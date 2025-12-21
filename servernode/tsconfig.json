@@ -1,0 +1,26 @@
+// Source - https://stackoverflow.com/a
+// Posted by saman samadi
+// Retrieved 2025-12-21, License - CC BY-SA 4.0
+
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "es2019",
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+  },
+  "include": [
+    "src/**/*.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

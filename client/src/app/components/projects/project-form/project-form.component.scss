@@ -1,0 +1,26 @@
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+  min-width: 500px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 10px;
+
+  button mat-icon {
+    margin-left: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .project-form {
+    min-width: auto;
+  }
+}

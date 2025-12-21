@@ -1,0 +1,62 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'עריכת ספק' : 'הוספת ספק חדש' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="supplierForm" class="supplier-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>שם</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-error *ngIf="supplierForm.get('name')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>טלפון</mat-label>
+        <input matInput formControlName="phone" type="tel" required>
+        <mat-icon matPrefix>phone</mat-icon>
+        <mat-error *ngIf="supplierForm.get('phone')?.hasError('required')">
+          שדה חובה
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>מייל</mat-label>
+        <input matInput formControlName="email" type="email" required>
+        <mat-icon matPrefix>email</mat-icon>
+        <mat-error *ngIf="supplierForm.get('email')?.hasError('required')">
+          שדה חובה
+        </mat-error>
+        <mat-error *ngIf="supplierForm.get('email')?.hasError('email')">
+          מייל לא תקין
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>פרטי חשבון</mat-label>
+      <textarea matInput formControlName="accountDetails" rows="2" required></textarea>
+      <mat-error *ngIf="supplierForm.get('accountDetails')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-checkbox formControlName="isPaid" class="checkbox-field">
+      שולם
+    </mat-checkbox>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>הערות</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!supplierForm.valid">
+    <mat-icon>save</mat-icon>
+    שמור
+  </button>
+</mat-dialog-actions>

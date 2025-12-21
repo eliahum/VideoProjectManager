@@ -1,0 +1,223 @@
+.current-milestone-row {
+  background: linear-gradient(90deg, #ffe082 0%, #ffd54f 100%);
+  box-shadow: 0 0 0 2px #ffd54f;
+}
+.project-detail-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+
+  button {
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .project-info {
+    flex: 1;
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+      color: #333;
+    }
+
+    .subtitle {
+      margin: 5px 0 0;
+      color: #666;
+      font-size: 1.1rem;
+    }
+  }
+
+  .current-stage-chip {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white !important;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    height: auto;
+  }
+}
+
+.stages-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.stages-tabs {
+  ::ng-deep .mat-mdc-tab-labels {
+    background-color: #f5f5f5;
+  }
+
+  ::ng-deep .mat-mdc-tab-label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    min-width: 150px;
+  }
+}
+
+.tab-content {
+  padding: 24px;
+}
+
+.stage-actions {
+  margin-bottom: 20px;
+
+  button mat-icon {
+    margin-left: 8px;
+  }
+}
+
+.milestones-accordion {
+  .milestone-panel {
+    margin-bottom: 16px;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+
+    mat-expansion-panel-header {
+      mat-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        mat-icon {
+          color: #667eea;
+        }
+
+        span {
+          font-weight: 500;
+          font-size: 1.05rem;
+        }
+      }
+
+      mat-panel-description {
+        justify-content: flex-start;
+      }
+    }
+  }
+}
+
+.milestone-details {
+  padding: 16px 0;
+
+  .detail-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+
+    mat-icon {
+      color: #667eea;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .suppliers-section {
+    margin: 20px 0;
+    padding: 16px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+
+    h4 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px 0;
+      color: #333;
+
+      mat-icon {
+        color: #667eea;
+      }
+    }
+
+    .supplier-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .amount {
+        font-weight: 600;
+        color: #27ae60;
+      }
+    }
+  }
+
+  .milestone-actions {
+    margin-top: 16px;
+
+    button mat-icon {
+      margin-left: 8px;
+    }
+  }
+}
+
+.status-chip {
+  font-weight: 500;
+}
+
+.status-before {
+  background-color: #e74c3c !important;
+  color: white !important;
+}
+
+.status-working {
+  background-color: #f39c12 !important;
+  color: white !important;
+}
+
+.status-client {
+  background-color: #3498db !important;
+  color: white !important;
+}
+
+.status-completed {
+  background-color: #27ae60 !important;
+  color: white !important;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  .large-icon {
+    font-size: 80px;
+    width: 80px;
+    height: 80px;
+    color: #ccc;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    color: #666;
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    flex-wrap: wrap;
+
+    .current-stage-chip {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .tab-content {
+    padding: 16px;
+  }
+}

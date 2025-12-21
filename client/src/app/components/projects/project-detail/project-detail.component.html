@@ -1,0 +1,89 @@
+<div class="project-detail-container" *ngIf="project">
+  <div class="header">
+    <button mat-icon-button (click)="goBack()">
+      <mat-icon>arrow_forward</mat-icon>
+    </button>
+    <div class="project-info">
+      <h1>{{ project.customerName }}</h1>
+      <p class="subtitle">{{ project.projectType }}</p>
+    </div>
+    <mat-chip class="current-stage-chip">{{ project.currentStage }}</mat-chip>
+  </div>
+
+  <mat-card class="stages-card">
+    <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
+      <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
+        <div class="tab-content">
+          <div class="stage-actions">
+            <button 
+              mat-raised-button 
+              color="primary" 
+              (click)="changeStage(stage.name)"
+              *ngIf="project.currentStage !== stage.name">
+              <mat-icon>play_arrow</mat-icon>
+              עבור לשלב זה
+            </button>
+          </div>
+
+          <mat-accordion class="milestones-accordion">
+            <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel"
+              [ngClass]="{'current-milestone-row': project.currentMilestoneId === milestone.id}">
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  <mat-icon>flag</mat-icon>
+                  <span>{{ milestone.name }}</span>
+                </mat-panel-title>
+                <mat-panel-description>
+                  <mat-chip [ngClass]="getMilestoneStatusClass(milestone.status)" class="status-chip">
+                    {{ milestone.status }}
+                  </mat-chip>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="milestone-details">
+                <div class="detail-row" *ngIf="milestone.documentReference">
+                  <mat-icon>description</mat-icon>
+                  <span><strong>מסמך:</strong> {{ milestone.documentReference }}</span>
+                </div>
+
+                <div class="detail-row" *ngIf="milestone.date">
+                  <mat-icon>calendar_today</mat-icon>
+                  <span><strong>תאריך:</strong> {{ milestone.date | date:'dd/MM/yyyy' }}</span>
+                </div>
+
+                <div class="suppliers-section" *ngIf="milestone.suppliers.length > 0">
+                  <h4><mat-icon>business</mat-icon> ספקים:</h4>
+                  <div class="supplier-item" *ngFor="let supplier of milestone.suppliers">
+                    <span>{{ supplier.supplierName }}</span>
+                    <span class="amount">₪{{ supplier.amount }}</span>
+                  </div>
+                </div>
+
+                <div class="milestone-actions">
+                  <button mat-raised-button color="primary" (click)="openMilestoneForm(stage, milestone)">
+                    <mat-icon>edit</mat-icon>
+                    ערוך אבן דרך
+                  </button>
+                  <button mat-stroked-button color="accent" (click)="setCurrentMilestone(milestone)">
+                    <mat-icon>star</mat-icon>
+                    קבע כאבן דרך נוכחית
+                  </button>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </mat-card>
+</div>
+
+<mat-card *ngIf="!project" class="empty-state">
+  <mat-card-content>
+    <mat-icon class="large-icon">error_outline</mat-icon>
+    <h2>פרוייקט לא נמצא</h2>
+    <button mat-raised-button color="primary" routerLink="/projects">
+      חזור לרשימת הפרוייקטים
+    </button>
+  </mat-card-content>
+</mat-card>

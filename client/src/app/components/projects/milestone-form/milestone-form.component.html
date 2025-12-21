@@ -1,0 +1,80 @@
+<h2 mat-dialog-title>עריכת אבן דרך: {{ data.milestone.name }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="milestoneForm" class="milestone-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>הפנייה למסמך</mat-label>
+      <input matInput formControlName="documentReference">
+      <mat-icon matPrefix>description</mat-icon>
+    </mat-form-field>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>תאריך</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="half-width">
+        <mat-label>סטטוס</mat-label>
+        <mat-select formControlName="status" required>
+          <mat-option *ngFor="let status of milestoneStatuses" [value]="status">
+            {{ status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="suppliers-section">
+      <div class="section-header">
+        <h3>ספקים</h3>
+        <button mat-raised-button type="button" (click)="addSupplier()">
+          <mat-icon>add</mat-icon>
+          הוסף ספק
+        </button>
+      </div>
+
+      <div formArrayName="suppliers" class="suppliers-list">
+        <mat-card *ngFor="let supplier of suppliers.controls; let i = index" [formGroupName]="i" class="supplier-card">
+          <div class="supplier-form-row">
+            <mat-form-field appearance="outline" class="supplier-select">
+              <mat-label>בחר ספק</mat-label>
+              <mat-select formControlName="supplierId" required>
+                <mat-option *ngFor="let availableSupplier of availableSuppliers" [value]="availableSupplier.id">
+                  {{ availableSupplier.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="amount-field">
+              <mat-label>סכום</mat-label>
+              <input matInput type="number" formControlName="amount" required>
+              <span matPrefix>₪</span>
+              <mat-error *ngIf="supplier.get('amount')?.hasError('required')">
+                שדה חובה
+              </mat-error>
+              <mat-error *ngIf="supplier.get('amount')?.hasError('min')">
+                סכום חייב להיות חיובי
+              </mat-error>
+            </mat-form-field>
+
+            <button mat-icon-button color="warn" type="button" (click)="removeSupplier(i)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+
+        <p *ngIf="suppliers.length === 0" class="no-suppliers">לא נוספו ספקים</p>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!milestoneForm.valid">
+    <mat-icon>save</mat-icon>
+    שמור
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'עריכת פרוייקט' : 'הוספת פרוייקט חדש' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="projectForm" class="project-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>לקוח</mat-label>
+      <mat-select formControlName="customerId" required>
+        <mat-option *ngFor="let customer of customers" [value]="customer.id">
+          {{ customer.name }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-error *ngIf="projectForm.get('customerId')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>סוג פרוייקט</mat-label>
+      <input matInput formControlName="projectType" required>
+      <mat-icon matPrefix>video_library</mat-icon>
+      <mat-error *ngIf="projectForm.get('projectType')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>שלב נוכחי</mat-label>
+      <mat-select formControlName="currentStage" required>
+        <mat-option *ngFor="let stage of projectStages" [value]="stage">
+          {{ stage }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>layers</mat-icon>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!projectForm.valid">
+    <mat-icon>save</mat-icon>
+    שמור
+  </button>
+</mat-dialog-actions>

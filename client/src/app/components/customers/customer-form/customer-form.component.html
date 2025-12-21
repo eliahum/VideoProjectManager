@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'עריכת לקוח' : 'הוספת לקוח חדש' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="customerForm" class="customer-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>שם</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-error *ngIf="customerForm.get('name')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>מייל</mat-label>
+      <input matInput formControlName="email" type="email" required>
+      <mat-icon matPrefix>email</mat-icon>
+      <mat-error *ngIf="customerForm.get('email')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+      <mat-error *ngIf="customerForm.get('email')?.hasError('email')">
+        מייל לא תקין
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>טלפון</mat-label>
+      <input matInput formControlName="phone" type="tel" required>
+      <mat-icon matPrefix>phone</mat-icon>
+      <mat-error *ngIf="customerForm.get('phone')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!customerForm.valid">
+    <mat-icon>save</mat-icon>
+    שמור
+  </button>
+</mat-dialog-actions>

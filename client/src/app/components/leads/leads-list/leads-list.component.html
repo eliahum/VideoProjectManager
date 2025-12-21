@@ -1,0 +1,90 @@
+<div class="leads-container">
+  <div class="header">
+    <h1>Leads</h1>
+    <button mat-raised-button color="primary" (click)="openLeadForm()">
+      <mat-icon>add</mat-icon>
+      הוסף Lead
+    </button>
+  </div>
+
+    <!-- Search box -->
+    <div class="search-container" style="margin-bottom: 16px;">
+      <mat-form-field appearance="outline" style="width: 100%;">
+        <mat-label>חפש Lead</mat-label>
+        <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="חפש בכל השדות...">
+        <button *ngIf="searchText" matSuffix mat-icon-button aria-label="נקה חיפוש" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+  <mat-card *ngIf="leads.length === 0" class="empty-state">
+    <mat-card-content>
+      <mat-icon class="large-icon">person_search</mat-icon>
+      <h2>אין Leads</h2>
+      <p>התחל על ידי הוספת Lead חדש</p>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="table-container" *ngIf="leads.length > 0">
+    <table mat-table [dataSource]="leads" class="leads-table">
+      
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>מספר</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>שם</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.name }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>טלפון</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.phone }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>מייל</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.email || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="companyName">
+        <th mat-header-cell *matHeaderCellDef>חברה</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.companyName }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>סטטוס</th>
+        <td mat-cell *matCellDef="let lead">
+          <mat-chip [ngClass]="getStatusClass(lead.status)">
+            {{ lead.status }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="contactDate">
+        <th mat-header-cell *matHeaderCellDef>ת.יצירה</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.createdAt | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>פעולות</th>
+        <td mat-cell *matCellDef="let lead">
+          <button mat-icon-button color="primary" (click)="openLeadForm(lead)">
+            <mat-icon>edit</mat-icon>
+          </button>
+            <button mat-icon-button color="accent" (click)="convertLeadToCustomer(lead)" [disabled]="lead.status === 'סגירה'">
+              <mat-icon>person_add</mat-icon>
+            </button>
+          <button mat-icon-button color="warn" (click)="deleteLead(lead.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+</div>

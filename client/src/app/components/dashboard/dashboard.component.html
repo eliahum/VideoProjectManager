@@ -1,0 +1,57 @@
+<div class="dashboard-container">
+  <h1 class="page-title">דשבורד</h1>
+
+  <div class="stats-section" *ngIf="activeProjects.length > 0; else noProjects">
+    <h2>פרוייקטים פעילים</h2>
+    
+    <div class="projects-grid">
+      <mat-card *ngFor="let stat of projectStats" class="project-card">
+        <mat-card-header>
+          <mat-card-title>{{ stat.project.customerName }}</mat-card-title>
+          <mat-card-subtitle>{{ stat.project.projectType }}</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content>
+          <div class="project-info">
+            <div class="info-row">
+              <mat-icon>layers</mat-icon>
+              <span><strong>שלב נוכחי:</strong> {{ stat.project.currentStage }}</span>
+            </div>
+            
+            <div class="info-row" *ngIf="stat.currentMilestone">
+              <mat-icon>flag</mat-icon>
+              <span><strong>אבן דרך נוכחית:</strong> {{ stat.currentMilestone.name }}</span>
+            </div>
+            
+            <div class="status-chip" *ngIf="stat.currentMilestone">
+              <mat-chip [ngClass]="getMilestoneStatusClass(stat.currentMilestone.status)">
+                {{ stat.currentMilestone.status }}
+              </mat-chip>
+            </div>
+          </div>
+        </mat-card-content>
+        
+        <mat-card-actions>
+          <button mat-raised-button color="primary" [routerLink]="['/projects', stat.project.id]">
+            <mat-icon>visibility</mat-icon>
+            צפה בפרוייקט
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <ng-template #noProjects>
+    <mat-card class="empty-state">
+      <mat-card-content>
+        <mat-icon class="large-icon">video_library</mat-icon>
+        <h2>אין פרוייקטים פעילים</h2>
+        <p>התחל על ידי יצירת פרוייקט חדש</p>
+        <button mat-raised-button color="primary" routerLink="/projects">
+          <mat-icon>add</mat-icon>
+          צור פרוייקט
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </ng-template>
+</div>

@@ -1,0 +1,13 @@
+{
+   "name": "foodmine-course",
+   "version": "1.0.0",
+   "engines": {
+      "node": ">=18 <19"
+   },
+   "scripts": {
+      "dev": "cd client && npm start & cd servernode && npm start",
+      "start": "cd servernode && npx ts-node src/index.ts",
+      "prebuild": "cd servernode && npm run build",
+      "build": "cd client && npm run build"
+   }
+}

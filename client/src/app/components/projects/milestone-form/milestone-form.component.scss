@@ -1,0 +1,111 @@
+.milestone-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+  min-width: 600px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.suppliers-section {
+  margin-top: 20px;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+
+    h3 {
+      margin: 0;
+      color: #333;
+    }
+
+    button mat-icon {
+      margin-left: 8px;
+    }
+  }
+
+  .suppliers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .supplier-card {
+      padding: 16px;
+      background-color: #f9f9f9;
+
+      .supplier-form-row {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+
+        .supplier-select {
+          flex: 2;
+        }
+
+        .amount-field {
+          flex: 1;
+        }
+
+        button {
+          margin-top: 8px;
+        }
+      }
+    }
+
+    .no-suppliers {
+      text-align: center;
+      color: #999;
+      padding: 20px;
+      font-style: italic;
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 10px;
+
+  button mat-icon {
+    margin-left: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .milestone-form {
+    min-width: auto;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .half-width {
+    width: 100%;
+  }
+
+  .suppliers-section .suppliers-list .supplier-card .supplier-form-row {
+    flex-direction: column;
+
+    .supplier-select,
+    .amount-field {
+      width: 100%;
+    }
+  }
+}
