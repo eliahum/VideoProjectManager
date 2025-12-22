@@ -93,7 +93,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">ביטול</button>
-  <button mat-raised-button color="accent" *ngIf="isEditMode" (click)="convertToCustomer()">
+  <button mat-raised-button color="accent" *ngIf="isEditMode" (click)="convertToCustomer()" [disabled]="hasCustomer">
     <mat-icon>person_add</mat-icon>
     המר ללקוח
   </button>

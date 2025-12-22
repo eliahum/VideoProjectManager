@@ -134,4 +134,8 @@ export class LeadFormComponent implements OnInit {
   get showNotInterestedReason(): boolean {
     return this.leadForm.get('status')?.value === LeadStatus.NOT_INTERESTED;
   }
+
+  get hasCustomer(): boolean {
+    return this.data?.hasCustomer || false;
+  }
 }
