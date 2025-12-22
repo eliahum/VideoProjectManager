@@ -45,8 +45,10 @@ export class SuppliersListComponent implements OnInit {
   }
 
   openSupplierForm(supplier?: Supplier): void {
+    const isMobile = window.innerWidth <= 768;
     const dialogRef = this.dialog.open(SupplierFormComponent, {
-      width: '600px',
+      width: isMobile ? '95vw' : '600px',
+      maxWidth: isMobile ? '95vw' : '600px',
       data: supplier
     });
 

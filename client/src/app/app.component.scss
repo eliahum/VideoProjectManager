@@ -46,6 +46,10 @@
   top: 0;
   z-index: 1000;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  .menu-button {
+    margin-left: 8px;
+  }
 }
 
 .main-content {
@@ -56,10 +60,22 @@
 
 @media (max-width: 768px) {
   .sidenav {
-    width: 200px;
+    width: 250px;
   }
   
   .main-content {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .top-toolbar {
+    .menu-button {
+      display: block;
+    }
+  }
+}
+
+@media (min-width: 769px) {
+  .menu-button {
+    display: none;
   }
 }

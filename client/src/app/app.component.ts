@@ -1,11 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-root',
@@ -26,6 +27,8 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   title = 'מנהל פרויקטי וידאו';
+  @ViewChild('sidenav') sidenav!: MatSidenav;
+  isMobile = false;
   
   menuItems = [
     { path: '/dashboard', label: 'דשבורד', icon: 'dashboard' },
@@ -34,4 +37,21 @@ export class AppComponent {
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
     { path: '/projects', label: 'פרויקטים', icon: 'video_library' }
   ];
+
+  constructor(private breakpointObserver: BreakpointObserver) {
+    this.breakpointObserver.observe([Breakpoints.Handset])
+      .subscribe(result => {
+        this.isMobile = result.matches;
+      });
+  }
+
+  toggleMenu(): void {
+    this.sidenav.toggle();
+  }
+
+  closeMenuIfMobile(): void {
+    if (this.isMobile) {
+      this.sidenav.close();
+    }
+  }
 }
