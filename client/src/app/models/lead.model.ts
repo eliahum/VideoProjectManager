@@ -2,6 +2,7 @@ import { BaseDataResponse } from './base-response.model';
 
 export interface Lead {
   id: string;
+  leadId: number;
   name: string;
   phone: string;
   email?: string;

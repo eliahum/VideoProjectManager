@@ -1,31 +1,40 @@
 import mongoose, { Document, CallbackError } from 'mongoose';
-
-// Counter Schema - shared across all models
-
-interface CounterDocument extends Document {
-  seq: number;
-}
-
+import { Counter } from './counter.model';
 
 // Customer Schema
 const customerSchema = new mongoose.Schema(
     {
-        // id removed, use default _id
+        customerId: { type: Number, unique: true },
         name: { type: String, required: true },
         email: { type: String},
         phone: { type: String, required: true },
         address: { type: String },
-        leadId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead' },
+        leadId: { type: Number },
     },
     { timestamps: true }
 );
 
+// Pre-save middleware to auto-increment customerId
+customerSchema.pre('save', async function() {
+  if (!this.customerId) {
+    const counter = await Counter.findByIdAndUpdate(
+      'customerId',
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    if (counter) {
+      this.customerId = counter.seq;
+    }
+  }
+});
+
 export interface CustomerDocument extends Document {
+    customerId: number;
     name: string;
     email: string;
     phone: string;
     address?: string;
-    leadId?: mongoose.Types.ObjectId;
+    leadId?: number;
     createdAt?: Date;
     updatedAt?: Date;
 }

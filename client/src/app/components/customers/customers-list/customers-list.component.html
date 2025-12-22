@@ -30,6 +30,13 @@
   <div class="table-container" *ngIf="customers.length > 0">
     <table mat-table [dataSource]="customers" class="customers-table">
       <!-- Lead ID Column -->
+        <ng-container matColumnDef="customerid">
+        <th mat-header-cell *matHeaderCellDef>מספר </th>
+        <td mat-cell *matCellDef="let customer">
+          <span *ngIf="customer.customerId; else noLead">{{ customer.customerId }}</span>
+          <ng-template #noLead>-</ng-template>
+        </td>
+      </ng-container>
       <ng-container matColumnDef="leadId">
         <th mat-header-cell *matHeaderCellDef>מספר Lead</th>
         <td mat-cell *matCellDef="let customer">

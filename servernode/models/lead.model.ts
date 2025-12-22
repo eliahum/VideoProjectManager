@@ -1,10 +1,11 @@
 
 import mongoose, { Document } from 'mongoose';
+import { Counter } from './counter.model';
 
 // Lead Schema
 const leadSchema = new mongoose.Schema(
   {
-    // id removed, use default _id
+    leadId: { type: Number, unique: true },
     name: { type: String, required: true },
     email: { type: String },
     phone: { type: String },
@@ -17,9 +18,22 @@ const leadSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// pre-save middleware removed, use default _id
+// Pre-save middleware to auto-increment leadId
+leadSchema.pre('save', async function() {
+  if (!this.leadId) {
+    const counter = await Counter.findByIdAndUpdate(
+      'leadId',
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    if (counter) {
+      this.leadId = counter.seq;
+    }
+  }
+});
 
 export interface LeadDocument extends Document {
+  leadId: number;
   name: string;
   email?: string;
   phone?: string;
@@ -33,5 +47,4 @@ export interface LeadDocument extends Document {
 
 const Lead = mongoose.model<LeadDocument>('Lead', leadSchema);
 
-// Counter schema and model removed
 export default Lead;

@@ -29,9 +29,9 @@
   <div class="table-container" *ngIf="leads.length > 0">
     <table mat-table [dataSource]="leads" class="leads-table">
       
-      <ng-container matColumnDef="id">
+      <ng-container matColumnDef="leadid">
         <th mat-header-cell *matHeaderCellDef>מספר</th>
-        <td mat-cell *matCellDef="let lead">{{ lead.id }}</td>
+        <td mat-cell *matCellDef="let lead">{{ lead.leadId }}</td>
       </ng-container>
 
       <ng-container matColumnDef="name">

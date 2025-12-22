@@ -5,8 +5,8 @@ export const getAllLeads = async (): Promise<LeadsListResponseDTO> => {
     try {
         const leads = await Lead.find();
         const data = leads.map((lead) => {
-            const { _id, name, email, phone, status, source, freeText, companyName,createdAt } = lead;
-            return { id: _id.toString(), name, email, phone, status, source, freeText, companyName,createdAt };
+            const { _id, leadId, name, email, phone, status, source, freeText, companyName, createdAt } = lead;
+            return { id: _id.toString(), leadId, name, email, phone, status, source, freeText, companyName, createdAt };
         });
         return { isSuccess: true, data };
     } catch (error) {
@@ -19,8 +19,8 @@ export const getLeadById = async (id: string): Promise<LeadResponseDTO> => {
     try {
         const lead = await Lead.findById(id);
         if (!lead) return { isSuccess: false, errorText: 'Lead not found' };
-        const { _id, name, email, phone, status, source, freeText, companyName } = lead;
-        const data = { id: _id.toString(), name, email, phone, status, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, status, source, freeText, companyName } = lead;
+        const data = { id: _id.toString(), leadId, name, email, phone, status, source, freeText, companyName };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[getLeadById] Error fetching lead:', error);
@@ -32,8 +32,8 @@ export const createLead = async (leadData: Partial<LeadDTO>): Promise<LeadRespon
     try {
         const lead = new Lead(leadData);
         const savedLead = await lead.save();
-        const { _id, name, email, phone, status, source, freeText, companyName } = savedLead;
-        const data = { id: _id.toString(), name, email, phone, status, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, status, source, freeText, companyName } = savedLead;
+        const data = { id: _id.toString(), leadId, name, email, phone, status, source, freeText, companyName };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[createLead] Error creating lead:', error);
@@ -45,8 +45,8 @@ export const updateLead = async (id: string, updateData: Partial<LeadDTO>): Prom
     try {
         const updatedLead = await Lead.findByIdAndUpdate(id, updateData, { new: true });
         if (!updatedLead) return { isSuccess: false, errorText: 'Lead not found' };
-        const { _id, name, email, phone, status, source, freeText, companyName } = updatedLead;
-        const data = { id: _id.toString(), name, email, phone, status, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, status, source, freeText, companyName } = updatedLead;
+        const data = { id: _id.toString(), leadId, name, email, phone, status, source, freeText, companyName };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[updateLead] Error updating lead:', error);
@@ -58,8 +58,8 @@ export const deleteLead = async (id: string): Promise<LeadResponseDTO> => {
     try {
         const deletedLead = await Lead.findByIdAndDelete(id);
         if (!deletedLead) return { isSuccess: false, errorText: 'Lead not found' };
-        const { _id, name, email, phone, status, source, freeText, companyName } = deletedLead;
-        const data = { id: _id.toString(), name, email, phone, status, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, status, source, freeText, companyName } = deletedLead;
+        const data = { id: _id.toString(), leadId, name, email, phone, status, source, freeText, companyName };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[deleteLead] Error deleting lead:', error);

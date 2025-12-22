@@ -33,7 +33,7 @@ export class CustomersListComponent implements OnInit {
   customers: Customer[] = [];
   allCustomers: Customer[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['name', 'phone', 'email', 'leadId', 'actions'];
+  displayedColumns: string[] = ['customerid','name', 'phone', 'email', 'leadId', 'actions'];
 
   constructor(
     private customerService: CustomerService,

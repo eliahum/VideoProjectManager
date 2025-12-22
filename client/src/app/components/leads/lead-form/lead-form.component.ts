@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { LeadService } from '../../../services/lead.service';
 import { CustomerService } from '../../../services/customer.service';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Lead, LeadStatus } from '../../../models/lead.model';
 import { Customer } from '../../../models/customer.model';
 
@@ -41,6 +42,7 @@ export class LeadFormComponent implements OnInit {
     private fb: FormBuilder,
     private leadService: LeadService,
     private customerService: CustomerService,
+    private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<LeadFormComponent>,
     private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: Lead
@@ -96,29 +98,32 @@ export class LeadFormComponent implements OnInit {
   convertToCustomer(): void {
     const leadData = this.data || this.leadForm.value;
     if (leadData.status === LeadStatus.CLOSED) {
-      alert('Lead זה כבר הומר ללקוח.');
+      this.messageDialogService.showError('Lead זה כבר הומר ללקוח.');
       return;
     }
-    if (confirm('האם להמיר Lead זה ללקוח?')) {
-      const customerData = {
-        name: leadData.name,
-        email: leadData.email || '',
-        phone: leadData.phone,
-        leadId: leadData.id || undefined
-      };
-      this.customerService.create(customerData).subscribe(() => {
-        // Update lead status to closed
-        if (this.data) {
-          this.leadService.updateStatus(this.data.id, LeadStatus.CLOSED).subscribe(() => {
-            alert('הלקוח נוצר בהצלחה!');
+
+    this.messageDialogService.confirm('האם להמיר Lead זה ללקוח?').subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        const customerData = {
+          name: leadData.name,
+          email: leadData.email || '',
+          phone: leadData.phone,
+          leadId: leadData.leadId || undefined
+        };
+        this.customerService.create(customerData).subscribe(() => {
+          // Update lead status to closed
+          if (this.data) {
+            this.leadService.updateStatus(this.data.id, LeadStatus.CLOSED).subscribe(() => {
+              this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
+              this.dialogRef.close(true);
+            });
+          } else {
+            this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
             this.dialogRef.close(true);
-          });
-        } else {
-          alert('הלקוח נוצר בהצלחה!');
-          this.dialogRef.close(true);
-        }
-      });
-    }
+          }
+        });
+      }
+    });
   }
 
   close(): void {

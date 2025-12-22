@@ -10,6 +10,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { LeadService } from '../../../services/lead.service';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Lead, LeadStatus } from '../../../models/lead.model';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { CustomerService } from '../../../services/customer.service';
@@ -38,10 +39,11 @@ export class LeadsListComponent implements OnInit {
   leads: Lead[] = [];
   allLeads: Lead[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['id','name', 'phone', 'email', 'companyName', 'status', 'contactDate', 'actions'];
+  displayedColumns: string[] = ['leadid','name', 'phone', 'email', 'companyName', 'status', 'contactDate', 'actions'];
 
   constructor(
     private leadService: LeadService,
+    private messageDialogService: MessageDialogService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private customerService: CustomerService
@@ -53,36 +55,39 @@ export class LeadsListComponent implements OnInit {
 
   convertLeadToCustomer(lead: Lead): void {
     if (lead.status === LeadStatus.CLOSED) {
-      alert('Lead זה כבר הומר ללקוח.');
+      this.messageDialogService.showError('Lead זה כבר הומר ללקוח.');
       return;
     }
-    if (confirm('האם להמיר Lead זה ללקוח?')) {
-      const customerData = {
-        name: lead.name,
-        email: lead.email || '',
-        phone: lead.phone,
-        companyName: lead.companyName,
-        source: lead.source,
-        freeText: lead.freeText,
-        leadId: lead.id
-      };
-      this.customerService.create(customerData).subscribe(customerResponse => {
-        if (customerResponse.isSuccess) {
-          this.leadService.updateStatus(lead.id, LeadStatus.CLOSED).subscribe(leadResponse => {
-            if (leadResponse.isSuccess) {
-              alert('הלקוח נוצר בהצלחה!');
-              this.loadLeads();
-            } else {
-              console.error('Failed to update lead status:', leadResponse.errorText);
-              alert('שגיאה בעדכון סטטוס Lead: ' + (leadResponse.errorText || 'Unknown error'));
-            }
-          });
-        } else {
-          console.error('Failed to create customer:', customerResponse.errorText);
-          alert('שגיאה ביצירת לקוח: ' + (customerResponse.errorText || 'Unknown error'));
-        }
-      });
-    }
+
+    this.messageDialogService.confirm('האם להמיר Lead זה ללקוח?').subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        const customerData = {
+          name: lead.name,
+          email: lead.email || '',
+          phone: lead.phone,
+          companyName: lead.companyName,
+          source: lead.source,
+          freeText: lead.freeText,
+          leadId: lead.leadId
+        };
+        this.customerService.create(customerData).subscribe(customerResponse => {
+          if (customerResponse.isSuccess) {
+            this.leadService.updateStatus(lead.id, LeadStatus.CLOSED).subscribe(leadResponse => {
+              if (leadResponse.isSuccess) {
+                this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
+                this.loadLeads();
+              } else {
+                console.error('Failed to update lead status:', leadResponse.errorText);
+                this.messageDialogService.showError('שגיאה בעדכון סטטוס Lead: ' + (leadResponse.errorText || 'Unknown error'));
+              }
+            });
+          } else {
+            console.error('Failed to create customer:', customerResponse.errorText);
+            this.messageDialogService.showError('שגיאה ביצירת לקוח: ' + (customerResponse.errorText || 'Unknown error'));
+          }
+        });
+      }
+    });
   }
 
   loadLeads(): void {
@@ -93,7 +98,7 @@ export class LeadsListComponent implements OnInit {
         this.cdr.detectChanges();
       } else {
         console.error('Failed to load leads:', response.errorText);
-        alert('שגיאה בטעינת Leads: ' + (response.errorText || 'Unknown error'));
+        this.messageDialogService.showError('שגיאה בטעינת Leads: ' + (response.errorText || 'Unknown error'));
       }
     });
   }
@@ -131,16 +136,19 @@ export class LeadsListComponent implements OnInit {
   }
 
   deleteLead(id: string): void {
-    if (confirm('האם אתה בטוח שברצונך למחוק Lead זה?')) {
-      this.leadService.delete(id).subscribe(response => {
-        if (response.isSuccess) {
-          this.loadLeads();
-        } else {
-          console.error('Failed to delete lead:', response.errorText);
-          alert('שגיאה במחיקת Lead: ' + (response.errorText || 'Unknown error'));
-        }
-      });
-    }
+    this.messageDialogService.confirm('האם אתה בטוח שברצונך למחוק Lead זה?', 'אישור מחיקה').subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        this.leadService.delete(id).subscribe(response => {
+          if (response.isSuccess) {
+            this.messageDialogService.showSuccess('Lead נמחק בהצלחה');
+            this.loadLeads();
+          } else {
+            console.error('Failed to delete lead:', response.errorText);
+            this.messageDialogService.showError('שגיאה במחיקת Lead: ' + (response.errorText || 'Unknown error'));
+          }
+        });
+      }
+    });
   }
 
   getStatusClass(status: LeadStatus): string {
