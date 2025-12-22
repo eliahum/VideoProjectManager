@@ -10,8 +10,8 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
 
 const app = express();
-const PORT = 3000;//process.env.PORT || 10000;
-const DATABASE_URL ='mongodb+srv://eliahumalkin_db_user:9dSA3N686kLkKUh4@cluster0.jfqizjk.mongodb.net/?appName=Cluster0';// process.env.DATABASE_URL || 'mongodb://localhost:27017/videoprojectmanager';
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/videoprojectmanager';
 
 
 // Middleware
