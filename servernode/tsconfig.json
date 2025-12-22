@@ -15,7 +15,7 @@
     "emitDecoratorMetadata": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "src/**/*.ts",
