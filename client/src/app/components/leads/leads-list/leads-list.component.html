@@ -18,7 +18,7 @@
       </mat-form-field>
     </div>
 
-  <mat-card *ngIf="leads.length === 0" class="empty-state">
+  <mat-card *ngIf="filteredLeads.length === 0" class="empty-state">
     <mat-card-content>
       <mat-icon class="large-icon">person_search</mat-icon>
       <h2>אין Leads</h2>
@@ -26,8 +26,8 @@
     </mat-card-content>
   </mat-card>
 
-  <div class="table-container" *ngIf="leads.length > 0">
-    <table mat-table [dataSource]="leads" class="leads-table">
+  <div class="table-container" *ngIf="filteredLeads.length > 0">
+    <table mat-table [dataSource]="paginatedLeads" class="leads-table">
       
       <ng-container matColumnDef="leadid">
         <th mat-header-cell *matHeaderCellDef>מספר</th>
@@ -86,5 +86,14 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageIndex"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>

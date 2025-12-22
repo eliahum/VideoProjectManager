@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
@@ -24,7 +25,8 @@ import { CustomerFormComponent } from '../customer-form/customer-form.component'
     MatTableModule,
     MatDialogModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatPaginatorModule
   ],
   templateUrl: './customers-list.component.html',
   styleUrl: './customers-list.component.scss'
@@ -32,8 +34,15 @@ import { CustomerFormComponent } from '../customer-form/customer-form.component'
 export class CustomersListComponent implements OnInit {
   customers: Customer[] = [];
   allCustomers: Customer[] = [];
+  filteredCustomers: Customer[] = [];
+  paginatedCustomers: Customer[] = [];
   searchText: string = '';
   displayedColumns: string[] = ['customerid','name', 'phone', 'email', 'leadId', 'actions'];
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+  
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private customerService: CustomerService,
@@ -61,14 +70,32 @@ export class CustomersListComponent implements OnInit {
   applyFilter(): void {
     const text = this.searchText ? this.searchText.trim().toLowerCase() : '';
     if (!text) {
-      this.customers = [...this.allCustomers];
-      return;
+      this.filteredCustomers = [...this.allCustomers];
+    } else {
+      this.filteredCustomers = this.allCustomers.filter(customer => {
+        return Object.values(customer).some(val =>
+          val && val.toString().toLowerCase().includes(text)
+        );
+      });
     }
-    this.customers = this.allCustomers.filter(customer => {
-      return Object.values(customer).some(val =>
-        val && val.toString().toLowerCase().includes(text)
-      );
-    });
+    this.pageIndex = 0;
+    this.updatePaginatedCustomers();
+  }
+
+  updatePaginatedCustomers(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedCustomers = this.filteredCustomers.slice(startIndex, endIndex);
+  }
+
+  onPageChange(event: any): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updatePaginatedCustomers();
+  }
+
+  get totalItems(): number {
+    return this.filteredCustomers.length;
   }
 
   clearSearch(): void {

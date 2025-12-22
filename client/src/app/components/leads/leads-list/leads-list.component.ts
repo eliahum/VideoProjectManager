@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -9,6 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { LeadService } from '../../../services/lead.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Lead, LeadStatus } from '../../../models/lead.model';
@@ -30,7 +31,8 @@ import { from } from 'rxjs';
     MatChipsModule,
     MatCardModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatPaginatorModule
   ],
   templateUrl: './leads-list.component.html',
   styleUrl: './leads-list.component.scss'
@@ -38,8 +40,15 @@ import { from } from 'rxjs';
 export class LeadsListComponent implements OnInit {
   leads: Lead[] = [];
   allLeads: Lead[] = [];
+  filteredLeads: Lead[] = [];
+  paginatedLeads: Lead[] = [];
   searchText: string = '';
   displayedColumns: string[] = ['leadid','name', 'phone', 'email', 'companyName', 'status', 'contactDate', 'actions'];
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+  
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private leadService: LeadService,
@@ -106,14 +115,32 @@ export class LeadsListComponent implements OnInit {
   applyFilter(): void {
     const text = this.searchText ? this.searchText.trim().toLowerCase() : '';
     if (!text) {
-      this.leads = [...this.allLeads];
-      return;
+      this.filteredLeads = [...this.allLeads];
+    } else {
+      this.filteredLeads = this.allLeads.filter(lead => {
+        return Object.values(lead).some(val =>
+          val && val.toString().toLowerCase().includes(text)
+        );
+      });
     }
-    this.leads = this.allLeads.filter(lead => {
-      return Object.values(lead).some(val =>
-        val && val.toString().toLowerCase().includes(text)
-      );
-    });
+    this.pageIndex = 0;
+    this.updatePaginatedLeads();
+  }
+
+  updatePaginatedLeads(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedLeads = this.filteredLeads.slice(startIndex, endIndex);
+  }
+
+  onPageChange(event: any): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updatePaginatedLeads();
+  }
+
+  get totalItems(): number {
+    return this.filteredLeads.length;
   }
 
   clearSearch(): void {

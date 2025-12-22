@@ -18,7 +18,7 @@
     </mat-form-field>
   </div>
 
-  <mat-card *ngIf="customers.length === 0" class="empty-state">
+  <mat-card *ngIf="filteredCustomers.length === 0" class="empty-state">
     <mat-card-content>
       <mat-icon class="large-icon">people</mat-icon>
       <h2>אין לקוחות</h2>
@@ -27,8 +27,8 @@
   </mat-card>
   
 
-  <div class="table-container" *ngIf="customers.length > 0">
-    <table mat-table [dataSource]="customers" class="customers-table">
+  <div class="table-container" *ngIf="filteredCustomers.length > 0">
+    <table mat-table [dataSource]="paginatedCustomers" class="customers-table">
       <!-- Lead ID Column -->
         <ng-container matColumnDef="customerid">
         <th mat-header-cell *matHeaderCellDef>מספר </th>
@@ -94,5 +94,14 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageIndex"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
   </div>
 </div>
