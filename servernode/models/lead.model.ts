@@ -9,7 +9,7 @@ const leadSchema = new mongoose.Schema(
     name: { type: String, required: true },
     email: { type: String },
     phone: { type: String },
-    status: { type: String, default: 'חדש' },
+    statusNumber: { type: Number, default: 1 },
     source: { type: String }, // איך הגיע אלי
   freeText:{ type: String },
   companyName: { type: String }
@@ -37,7 +37,7 @@ export interface LeadDocument extends Document {
   name: string;
   email?: string;
   phone?: string;
-  status: string;
+  statusNumber: number;
   source: string; // איך הגיע אלי
   freeText: string;
   companyName: string;  

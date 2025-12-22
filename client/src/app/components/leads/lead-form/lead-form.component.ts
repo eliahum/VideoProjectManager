@@ -10,6 +10,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { LeadService } from '../../../services/lead.service';
+import { LeadStatusService } from '../../../services/lead-status.service';
 import { CustomerService } from '../../../services/customer.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Lead, LeadStatus } from '../../../models/lead.model';
@@ -35,12 +36,14 @@ import { Customer } from '../../../models/customer.model';
 })
 export class LeadFormComponent implements OnInit {
   leadForm: FormGroup;
-  leadStatuses = Object.values(LeadStatus);
+  leadStatuses: LeadStatus[] = [];
   isEditMode = false;
+  notInterestedStatus: LeadStatus | undefined;
 
   constructor(
     private fb: FormBuilder,
     private leadService: LeadService,
+    private leadStatusService: LeadStatusService,
     private customerService: CustomerService,
     private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<LeadFormComponent>,
@@ -55,21 +58,37 @@ export class LeadFormComponent implements OnInit {
       freeText: ['', Validators.required],
       companyName: ['', Validators.required],
       contactDate: [new Date(), Validators.required],
-      status: [LeadStatus.NEW, Validators.required],
+      statusNumber: [1, Validators.required],
       notInterestedReason: ['']
     });
   }
 
   ngOnInit(): void {
-    if (this.data) {
-      this.isEditMode = true;
-      this.leadForm.patchValue(this.data);
-    }
+    // טען סטטוסים מהשרת
+    this.leadStatusService.getAll().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.leadStatuses = response.data;
+        this.notInterestedStatus = this.leadStatuses.find(s => s.name === 'לא מעוניין');
+        
+        // אם יש data, עדכן את הטופס
+        if (this.data) {
+          this.isEditMode = true;
+          this.leadForm.patchValue(this.data);
+        } else {
+          // אם זה lead חדש, קבע את הסטטוס הראשון (מספר 1)
+          const newStatus = this.leadStatuses.find(s => s.statusNumber === 1);
+          if (newStatus) {
+            this.leadForm.patchValue({ statusNumber: newStatus.statusNumber });
+          }
+        }
+      }
+    });
 
     // הצגת שדה "לא מעוניין" רק כאשר הסטטוס הוא "לא מעוניין"
-    this.leadForm.get('status')?.valueChanges.subscribe(status => {
+    this.leadForm.get('statusNumber')?.valueChanges.subscribe(statusNumber => {
       const notInterestedControl = this.leadForm.get('notInterestedReason');
-      if (status === LeadStatus.NOT_INTERESTED) {
+      const selectedStatus = this.leadStatuses.find(s => s.statusNumber === statusNumber);
+      if (selectedStatus?.name === 'לא מעוניין') {
         notInterestedControl?.setValidators([Validators.required]);
       } else {
         notInterestedControl?.clearValidators();
@@ -98,7 +117,9 @@ export class LeadFormComponent implements OnInit {
 
   convertToCustomer(): void {
     const leadData = this.data || this.leadForm.value;
-    if (leadData.status === LeadStatus.CLOSED) {
+    const closedStatus = this.leadStatuses.find(s => s.isFinal && !s.isEditable);
+    
+    if (closedStatus && leadData.statusNumber === closedStatus.statusNumber) {
       this.messageDialogService.showError('Lead זה כבר הומר ללקוח.');
       return;
     }
@@ -113,8 +134,8 @@ export class LeadFormComponent implements OnInit {
         };
         this.customerService.create(customerData).subscribe(() => {
           // Update lead status to closed
-          if (this.data) {
-            this.leadService.updateStatus(this.data.id, LeadStatus.CLOSED).subscribe(() => {
+          if (this.data && closedStatus) {
+            this.leadService.updateStatus(this.data.id, closedStatus.statusNumber).subscribe(() => {
               this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
               this.dialogRef.close(true);
             });
@@ -132,7 +153,9 @@ export class LeadFormComponent implements OnInit {
   }
 
   get showNotInterestedReason(): boolean {
-    return this.leadForm.get('status')?.value === LeadStatus.NOT_INTERESTED;
+    const statusNumber = this.leadForm.get('statusNumber')?.value;
+    const selectedStatus = this.leadStatuses.find(s => s.statusNumber === statusNumber);
+    return selectedStatus?.name === 'לא מעוניין';
   }
 
   get hasCustomer(): boolean {

@@ -6,7 +6,7 @@ export interface LeadDTO {
     name: string;
     email?: string;
     phone?: string;
-    status: string;
+    statusNumber: number;
     source: string; // איך הגיע אלי
     freeText: string;
     companyName: string;

@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import customerRoutes from '../routes/customers.routes';
 import leadRoutes from '../routes/leads.routes';
+import leadStatusRoutes from '../routes/lead-status.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
@@ -21,6 +22,7 @@ app.use(cors({ origin: '*' }));
 // Routes
 app.use('/api/customers', customerRoutes);
 app.use('/api/leads', leadRoutes);
+app.use('/api/lead-statuses', leadStatusRoutes);
 
 
 // Swagger setup

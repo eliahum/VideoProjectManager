@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LeadService } from '../../../services/lead.service';
+import { LeadStatusService } from '../../../services/lead-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Lead, LeadStatus } from '../../../models/lead.model';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
@@ -50,11 +51,14 @@ export class LeadsListComponent implements OnInit {
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
   isLoading: boolean = false;
+  leadStatuses: LeadStatus[] = [];
+  closedStatus: LeadStatus | undefined;
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(
     private leadService: LeadService,
+    private leadStatusService: LeadStatusService,
     private messageDialogService: MessageDialogService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
@@ -62,11 +66,21 @@ export class LeadsListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // טען סטטוסים מהשרת
+    this.leadStatusService.getAll().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.leadStatuses = response.data;
+        this.closedStatus = this.leadStatuses.find(s => s.isFinal && s.name === 'סגירה');
+      }
+    });
     this.loadLeads();
   }
 
   convertLeadToCustomer(lead: Lead): void {
-    if (lead.status === LeadStatus.CLOSED) {
+    debugger;
+    // בדוק אם הסטטוס הנוכחי הוא סופי
+    const currentStatus = this.leadStatuses.find(s => s.statusNumber === lead.statusNumber);
+    if (currentStatus?.isFinal) {
       this.messageDialogService.showError('Lead זה כבר הומר ללקוח.');
       return;
     }
@@ -84,7 +98,7 @@ export class LeadsListComponent implements OnInit {
         };
         this.customerService.create(customerData).subscribe(customerResponse => {
           if (customerResponse.isSuccess) {
-            this.leadService.updateStatus(lead.id, LeadStatus.CLOSED).subscribe(leadResponse => {
+            this.leadService.updateStatus(lead.id, this.closedStatus?.statusNumber || 5).subscribe(leadResponse => {
               if (leadResponse.isSuccess) {
                 this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
                 this.loadLeads();
@@ -196,13 +210,18 @@ export class LeadsListComponent implements OnInit {
     });
   }
 
-  getStatusClass(status: LeadStatus): string {
-    switch (status) {
-      case LeadStatus.NEW: return 'status-new';
-      case LeadStatus.QUOTE: return 'status-quote';
-      case LeadStatus.PAUSED: return 'status-paused';
-      case LeadStatus.NOT_INTERESTED: return 'status-not-interested';
-      case LeadStatus.CLOSED: return 'status-closed';
+  getStatusName(statusNumber: number): string {
+    const status = this.leadStatuses.find(s => s.statusNumber === statusNumber);
+    return status?.name || '';
+  }
+
+  getStatusClass(statusNumber: number): string {
+    switch (statusNumber) {
+      case 1: return 'status-new';
+      case 2: return 'status-quote';
+      case 3: return 'status-paused';
+      case 4: return 'status-not-interested';
+      case 5: return 'status-closed';
       default: return '';
     }
   }

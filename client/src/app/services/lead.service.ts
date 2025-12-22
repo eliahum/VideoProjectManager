@@ -29,8 +29,8 @@ export class LeadService {
     return this.http.put<LeadResponse>(`${this.apiUrl}/${id}`, updates);
   }
 
-  updateStatus(id: string, status: LeadStatus): Observable<LeadResponse> {
-    return this.http.put<LeadResponse>(`${this.apiUrl}/${id}/status`, { status });
+  updateStatus(id: string, statusNumber: number): Observable<LeadResponse> {
+    return this.http.put<LeadResponse>(`${this.apiUrl}/${id}`, { statusNumber });
   }
 
   delete(id: string): Observable<LeadResponse> {

@@ -12,19 +12,24 @@ export interface Lead {
   contactDate: Date;
   createdAt: Date;
   updatedAt: Date;
-  status: LeadStatus;
+  statusNumber: number; // מספר הסטטוס
   notInterestedReason?: string;
   hasCustomer?: boolean; // האם נוצר ממנו לקוח
 }
 
-export enum LeadStatus {
-  NEW = 'חדש',
-  QUOTE = 'הצעת מחיר',
-  PAUSED = 'השהייה',
-  NOT_INTERESTED = 'לא מעוניין',
-  CLOSED = 'סגירה'
+export interface LeadStatus {
+  id: string;
+  name: string; // שם הסטטוס
+  statusNumber: number; // מספר הסטטוס
+  isFinal: boolean; // האם סטטוס סופי
+  isEditable: boolean; // האם ניתן לעדכן
 }
 
 export interface LeadResponse extends BaseDataResponse<Lead> {}
 
 export interface LeadsListResponse extends BaseDataResponse<Lead[]> {}
+
+export interface LeadStatusResponse extends BaseDataResponse<LeadStatus> {}
+
+export interface LeadStatusListResponse extends BaseDataResponse<LeadStatus[]> {}
+
