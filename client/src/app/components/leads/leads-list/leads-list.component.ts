@@ -66,20 +66,35 @@ export class LeadsListComponent implements OnInit {
         freeText: lead.freeText,
         leadId: lead.id
       };
-      this.customerService.create(customerData).subscribe(() => {
-        this.leadService.updateStatus(lead.id, LeadStatus.CLOSED).subscribe(() => {
-          alert('הלקוח נוצר בהצלחה!');
-          this.loadLeads();
-        });
+      this.customerService.create(customerData).subscribe(customerResponse => {
+        if (customerResponse.isSuccess) {
+          this.leadService.updateStatus(lead.id, LeadStatus.CLOSED).subscribe(leadResponse => {
+            if (leadResponse.isSuccess) {
+              alert('הלקוח נוצר בהצלחה!');
+              this.loadLeads();
+            } else {
+              console.error('Failed to update lead status:', leadResponse.errorText);
+              alert('שגיאה בעדכון סטטוס Lead: ' + (leadResponse.errorText || 'Unknown error'));
+            }
+          });
+        } else {
+          console.error('Failed to create customer:', customerResponse.errorText);
+          alert('שגיאה ביצירת לקוח: ' + (customerResponse.errorText || 'Unknown error'));
+        }
       });
     }
   }
 
   loadLeads(): void {
-    this.leadService.getAll().subscribe(leads => {
-      this.allLeads = [...leads];
-      this.applyFilter();
-      this.cdr.detectChanges();
+    this.leadService.getAll().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.allLeads = [...response.data];
+        this.applyFilter();
+        this.cdr.detectChanges();
+      } else {
+        console.error('Failed to load leads:', response.errorText);
+        alert('שגיאה בטעינת Leads: ' + (response.errorText || 'Unknown error'));
+      }
     });
   }
 
@@ -117,8 +132,13 @@ export class LeadsListComponent implements OnInit {
 
   deleteLead(id: string): void {
     if (confirm('האם אתה בטוח שברצונך למחוק Lead זה?')) {
-      this.leadService.delete(id).subscribe(() => {
-        this.loadLeads();
+      this.leadService.delete(id).subscribe(response => {
+        if (response.isSuccess) {
+          this.loadLeads();
+        } else {
+          console.error('Failed to delete lead:', response.errorText);
+          alert('שגיאה במחיקת Lead: ' + (response.errorText || 'Unknown error'));
+        }
       });
     }
   }

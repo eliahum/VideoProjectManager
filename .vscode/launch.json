@@ -8,11 +8,11 @@
             "type": "node",
             "request": "launch",
             "name": "Debug TypeScript (ts-node)",
-            "program": "${workspaceFolder}servernode/api/node_modules/ts-node/dist/bin.js",
+            "program": "${workspaceFolder}/servernode/node_modules/ts-node/dist/bin.js",
             "args": [
-                "${workspaceFolder}/servernode/api/src/index.ts"
+                "${workspaceFolder}/servernode/src/index.ts"
             ],
-            "cwd": "${workspaceFolder}/servernode/api",
+            "cwd": "${workspaceFolder}/servernode",
             "protocol": "inspector",
             "skipFiles": [
                 "<node_internals>/**"

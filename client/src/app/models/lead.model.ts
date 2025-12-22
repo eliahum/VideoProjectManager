@@ -1,3 +1,5 @@
+import { BaseDataResponse } from './base-response.model';
+
 export interface Lead {
   id: string;
   name: string;
@@ -20,3 +22,7 @@ export enum LeadStatus {
   NOT_INTERESTED = 'לא מעוניין',
   CLOSED = 'סגירה'
 }
+
+export interface LeadResponse extends BaseDataResponse<Lead> {}
+
+export interface LeadsListResponse extends BaseDataResponse<Lead[]> {}

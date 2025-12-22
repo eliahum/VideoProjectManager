@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Customer } from '../models/customer.model';
+import { Customer, CustomerResponse, CustomersListResponse } from '../models/customer.model';
 import { API_BASE_URL } from '../../environments/api.config';
 
 @Injectable({
@@ -12,24 +12,24 @@ export class CustomerService {
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Customer[]> {
-    return this.http.get<Customer[]>(this.apiUrl);
+  getAll(): Observable<CustomersListResponse> {
+    return this.http.get<CustomersListResponse>(this.apiUrl);
   }
 
-  getById(id: string): Observable<Customer> {
-    return this.http.get<Customer>(`${this.apiUrl}/${id}`);
+  getById(id: string): Observable<CustomerResponse> {
+    return this.http.get<CustomerResponse>(`${this.apiUrl}/${id}`);
   }
 
-  create(customer:  Partial<Customer>): Observable<Customer> {
-    return this.http.post<Customer>(this.apiUrl, customer);
+  create(customer:  Partial<Customer>): Observable<CustomerResponse> {
+    return this.http.post<CustomerResponse>(this.apiUrl, customer);
   }
 
-  update(id: string, updates: Partial<Customer>): Observable<Customer> {
-    return this.http.put<Customer>(`${this.apiUrl}/${id}`, updates);
+  update(id: string, updates: Partial<Customer>): Observable<CustomerResponse> {
+    return this.http.put<CustomerResponse>(`${this.apiUrl}/${id}`, updates);
   }
 
-  delete(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  delete(id: string): Observable<CustomerResponse> {
+    return this.http.delete<CustomerResponse>(`${this.apiUrl}/${id}`);
   }
 
   // No need for generateId, handled by backend

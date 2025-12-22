@@ -7,6 +7,17 @@
     </button>
   </div>
 
+  <!-- Search box -->
+  <div class="search-container" style="margin-bottom: 16px;">
+    <mat-form-field appearance="outline" style="width: 100%;">
+      <mat-label>חפש לקוח</mat-label>
+      <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="חפש בכל השדות...">
+      <button *ngIf="searchText" matSuffix mat-icon-button aria-label="נקה חיפוש" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+
   <mat-card *ngIf="customers.length === 0" class="empty-state">
     <mat-card-content>
       <mat-icon class="large-icon">people</mat-icon>

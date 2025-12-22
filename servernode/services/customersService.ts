@@ -1,78 +1,103 @@
 import Customer from '../models/customer.model';
-import { CustomerDTO } from '../dtos/customer.dto';
+import { CustomerDTO, CustomerResponseDTO, CustomersListResponseDTO } from '../dtos/customer.dto';
 
-export const getAllCustomers = async (): Promise<CustomerDTO[]> => {
-    const customers = await Customer.find();
-    return customers.map((customer) => {
-        const { _id, name, email, phone, address, leadId } = customer;
-        return {
-            id: _id.toString(),
-            name,
-            email,
-            phone,
-            address,
-            leadId: leadId ? leadId.toString() : undefined
-        };
-    });
-};
-
-export const getCustomerById = async (id: string): Promise<CustomerDTO | null> => {
-    const customer = await Customer.findById(id);
-    if (!customer) return null;
-    const { _id, name, email, phone, address, leadId } = customer;
-    return {
-        id: _id.toString(),
-        name,
-        email,
-        phone,
-        address,
-        leadId: leadId ? leadId.toString() : undefined
-    };
-};
-
-export const createCustomer = async (data: CustomerDTO): Promise<CustomerDTO> => {
+export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
     try {
-        const customer = new Customer(data);
-        const savedCustomer = await customer.save();
-        const { _id, name, email, phone, address, leadId } = savedCustomer;
-        return {
-            id: _id.toString(),
-            name,
-            email,
-            phone,
-            address,
-            leadId: leadId ? leadId.toString() : undefined
-        };
+        const customers = await Customer.find();
+        const data = customers.map((customer) => {
+            const { _id, name, email, phone, address, leadId } = customer;
+            return {
+                id: _id.toString(),
+                name,
+                email,
+                phone,
+                address,
+                leadId: leadId ? leadId.toString() : undefined
+            };
+        });
+        return { isSuccess: true, data };
     } catch (error) {
-        // You can customize the error handling as needed
-        throw new Error('Failed to create customer: ' + error.message + (error instanceof Error ? error.message : String(error)));
+        console.error('[getAllCustomers] Error fetching customers:', error);
+        return { isSuccess: false, errorText: 'Failed to fetch customers' };
     }
 };
 
-export const updateCustomer = async (id: string, data: Partial<CustomerDTO>): Promise<CustomerDTO | null> => {
-    const updatedCustomer = await Customer.findByIdAndUpdate(id, data, { new: true });
-    if (!updatedCustomer) return null;
-    const { _id, name, email, phone, address, leadId } = updatedCustomer;
-    return {
-        id: _id.toString(),
-        name,
-        email,
-        phone,
-        address,
-        leadId: leadId ? leadId.toString() : undefined
-    };
+export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> => {
+    try {
+        const customer = await Customer.findById(id);
+        if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        const { _id, name, email, phone, address, leadId } = customer;
+        const data = {
+            id: _id.toString(),
+            name,
+            email,
+            phone,
+            address,
+            leadId: leadId ? leadId.toString() : undefined
+        };
+        return { isSuccess: true, data };
+    } catch (error) {
+        console.error('[getCustomerById] Error fetching customer:', error);
+        return { isSuccess: false, errorText: 'Failed to fetch customer' };
+    }
 };
 
-export const deleteCustomer = async (id: string): Promise<CustomerDTO | null> => {
-    const deletedCustomer = await Customer.findByIdAndDelete(id);
-    if (!deletedCustomer) return null;
-    const { _id, name, email, phone, address, leadId } = deletedCustomer;
-    return {
-        id: _id.toString(),
-        name,
-        email,
-        phone,
-        address,
-        leadId: leadId ? leadId.toString() : undefined
-    };
+export const createCustomer = async (customerData: CustomerDTO): Promise<CustomerResponseDTO> => {
+    try {
+        const customer = new Customer(customerData);
+        const savedCustomer = await customer.save();
+        const { _id, name, email, phone, address, leadId } = savedCustomer;
+        const data = {
+            id: _id.toString(),
+            name,
+            email,
+            phone,
+            address,
+            leadId: leadId ? leadId.toString() : undefined
+        };
+        return { isSuccess: true, data };
+    } catch (error) {
+        console.error('[createCustomer] Error creating customer:', error);
+        return { isSuccess: false, errorText: 'Failed to create customer: ' + (error instanceof Error ? error.message : String(error)) };
+    }
+};
+
+export const updateCustomer = async (id: string, updateData: Partial<CustomerDTO>): Promise<CustomerResponseDTO> => {
+    try {
+        const updatedCustomer = await Customer.findByIdAndUpdate(id, updateData, { new: true });
+        if (!updatedCustomer) return { isSuccess: false, errorText: 'Customer not found' };
+        const { _id, name, email, phone, address, leadId } = updatedCustomer;
+        const data = {
+            id: _id.toString(),
+            name,
+            email,
+            phone,
+            address,
+            leadId: leadId ? leadId.toString() : undefined
+        };
+        return { isSuccess: true, data };
+    } catch (error) {
+        console.error('[updateCustomer] Error updating customer:', error);
+        return { isSuccess: false, errorText: 'Failed to update customer' };
+    }
+};
+
+export const deleteCustomer = async (id: string): Promise<CustomerResponseDTO> => {
+    try {
+        const deletedCustomer = await Customer.findByIdAndDelete(id);
+        if (!deletedCustomer) return { isSuccess: false, errorText: 'Customer not found' };
+        const { _id, name, email, phone, address, leadId } = deletedCustomer;
+        const data = {
+            id: _id.toString(),
+            name,
+            email,
+            phone,
+            address,
+            leadId: leadId ? leadId.toString() : undefined
+        };
+        return { isSuccess: true, data };
+    } catch (error) {
+        console.error('[deleteCustomer] Error deleting customer:', error);
+        return { isSuccess: false, errorText: 'Failed to delete customer' };
+    }
 };

@@ -4,59 +4,47 @@ import { getAllCustomers, getCustomerById, createCustomer, updateCustomer, delet
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    try {
-        const customers = await getAllCustomers();
-        res.json(customers);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch customers' });
+    const response = await getAllCustomers();
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(500).json(response);
     }
 });
 
 router.get('/:id', async (req, res) => {
-    try {
-        const customer = await getCustomerById(req.params.id);
-        if (customer) {
-            res.json(customer);
-        } else {
-            res.status(404).json({ error: 'Customer not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch customer' });
+    const response = await getCustomerById(req.params.id);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Customer not found' ? 404 : 500).json(response);
     }
 });
 
 router.post('/', async (req, res) => {
-    try {
-        const newCustomer = await createCustomer(req.body);
-        res.status(201).json(newCustomer);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create customer' });
+    const response = await createCustomer(req.body);
+    if (response.isSuccess) {
+        res.status(201).json(response);
+    } else {
+        res.status(500).json(response);
     }
 });
 
 router.put('/:id', async (req, res) => {
-    try {
-        const updatedCustomer = await updateCustomer(req.params.id, req.body);
-        if (updatedCustomer) {
-            res.json(updatedCustomer);
-        } else {
-            res.status(404).json({ error: 'Customer not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update customer' });
+    const response = await updateCustomer(req.params.id, req.body);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Customer not found' ? 404 : 500).json(response);
     }
 });
 
 router.delete('/:id', async (req, res) => {
-    try {
-        const deletedCustomer = await deleteCustomer(req.params.id);
-        if (deletedCustomer) {
-            res.json(deletedCustomer);
-        } else {
-            res.status(404).json({ error: 'Customer not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete customer' });
+    const response = await deleteCustomer(req.params.id);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Customer not found' ? 404 : 500).json(response);
     }
 });
 

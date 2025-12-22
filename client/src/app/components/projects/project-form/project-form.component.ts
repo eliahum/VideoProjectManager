@@ -49,8 +49,13 @@ export class ProjectFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.customerService.getAll().subscribe(customers => {
-      this.customers = customers;
+    this.customerService.getAll().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.customers = response.data;
+      } else {
+        console.error('Failed to load customers:', response.errorText);
+        alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
+      }
     });
     
     if (this.data) {

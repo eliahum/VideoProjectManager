@@ -4,59 +4,47 @@ import { getAllLeads, getLeadById, createLead, updateLead, deleteLead } from '..
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-    try {
-        const leads = await getAllLeads();
-        res.json(leads);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch leads' });
+    const response = await getAllLeads();
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(500).json(response);
     }
 });
 
 router.get('/:id', async (req, res) => {
-    try {
-        const lead = await getLeadById(req.params.id);
-        if (lead) {
-            res.json(lead);
-        } else {
-            res.status(404).json({ error: 'Lead not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch lead' });
+    const response = await getLeadById(req.params.id);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Lead not found' ? 404 : 500).json(response);
     }
 });
 
 router.post('/', async (req, res) => {
-    try {
-        const newLead = await createLead(req.body);
-        res.status(201).json(newLead);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create lead' });
+    const response = await createLead(req.body);
+    if (response.isSuccess) {
+        res.status(201).json(response);
+    } else {
+        res.status(500).json(response);
     }
 });
 
 router.put('/:id', async (req, res) => {
-    try {
-        const updatedLead = await updateLead(req.params.id, req.body);
-        if (updatedLead) {
-            res.json(updatedLead);
-        } else {
-            res.status(404).json({ error: 'Lead not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to update lead' });
+    const response = await updateLead(req.params.id, req.body);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Lead not found' ? 404 : 500).json(response);
     }
 });
 
 router.delete('/:id', async (req, res) => {
-    try {
-        const deletedLead = await deleteLead(req.params.id);
-        if (deletedLead) {
-            res.json(deletedLead);
-        } else {
-            res.status(404).json({ error: 'Lead not found' });
-        }
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to delete lead' });
+    const response = await deleteLead(req.params.id);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Lead not found' ? 404 : 500).json(response);
     }
 });
 
