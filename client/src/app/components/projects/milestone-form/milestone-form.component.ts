@@ -59,8 +59,10 @@ export class MilestoneFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.supplierService.getAll().subscribe(suppliers => {
-      this.availableSuppliers = suppliers;
+    this.supplierService.getAll().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.availableSuppliers = response.data;
+      }
     });
     
     if (this.data.milestone) {

@@ -6,6 +6,7 @@ import mongoose from 'mongoose';
 import customerRoutes from '../routes/customers.routes';
 import leadRoutes from '../routes/leads.routes';
 import leadStatusRoutes from '../routes/lead-status.routes';
+import supplierRoutes from '../routes/suppliers.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
@@ -23,6 +24,7 @@ app.use(cors({ origin: '*' }));
 app.use('/api/customers', customerRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/lead-statuses', leadStatusRoutes);
+app.use('/api/suppliers', supplierRoutes);
 
 
 // Swagger setup

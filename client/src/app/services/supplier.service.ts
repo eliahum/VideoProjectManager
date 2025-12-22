@@ -1,66 +1,35 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Supplier } from '../models/supplier.model';
+import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Supplier, SupplierResponse, SuppliersListResponse } from '../models/supplier.model';
+import { API_BASE_URL } from '../../environments/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SupplierService {
-  private storageKey = 'suppliers';
+  private apiUrl = `${API_BASE_URL}/api/suppliers`;
 
-  getAll(): Observable<Supplier[]> {
-    const data = localStorage.getItem(this.storageKey);
-    const suppliers = data ? JSON.parse(data) : [];
-    return of(suppliers);
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<SuppliersListResponse> {
+    return this.http.get<SuppliersListResponse>(this.apiUrl);
   }
 
-  getById(id: string): Observable<Supplier | undefined> {
-    const data = localStorage.getItem(this.storageKey);
-    const suppliers: Supplier[] = data ? JSON.parse(data) : [];
-    return of(suppliers.find(supplier => supplier.id === id));
+  getById(id: string): Observable<SupplierResponse> {
+    return this.http.get<SupplierResponse>(`${this.apiUrl}/${id}`);
   }
 
-  create(supplier: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>): Observable<Supplier> {
-    const newSupplier: Supplier = {
-      ...supplier,
-      id: this.generateId(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    const data = localStorage.getItem(this.storageKey);
-    const suppliers: Supplier[] = data ? JSON.parse(data) : [];
-    suppliers.push(newSupplier);
-    localStorage.setItem(this.storageKey, JSON.stringify(suppliers));
-    return of(newSupplier);
+  create(supplier: Partial<Supplier>): Observable<SupplierResponse> {
+    return this.http.post<SupplierResponse>(this.apiUrl, supplier);
   }
 
-  update(id: string, updates: Partial<Supplier>): Observable<Supplier> {
-    const data = localStorage.getItem(this.storageKey);
-    const suppliers: Supplier[] = data ? JSON.parse(data) : [];
-    const index = suppliers.findIndex(supplier => supplier.id === id);
-    
-    if (index !== -1) {
-      suppliers[index] = {
-        ...suppliers[index],
-        ...updates,
-        updatedAt: new Date()
-      };
-      localStorage.setItem(this.storageKey, JSON.stringify(suppliers));
-      return of(suppliers[index]);
-    }
-    
-    return of(updates as Supplier);
+  update(id: string, updates: Partial<Supplier>): Observable<SupplierResponse> {
+    return this.http.put<SupplierResponse>(`${this.apiUrl}/${id}`, updates);
   }
 
-  delete(id: string): Observable<void> {
-    const data = localStorage.getItem(this.storageKey);
-    const suppliers: Supplier[] = data ? JSON.parse(data) : [];
-    const filtered = suppliers.filter(supplier => supplier.id !== id);
-    localStorage.setItem(this.storageKey, JSON.stringify(filtered));
-    return of(undefined);
-  }
-
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  delete(id: string): Observable<SupplierResponse> {
+    return this.http.delete<SupplierResponse>(`${this.apiUrl}/${id}`);
   }
 }
+

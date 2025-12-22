@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { SupplierService } from '../../../services/supplier.service';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Supplier } from '../../../models/supplier.model';
 
 @Component({
@@ -33,6 +34,7 @@ export class SupplierFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private supplierService: SupplierService,
+    private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<SupplierFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Supplier
   ) {
@@ -58,12 +60,24 @@ export class SupplierFormComponent implements OnInit {
       const supplierData = this.supplierForm.value;
       
       if (this.isEditMode) {
-        this.supplierService.update(this.data.id, supplierData).subscribe(() => {
-          this.dialogRef.close(true);
+        this.supplierService.update(this.data.id, supplierData).subscribe(response => {
+          if (response.isSuccess) {
+            this.messageDialogService.showSuccess('ספק עודכן בהצלחה!');
+            this.dialogRef.close(true);
+          } else {
+            console.error('Failed to update supplier:', response.errorText);
+            this.messageDialogService.showError('שגיאה בעדכון ספק: ' + (response.errorText || 'Unknown error'));
+          }
         });
       } else {
-        this.supplierService.create(supplierData).subscribe(() => {
-          this.dialogRef.close(true);
+        this.supplierService.create(supplierData).subscribe(response => {
+          if (response.isSuccess) {
+            this.messageDialogService.showSuccess('ספק נוצר בהצלחה!');
+            this.dialogRef.close(true);
+          } else {
+            console.error('Failed to create supplier:', response.errorText);
+            this.messageDialogService.showError('שגיאה ביצירת ספק: ' + (response.errorText || 'Unknown error'));
+          }
         });
       }
     }
