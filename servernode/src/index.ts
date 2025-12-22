@@ -7,6 +7,9 @@ import customerRoutes from '../routes/customers.routes';
 import leadRoutes from '../routes/leads.routes';
 import leadStatusRoutes from '../routes/lead-status.routes';
 import supplierRoutes from '../routes/suppliers.routes';
+import milestoneStatusRoutes from '../routes/milestone-status.routes';
+import stageTemplateRoutes from '../routes/stage-template.routes';
+import projectRoutes from '../routes/projects.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
@@ -25,6 +28,9 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/lead-statuses', leadStatusRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/milestone-statuses', milestoneStatusRoutes);
+app.use('/api/stage-templates', stageTemplateRoutes);
+app.use('/api/projects', projectRoutes);
 
 
 // Swagger setup
