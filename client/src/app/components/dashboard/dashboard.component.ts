@@ -33,12 +33,16 @@ export class DashboardComponent implements OnInit {
   }
 
   loadData(): void {
-    this.projectService.getActiveProjects().subscribe(projects => {
-      this.activeProjects = [...projects];
-      this.projectStats = this.activeProjects.map(project => ({
-        project,
-        currentMilestone: this.getCurrentMilestone(project)
-      }));
+    this.projectService.getActiveProjects().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.activeProjects = [...response.data];
+        this.projectStats = this.activeProjects.map(project => ({
+          project,
+          currentMilestone: this.getCurrentMilestone(project)
+        }));
+      } else {
+        console.error('Failed to load active projects:', response.errorText);
+      }
     });
   }
 

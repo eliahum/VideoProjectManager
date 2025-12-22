@@ -1,14 +1,23 @@
+import { BaseDataResponse } from './base-response.model';
+
 export interface Project {
+  _id?: string;
   id: string;
+  projectNumber: number;
   customerId: string;
   customerName: string;
   projectType: string;
   currentStage: ProjectStage;
+  currentStageNumber: number;
   stages: Stage[];
   currentMilestoneId?: string;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
+
+export interface ProjectResponse extends BaseDataResponse<Project> {}
+
+export interface ProjectListResponse extends BaseDataResponse<Project[]> {}
 
 export enum ProjectStage {
   PRE = 'פרה',
@@ -17,6 +26,8 @@ export enum ProjectStage {
 }
 
 export interface Stage {
+  stageNumber: number;
+  stageName: string;
   name: ProjectStage;
   milestones: Milestone[];
 }
@@ -25,6 +36,7 @@ export interface Milestone {
   id: string;
   name: string;
   documentReference: string;
+  statusNumber: number;
   date?: Date;
   status: MilestoneStatus;
   suppliers: MilestoneSupplier[];

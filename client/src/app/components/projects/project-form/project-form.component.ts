@@ -81,12 +81,20 @@ export class ProjectFormComponent implements OnInit {
       };
       
       if (this.isEditMode) {
-        this.projectService.update(this.data.id, fullProjectData).subscribe(() => {
-          this.dialogRef.close(true);
+        this.projectService.update(this.data.id, fullProjectData).subscribe(response => {
+          if (response.isSuccess) {
+            this.dialogRef.close(true);
+          } else {
+            alert('שגיאה בעדכון פרוייקט: ' + (response.errorText || 'Unknown error'));
+          }
         });
       } else {
-        this.projectService.create(fullProjectData).subscribe(() => {
-          this.dialogRef.close(true);
+        this.projectService.create(fullProjectData).subscribe(response => {
+          if (response.isSuccess) {
+            this.dialogRef.close(true);
+          } else {
+            alert('שגיאה ביצירת פרוייקט: ' + (response.errorText || 'Unknown error'));
+          }
         });
       }
     }

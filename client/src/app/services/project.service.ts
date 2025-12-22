@@ -1,106 +1,38 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { Project, ProjectStage, Stage, PRE_MILESTONES, PRODUCTION_MILESTONES, POST_MILESTONES, MilestoneStatus } from '../models/project.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Project, ProjectResponse, ProjectListResponse } from '../models/project.model';
+import { API_BASE_URL } from '../../environments/api.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
-  private storageKey = 'projects';
+  private apiUrl = `${API_BASE_URL}/api/projects`;
 
-  getAll(): Observable<Project[]> {
-    const data = localStorage.getItem(this.storageKey);
-    const projects = data ? JSON.parse(data) : [];
-    return of(projects);
+  constructor(private http: HttpClient) {}
+
+  getAll(): Observable<ProjectListResponse> {
+    return this.http.get<ProjectListResponse>(this.apiUrl);
   }
 
-  getById(id: string): Observable<Project | undefined> {
-    const data = localStorage.getItem(this.storageKey);
-    const projects: Project[] = data ? JSON.parse(data) : [];
-    return of(projects.find(project => project.id === id));
+  getById(id: string): Observable<ProjectResponse> {
+    return this.http.get<ProjectResponse>(`${this.apiUrl}/${id}`);
   }
 
-  getActiveProjects(): Observable<Project[]> {
+  getActiveProjects(): Observable<ProjectListResponse> {
     return this.getAll();
   }
 
-  create(project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Observable<Project> {
-    const newProject: Project = {
-      ...project,
-      id: this.generateId(),
-      stages: project.stages && project.stages.length > 0 ? project.stages : this.initializeStages(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    const data = localStorage.getItem(this.storageKey);
-    const projects: Project[] = data ? JSON.parse(data) : [];
-    projects.push(newProject);
-    localStorage.setItem(this.storageKey, JSON.stringify(projects));
-    return of(newProject);
+  create(project: Partial<Project>): Observable<ProjectResponse> {
+    return this.http.post<ProjectResponse>(this.apiUrl, project);
   }
 
-  update(id: string, updates: Partial<Project>): Observable<Project> {
-    const data = localStorage.getItem(this.storageKey);
-    const projects: Project[] = data ? JSON.parse(data) : [];
-    const index = projects.findIndex(project => project.id === id);
-    
-    if (index !== -1) {
-      projects[index] = {
-        ...projects[index],
-        ...updates,
-        updatedAt: new Date()
-      };
-      localStorage.setItem(this.storageKey, JSON.stringify(projects));
-      return of(projects[index]);
-    }
-    
-    return of(updates as Project);
+  update(id: string, updates: Partial<Project>): Observable<ProjectResponse> {
+    return this.http.put<ProjectResponse>(`${this.apiUrl}/${id}`, updates);
   }
 
-  delete(id: string): Observable<void> {
-    const data = localStorage.getItem(this.storageKey);
-    const projects: Project[] = data ? JSON.parse(data) : [];
-    const filtered = projects.filter(project => project.id !== id);
-    localStorage.setItem(this.storageKey, JSON.stringify(filtered));
-    return of(undefined);
-  }
-
-  private initializeStages(): Stage[] {
-    return [
-      {
-        name: ProjectStage.PRE,
-        milestones: PRE_MILESTONES.map(name => ({
-          id: this.generateId(),
-          name,
-          documentReference: '',
-          status: MilestoneStatus.BEFORE_START,
-          suppliers: []
-        }))
-      },
-      {
-        name: ProjectStage.PRODUCTION,
-        milestones: PRODUCTION_MILESTONES.map(name => ({
-          id: this.generateId(),
-          name,
-          documentReference: '',
-          status: MilestoneStatus.BEFORE_START,
-          suppliers: []
-        }))
-      },
-      {
-        name: ProjectStage.POST,
-        milestones: POST_MILESTONES.map(name => ({
-          id: this.generateId(),
-          name,
-          documentReference: '',
-          status: MilestoneStatus.BEFORE_START,
-          suppliers: []
-        }))
-      }
-    ];
-  }
-
-  private generateId(): string {
-    return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  delete(id: string): Observable<ProjectResponse> {
+    return this.http.delete<ProjectResponse>(`${this.apiUrl}/${id}`);
   }
 }

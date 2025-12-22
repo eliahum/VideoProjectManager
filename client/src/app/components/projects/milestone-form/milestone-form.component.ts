@@ -110,18 +110,25 @@ export class MilestoneFormComponent implements OnInit {
       const milestoneData = this.milestoneForm.value;
       
       // עדכון המילסטון דרך הפרויקט
-      this.projectService.getById(this.data.projectId).subscribe(project => {
-        if (project) {
+      this.projectService.getById(this.data.projectId).subscribe(response => {
+        if (response.isSuccess && response.data) {
+          const project = response.data;
           const stage = project.stages.find(s => s.name === this.data.stageName);
           if (stage) {
             const milestone = stage.milestones.find(m => m.id === this.data.milestone.id);
             if (milestone) {
               Object.assign(milestone, milestoneData);
-              this.projectService.update(project.id, project).subscribe(() => {
-                this.dialogRef.close(true);
+              this.projectService.update(project.id, project).subscribe(updateResponse => {
+                if (updateResponse.isSuccess) {
+                  this.dialogRef.close(true);
+                } else {
+                  alert('שגיאה בעדכון milestone: ' + (updateResponse.errorText || 'Unknown error'));
+                }
               });
             }
           }
+        } else {
+          alert('שגיאה בטעינת פרוייקט: ' + (response.errorText || 'Unknown error'));
         }
       });
     }

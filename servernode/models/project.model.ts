@@ -96,12 +96,10 @@ const stageSchema = new Schema<IStage>({
 const projectSchema = new Schema<IProject>({
   id: {
     type: String,
-    required: true,
     unique: true
   },
   projectNumber: {
     type: Number,
-    required: true,
     unique: true
   },
   customerId: {

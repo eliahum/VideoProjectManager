@@ -42,19 +42,23 @@ export class ProjectDetailComponent implements OnInit {
 
   setCurrentMilestone(milestone: Milestone): void {
     if (!this.project) return;
-    this.projectService.update(this.project.id, { currentMilestoneId: milestone.id }).subscribe(() => {
-      this.reloadProject();
+    this.projectService.update(this.project.id, { currentMilestoneId: milestone.id }).subscribe(response => {
+      if (response.isSuccess) {
+        this.reloadProject();
+      } else {
+        alert('שגיאה בעדכון milestone: ' + (response.errorText || 'Unknown error'));
+      }
     });
   }
 
   ngOnInit(): void {
     const projectId = this.route.snapshot.paramMap.get('id');
     if (projectId) {
-      this.projectService.getById(projectId).subscribe(project => {
-        if (!project) {
+      this.projectService.getById(projectId).subscribe(response => {
+        if (!response.isSuccess || !response.data) {
           this.router.navigate(['/projects']);
         } else {
-          this.project = project;
+          this.project = response.data;
           // Set tab index based on current stage
           this.selectedTabIndex = this.getTabIndex(this.project.currentStage);
         }
@@ -92,9 +96,9 @@ export class ProjectDetailComponent implements OnInit {
 
   reloadProject(): void {
     if (this.project) {
-      this.projectService.getById(this.project.id).subscribe(project => {
-        if (project) {
-          this.project = project;
+      this.projectService.getById(this.project.id).subscribe(response => {
+        if (response.isSuccess && response.data) {
+          this.project = response.data;
         }
       });
     }
@@ -113,8 +117,13 @@ export class ProjectDetailComponent implements OnInit {
   changeStage(stage: ProjectStage): void {
     if (!this.project) return;
     if (confirm(`האם לעבור לשלב ${stage}?`)) {
-      this.projectService.update(this.project.id, { currentStage: stage });
-      this.reloadProject();
+      this.projectService.update(this.project.id, { currentStage: stage }).subscribe(response => {
+        if (response.isSuccess) {
+          this.reloadProject();
+        } else {
+          alert('שגיאה בשינוי שלב: ' + (response.errorText || 'Unknown error'));
+        }
+      });
     }
   }
 

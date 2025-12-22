@@ -49,8 +49,12 @@ export class ProjectsListComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.projectService.getAll().subscribe(projects => {
-      this.projects = [...projects];
+    this.projectService.getAll().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.projects = [...response.data];
+      } else {
+        console.error('Failed to load projects:', response.errorText);
+      }
     });
   }
 
@@ -71,8 +75,12 @@ export class ProjectsListComponent implements OnInit {
 
   deleteProject(id: string): void {
     if (confirm('האם אתה בטוח שברצונך למחוק פרוייקט זה?')) {
-      this.projectService.delete(id).subscribe(() => {
-        this.loadProjects();
+      this.projectService.delete(id).subscribe(response => {
+        if (response.isSuccess) {
+          this.loadProjects();
+        } else {
+          alert('שגיאה במחיקת פרוייקט: ' + (response.errorText || 'Unknown error'));
+        }
       });
     }
   }
