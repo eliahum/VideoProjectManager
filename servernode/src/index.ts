@@ -39,14 +39,21 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Connect to MongoDB and start server
+// Connect to MongoDB
 mongoose.connect(DATABASE_URL)
     .then(() => {
         console.log('Connected to MongoDB');
-        app.listen(PORT, () => {
-            console.log(`Server running on http://localhost:${PORT}`);
-        });
     })
     .catch(err => {
         console.error('Failed to connect to MongoDB', err);
     });
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+// Export for Vercel serverless
+export default app;
