@@ -10,13 +10,14 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LeadService } from '../../../services/lead.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Lead, LeadStatus } from '../../../models/lead.model';
 import { LeadFormComponent } from '../lead-form/lead-form.component';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
-import { from } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-leads-list',
@@ -32,7 +33,8 @@ import { from } from 'rxjs';
     MatCardModule,
     MatFormFieldModule,
     MatInputModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './leads-list.component.html',
   styleUrl: './leads-list.component.scss'
@@ -47,6 +49,7 @@ export class LeadsListComponent implements OnInit {
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
+  isLoading: boolean = false;
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -100,16 +103,29 @@ export class LeadsListComponent implements OnInit {
   }
 
   loadLeads(): void {
-    this.leadService.getAll().subscribe(response => {
-      if (response.isSuccess && response.data) {
-        this.allLeads = [...response.data];
-        this.applyFilter();
-        this.cdr.detectChanges();
-      } else {
-        console.error('Failed to load leads:', response.errorText);
-        this.messageDialogService.showError('שגיאה בטעינת Leads: ' + (response.errorText || 'Unknown error'));
-      }
-    });
+    this.isLoading = true;
+    this.leadService.getAll()
+      .pipe(finalize(() => {
+        this.isLoading = false;
+         this.cdr.detectChanges();
+        console.log('Finalize called - isLoading set to false');
+      }))
+      .subscribe({
+        next: (response) => {
+          if (response.isSuccess && response.data) {
+            this.allLeads = [...response.data];
+            this.applyFilter();
+            this.cdr.detectChanges();
+          } else {
+            console.error('Failed to load leads:', response.errorText);
+            this.messageDialogService.showError('שגיאה בטעינת Leads: ' + (response.errorText || 'Unknown error'));
+          }
+        },
+        error: (error) => {
+          console.error('Error loading leads:', error);
+          this.messageDialogService.showError('שגיאה בטעינת Leads');
+        }
+      });
   }
 
   applyFilter(): void {

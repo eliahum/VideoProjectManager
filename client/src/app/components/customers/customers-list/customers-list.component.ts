@@ -9,9 +9,11 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-customers-list',
@@ -26,7 +28,8 @@ import { CustomerFormComponent } from '../customer-form/customer-form.component'
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './customers-list.component.html',
   styleUrl: './customers-list.component.scss'
@@ -41,6 +44,7 @@ export class CustomersListComponent implements OnInit {
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
+  isLoading: boolean = false;
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -55,16 +59,29 @@ export class CustomersListComponent implements OnInit {
   }
 
   loadCustomers(): void {
-    this.customerService.getAll().subscribe(response => {
-      if (response.isSuccess && response.data) {
-        this.allCustomers = [...response.data];
-        this.applyFilter();
+    this.isLoading = true;
+    this.customerService.getAll()
+      .pipe(finalize(() => {
+        this.isLoading = false;
         this.cdr.detectChanges();
-      } else {
-        console.error('Failed to load customers:', response.errorText);
-        alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
-      }
-    });
+        console.log('Finalize called - isLoading set to false');
+      }))
+      .subscribe({
+        next: (response) => {
+          if (response.isSuccess && response.data) {
+            this.allCustomers = [...response.data];
+            this.applyFilter();
+            this.cdr.detectChanges();
+          } else {
+            console.error('Failed to load customers:', response.errorText);
+            alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
+          }
+        },
+        error: (error) => {
+          console.error('Error loading customers:', error);
+          alert('שגיאה בטעינת לקוחות');
+        }
+      });
   }
 
   applyFilter(): void {

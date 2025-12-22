@@ -7,6 +7,12 @@
     </button>
   </div>
 
+  <!-- Loading Spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <div *ngIf="!isLoading">
     <!-- Search box -->
     <div class="search-container" style="margin-bottom: 16px;">
       <mat-form-field appearance="outline" style="width: 100%;">
@@ -95,5 +101,6 @@
       (page)="onPageChange($event)"
       showFirstLastButtons>
     </mat-paginator>
+  </div>
   </div>
 </div>
