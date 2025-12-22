@@ -23,7 +23,7 @@ export interface MessageDialogData {
       <mat-dialog-content>
         <p>{{ getMessage() }}</p>
       </mat-dialog-content>
-      <mat-dialog-actions align="end">
+      <mat-dialog-actions align="center">
         <button mat-raised-button [mat-dialog-close]="true" [color]="data.type === 'success' ? 'primary' : 'warn'">
           אישור
         </button>
@@ -45,7 +45,7 @@ export interface MessageDialogData {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 16px;
+      padding: 16px 24px;
       margin: -24px -24px 16px -24px;
       border-radius: 4px 4px 0 0;
     }
@@ -82,7 +82,7 @@ export interface MessageDialogData {
     }
 
     mat-dialog-actions {
-      padding: 16px 0 0 0 !important;
+      padding: 16px 0 8px 0 !important;
       margin: 0 !important;
       min-height: auto !important;
     }

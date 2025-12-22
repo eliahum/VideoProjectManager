@@ -89,6 +89,7 @@ export class LeadFormComponent implements OnInit {
         });
       } else {
         this.leadService.create(leadData).subscribe(() => {
+          this.messageDialogService.showSuccess('Lead נוצר בהצלחה!');
           this.dialogRef.close(true);
         });
       }

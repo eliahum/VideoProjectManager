@@ -70,13 +70,13 @@
   }
 
   td {
-    
-    height: 8px !important;
+    padding: 4px 8px !important;
+    height: 40px !important;
     font-size: 12px;
   }
 
   tr.mat-mdc-row {
-    height: 16px !important;
+    height: 40px !important;
   }
 
   tr:hover {
@@ -84,8 +84,8 @@
   }
 
   .mat-mdc-cell {
-    padding: 0 16px !important;
-    height: 16px !important;
+    padding: 4px 8px !important;
+    height: 40px !important;
   }
 }
 

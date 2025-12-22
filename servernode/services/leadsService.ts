@@ -1,12 +1,45 @@
 import Lead from '../models/lead.model';
+import Customer from '../models/customer.model';
 import { LeadDTO, LeadResponseDTO, LeadsListResponseDTO } from '../dtos/lead.dto';
 
 export const getAllLeads = async (): Promise<LeadsListResponseDTO> => {
     try {
-        const leads = await Lead.find();
+        const leads = await Lead.aggregate([
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: 'leadId',
+                    foreignField: 'leadId',
+                    as: 'customers'
+                }
+            },
+            {
+                $addFields: {
+                    hasCustomer: { $gt: [{ $size: '$customers' }, 0] }
+                }
+            },
+            {
+                $project: {
+                    customers: 0  // Remove customers array from result
+                }
+            }
+        ]);
+        
         const data = leads.map((lead) => {
-            const { _id, leadId, name, email, phone, status, source, freeText, companyName, createdAt } = lead;
-            return { id: _id.toString(), leadId, name, email, phone, status, source, freeText, companyName, createdAt };
+            const { _id, leadId, name, email, phone, status, source, freeText, companyName, createdAt, hasCustomer } = lead;
+            return { 
+                id: _id.toString(), 
+                leadId, 
+                name, 
+                email, 
+                phone, 
+                status, 
+                source, 
+                freeText, 
+                companyName, 
+                createdAt,
+                hasCustomer
+            };
         });
         return { isSuccess: true, data };
     } catch (error) {

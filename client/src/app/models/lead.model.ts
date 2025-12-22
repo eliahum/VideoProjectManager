@@ -14,6 +14,7 @@ export interface Lead {
   updatedAt: Date;
   status: LeadStatus;
   notInterestedReason?: string;
+  hasCustomer?: boolean; // האם נוצר ממנו לקוח
 }
 
 export enum LeadStatus {

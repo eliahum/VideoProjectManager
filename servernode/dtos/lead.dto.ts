@@ -10,6 +10,7 @@ export interface LeadDTO {
     source: string; // איך הגיע אלי
     freeText: string;
     companyName: string;
+    hasCustomer?: boolean; // האם נוצר ממנו לקוח
 }
 
 export interface LeadResponseDTO extends BaseDataResponseDTO<LeadDTO> {}

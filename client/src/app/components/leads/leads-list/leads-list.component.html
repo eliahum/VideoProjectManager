@@ -74,7 +74,7 @@
           <button mat-icon-button color="primary" (click)="openLeadForm(lead)">
             <mat-icon>edit</mat-icon>
           </button>
-            <button mat-icon-button color="accent" (click)="convertLeadToCustomer(lead)" [disabled]="lead.status === 'סגירה'">
+            <button mat-icon-button color="accent" (click)="convertLeadToCustomer(lead)" [disabled]="lead.hasCustomer">
               <mat-icon>person_add</mat-icon>
             </button>
           <button mat-icon-button color="warn" (click)="deleteLead(lead.id)">
