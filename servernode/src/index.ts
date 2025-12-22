@@ -42,7 +42,10 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Connect to MongoDB
-mongoose.connect(DATABASE_URL)
+mongoose.connect(DATABASE_URL, {
+    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+    socketTimeoutMS: 45000,
+})
     .then(() => {
         console.log('Connected to MongoDB');
     })

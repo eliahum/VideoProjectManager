@@ -1,9 +1,12 @@
 import Lead from '../models/lead.model';
 import Customer from '../models/customer.model';
 import { LeadDTO, LeadResponseDTO, LeadsListResponseDTO } from '../dtos/lead.dto';
+import { connectToDatabase } from '../utils/db';
 
 export const getAllLeads = async (): Promise<LeadsListResponseDTO> => {
     try {
+        await connectToDatabase();
+        
         const leads = await Lead.aggregate([
             {
                 $lookup: {
