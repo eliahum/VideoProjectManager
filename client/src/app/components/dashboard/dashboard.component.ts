@@ -89,4 +89,16 @@ export class DashboardComponent implements OnInit {
       default: return '';
     }
   }
+
+  getTotalSuppliersAmount(project: Project): number {
+    let total = 0;
+    project.stages.forEach(stage => {
+      stage.milestones.forEach(milestone => {
+        milestone.suppliers.forEach(supplier => {
+          total += supplier.amount || 0;
+        });
+      });
+    });
+    return total;
+  }
 }

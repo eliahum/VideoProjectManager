@@ -23,6 +23,11 @@
               <span><strong>אבן דרך נוכחית:</strong> {{ stat.currentMilestone.name }}</span>
             </div>
             
+            <div class="info-row">
+              <mat-icon>attach_money</mat-icon>
+              <span><strong>סך לכל ספקים:</strong> ₪{{ getTotalSuppliersAmount(stat.project) | number:'1.2-2' }}</span>
+            </div>
+            
             <div class="status-chip" *ngIf="stat.currentMilestone">
               <mat-chip [ngClass]="getMilestoneStatusClass(stat.currentMilestone.status)">
                 {{ stat.currentMilestone.status }}
