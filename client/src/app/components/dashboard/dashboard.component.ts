@@ -52,7 +52,7 @@ export class DashboardComponent implements OnInit {
 
     // אם יש currentMilestoneId, נחפש אותה
     if (project.currentMilestoneId) {
-      const found = currentStage.milestones.find(m => m.id === project.currentMilestoneId);
+      const found = currentStage.milestones.find(m => m.milestoneId === project.currentMilestoneId);
       if (found) return found;
     }
     // אחרת נחזיר את הראשונה שלא הושלמה

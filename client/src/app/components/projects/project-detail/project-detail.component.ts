@@ -45,9 +45,14 @@ export class ProjectDetailComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {}
 
-  setCurrentMilestone(milestone: Milestone): void {
+  setCurrentMilestone(milestone: Milestone, stage: Stage): void {
+    
     if (!this.project) return;
-    this.projectService.update(this.project.id, { currentMilestoneId: milestone.id }).subscribe(response => {
+    this.projectService.update(this.project.id, { 
+      currentStageNumber: stage.stageNumber,
+      currentStage: stage.name,
+      currentMilestoneId: milestone.milestoneId
+    }).subscribe(response => {
       if (response.isSuccess) {
         this.reloadProject();
       } else {

@@ -1,14 +1,30 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Counter } from './counter.model';
 
+export interface IMilestoneTemplate {
+  id: number;
+  name: string;
+}
+
 export interface IStageTemplate extends Document {
   id: number;
   name: string;
   engName: string;
   hebName: string;
   stageNumber: number;
-  milestoneNames: string[];
+  milestones: IMilestoneTemplate[];
 }
+
+const milestoneTemplateSchema = new Schema<IMilestoneTemplate>({
+  id: {
+    type: Number,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  }
+}, { _id: false });
 
 const stageTemplateSchema = new Schema<IStageTemplate>({
   id: {
@@ -33,8 +49,8 @@ const stageTemplateSchema = new Schema<IStageTemplate>({
     required: true,
     unique: true
   },
-  milestoneNames: {
-    type: [String],
+  milestones: {
+    type: [milestoneTemplateSchema],
     required: true,
     default: []
   }

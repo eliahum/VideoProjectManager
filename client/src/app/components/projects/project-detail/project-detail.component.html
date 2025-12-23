@@ -27,7 +27,7 @@
 
           <mat-accordion class="milestones-accordion">
             <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel"
-              [ngClass]="{'current-milestone-row': project.currentMilestoneId === milestone.id}">
+              [ngClass]="{'current-milestone-row': project.currentMilestoneId === milestone.milestoneId}">
               {{milestone | json}}
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -65,7 +65,7 @@
                     <mat-icon>edit</mat-icon>
                     ערוך אבן דרך
                   </button>
-                  <button mat-stroked-button color="accent" (click)="setCurrentMilestone(milestone)">
+                  <button mat-stroked-button color="accent" (click)="setCurrentMilestone(milestone, stage)">
                     <mat-icon>star</mat-icon>
                     קבע כאבן דרך נוכחית
                   </button>

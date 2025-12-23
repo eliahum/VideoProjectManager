@@ -1,5 +1,10 @@
 import { BaseDataResponseDTO } from "./base-response.dto";
 
+export interface MilestoneTemplateDTO {
+  id: number;
+  name: string;
+}
+
 export interface StageTemplateDTO {
   _id?: string;
   id: number;
@@ -7,7 +12,7 @@ export interface StageTemplateDTO {
   engName: string;
   hebName: string;
   stageNumber: number;
-  milestoneNames: string[];
+  milestones: MilestoneTemplateDTO[];
 }
 
 export interface StageTemplateResponseDTO extends BaseDataResponseDTO<StageTemplateDTO> {}

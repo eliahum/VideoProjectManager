@@ -8,6 +8,7 @@ export interface MilestoneSupplierDTO {
 
 export interface MilestoneDTO {
   id: string;
+  milestoneId: number;
   name: string;
   documentReference: string;
   date?: Date;
@@ -33,7 +34,7 @@ export interface ProjectDTO {
   currentStage?: string;
   currentStageNumber: number;
   stages: StageDTO[];
-  currentMilestoneId?: string;
+  currentMilestoneId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

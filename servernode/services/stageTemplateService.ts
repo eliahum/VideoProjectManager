@@ -81,7 +81,7 @@ export class StageTemplateService {
       engName: stageTemplate.engName,
       hebName: stageTemplate.hebName,
       stageNumber: stageTemplate.stageNumber,
-      milestoneNames: stageTemplate.milestoneNames
+      milestones: stageTemplate.milestones
     };
   }
 }

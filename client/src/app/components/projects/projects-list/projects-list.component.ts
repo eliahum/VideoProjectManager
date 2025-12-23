@@ -33,9 +33,9 @@ export class ProjectsListComponent implements OnInit {
 
   getCurrentMilestoneName(project: Project): string {
     if (!project.currentMilestoneId) return '-';
-    const stage = project.stages.find(s => s.name === project.currentStage);
+    const stage = project.stages.find(s => s.stageNumber === project.currentStageNumber);
     if (!stage) return '-';
-    const milestone = stage.milestones.find(m => m.id === project.currentMilestoneId);
+    const milestone = stage.milestones.find(m => m.milestoneId === project.currentMilestoneId);
     return milestone ? milestone.name : '-';
   }
 

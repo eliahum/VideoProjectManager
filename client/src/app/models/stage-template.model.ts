@@ -1,5 +1,10 @@
 import { BaseDataResponse } from './base-response.model';
 
+export interface MilestoneTemplate {
+  id: number;
+  name: string;
+}
+
 export interface StageTemplate {
   _id?: string;
   id: number;
@@ -7,7 +12,7 @@ export interface StageTemplate {
   engName: string;
   hebName: string;
   stageNumber: number;
-  milestoneNames: string[];
+  milestones: MilestoneTemplate[];
 }
 
 export interface StageTemplateResponse extends BaseDataResponse<StageTemplate> {}

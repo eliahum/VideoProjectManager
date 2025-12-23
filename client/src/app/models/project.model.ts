@@ -10,7 +10,7 @@ export interface Project {
   currentStage: string;
   currentStageNumber: number;
   stages: Stage[];
-  currentMilestoneId?: string;
+  currentMilestoneId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -28,6 +28,7 @@ export interface Stage {
 
 export interface Milestone {
   id: string;
+  milestoneId: number;
   name: string;
   documentReference: string;
   statusNumber: number;

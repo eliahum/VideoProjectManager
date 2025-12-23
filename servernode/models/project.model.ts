@@ -9,6 +9,7 @@ export interface IMilestoneSupplier {
 
 export interface IMilestone {
   id: string;
+  milestoneId: number;
   name: string;
   documentReference: string;
   date?: Date;
@@ -30,7 +31,7 @@ export interface IProject extends Document {
   projectType: string;
   currentStageNumber: number;
   stages: IStage[];
-  currentMilestoneId?: string;
+  currentMilestoneId?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -53,6 +54,10 @@ const milestoneSupplierSchema = new Schema<IMilestoneSupplier>({
 const milestoneSchema = new Schema<IMilestone>({
   id: {
     type: String,
+    required: true
+  },
+  milestoneId: {
+    type: Number,
     required: true
   },
   name: {
@@ -125,7 +130,7 @@ const projectSchema = new Schema<IProject>({
     default: []
   },
   currentMilestoneId: {
-    type: String
+    type: Number
   }
 }, {
   timestamps: true

@@ -101,6 +101,7 @@ export class ProjectsService {
         name: stage.stageName, // Adding name field
         milestones: stage.milestones.map(milestone => ({
           id: milestone.id,
+          milestoneId: milestone.milestoneId,
           name: milestone.name,
           documentReference: milestone.documentReference,
           date: milestone.date,
@@ -142,9 +143,9 @@ export class ProjectsService {
           // אם השלב קיים, נוודא שיש את כל המילסטונים מה-template
           const enrichedMilestones: MilestoneDTO[] = [];
           
-          for (const milestoneName of template.milestoneNames) {
+          for (const milestoneTemplate of template.milestones) {
             // מחפש אם המילסטון כבר קיים
-            const existingMilestone = existingStage.milestones.find(m => m.name === milestoneName);
+            const existingMilestone = existingStage.milestones.find(m => m.name === milestoneTemplate.name);
             
             if (existingMilestone) {
               // אם קיים, שומר אותו עם כל הנתונים
@@ -152,8 +153,9 @@ export class ProjectsService {
             } else {
               // אם לא קיים, יוצר מילסטון חדש עם ערכי ברירת מחדל
               enrichedMilestones.push({
-                id: `${project.id}-${template.stageNumber}-${milestoneName}`,
-                name: milestoneName,
+                id: `${project.id}-${template.stageNumber}-${milestoneTemplate.id}`,
+                milestoneId: milestoneTemplate.id,
+                name: milestoneTemplate.name,
                 documentReference: '',
                 statusNumber: 1,
                 suppliers: [] as MilestoneSupplierDTO[]
@@ -169,9 +171,10 @@ export class ProjectsService {
           });
         } else {
           // אם השלב לא קיים, יוצר אותו חדש מה-template
-          const newMilestones: MilestoneDTO[] = template.milestoneNames.map(milestoneName => ({
-            id: `${project.id}-${template.stageNumber}-${milestoneName}`,
-            name: milestoneName,
+          const newMilestones: MilestoneDTO[] = template.milestones.map(milestoneTemplate => ({
+            id: `${project.id}-${template.stageNumber}-${milestoneTemplate.id}`,
+            milestoneId: milestoneTemplate.id,
+            name: milestoneTemplate.name,
             documentReference: '',
             statusNumber: 1,
             suppliers: [] as MilestoneSupplierDTO[]
@@ -186,9 +189,13 @@ export class ProjectsService {
         }
       }
 
+      // עדכן את currentStage על סמך currentStageNumber
+      const currentStageFromEnriched = enrichedStages.find(s => s.stageNumber === project.currentStageNumber);
+      
       // מחזיר את הפרויקט עם השלבים המועשרים
       return {
         ...project,
+        currentStage: currentStageFromEnriched?.stageName || project.currentStage,
         stages: enrichedStages
       };
     } catch (error) {
