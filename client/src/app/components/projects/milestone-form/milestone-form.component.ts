@@ -106,11 +106,13 @@ export class MilestoneFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    debugger;
     if (this.milestoneForm.valid) {
       const milestoneData = this.milestoneForm.value;
       
       // עדכון המילסטון דרך הפרויקט
       this.projectService.getById(this.data.projectId).subscribe(response => {
+            debugger;
         if (response.isSuccess && response.data) {
           const project = response.data;
           const stage = project.stages.find(s => s.name === this.data.stageName);

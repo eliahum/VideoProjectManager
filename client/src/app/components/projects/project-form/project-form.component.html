@@ -17,8 +17,8 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>סוג פרוייקט</mat-label>
-      <input matInput formControlName="projectType" required>
       <mat-icon matPrefix>video_library</mat-icon>
+      <input matInput formControlName="projectType" required>
       <mat-error *ngIf="projectForm.get('projectType')?.hasError('required')">
         שדה חובה
       </mat-error>
