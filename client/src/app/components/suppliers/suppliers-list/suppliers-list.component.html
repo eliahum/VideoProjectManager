@@ -32,7 +32,8 @@
       </mat-card-content>
     </mat-card>
 
-    <div class="table-container" *ngIf="filteredSuppliers.length > 0">
+    <!-- Desktop Table View -->
+    <div class="table-container desktop-view" *ngIf="filteredSuppliers.length > 0">
       <table mat-table [dataSource]="paginatedSuppliers" class="suppliers-table">
       
       <ng-container matColumnDef="supplierNumber">
@@ -79,6 +80,55 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageIndex"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="mobile-view" *ngIf="filteredSuppliers.length > 0">
+    <mat-card class="supplier-card" *ngFor="let supplier of paginatedSuppliers">
+      <mat-card-header>
+        <mat-card-title>
+          <div class="card-title-row">
+            <span class="supplier-name">{{ supplier.name }}</span>
+            <mat-chip [ngClass]="supplier.isPaid ? 'status-paid' : 'status-unpaid'">
+              {{ supplier.isPaid ? 'שולם' : 'לא שולם' }}
+            </mat-chip>
+          </div>
+        </mat-card-title>
+        <mat-card-subtitle>ספק #{{ supplier.supplierNumber }}</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="info-row" *ngIf="supplier.phone">
+          <mat-icon>phone</mat-icon>
+          <a href="tel:{{ supplier.phone }}" class="info-value">{{ supplier.phone }}</a>
+        </div>
+        
+        <div class="info-row" *ngIf="supplier.email">
+          <mat-icon>email</mat-icon>
+          <a href="mailto:{{ supplier.email }}" class="info-value">{{ supplier.email }}</a>
+        </div>
+      </mat-card-content>
+      
+      <mat-card-actions>
+        <button mat-button color="primary" (click)="openSupplierForm(supplier)">
+          <mat-icon>edit</mat-icon>
+          ערוך
+        </button>
+        <button mat-button color="warn" (click)="deleteSupplier(supplier.id)">
+          <mat-icon>delete</mat-icon>
+          מחק
+        </button>
+      </mat-card-actions>
+    </mat-card>
     
     <mat-paginator 
       [length]="totalItems"

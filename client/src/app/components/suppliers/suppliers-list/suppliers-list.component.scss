@@ -1,6 +1,7 @@
 .suppliers-container {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 16px;
 }
 
 .loading-container {
@@ -107,32 +108,127 @@
   color: white !important;
 }
 
+// Mobile card view styles
+.mobile-view {
+  display: none;
+}
+
+.supplier-card {
+  margin-bottom: 16px;
+  
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+
+  .card-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+    
+    .supplier-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      flex: 1;
+    }
+  }
+
+  mat-card-subtitle {
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 4px;
+  }
+
+  mat-card-content {
+    padding: 0 16px 16px;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    
+    mat-icon {
+      color: #666;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .info-value {
+      color: #333;
+      text-decoration: none;
+      flex: 1;
+      
+      &:hover {
+        color: #1976d2;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  mat-card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 16px;
+    border-top: 1px solid #e0e0e0;
+    
+    button {
+      mat-icon {
+        margin-left: 4px;
+      }
+    }
+  }
+}
+
 @media (max-width: 768px) {
+  .suppliers-container {
+    padding: 8px;
+  }
+
   .header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
-
-  .table-container {
-    overflow-x: auto;
-  }
-
-  .suppliers-table {
-    min-width: 800px;
-
-    th:last-child,
-    td:last-child {
-      position: sticky !important;
-      right: 0;
-      background-color: white !important;
-      box-shadow: -2px 0 4px rgba(0, 0, 0, 0.1);
-      z-index: 2;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 16px;
+    
+    h1 {
+      font-size: 1.5rem;
     }
 
-    th:last-child {
-      background-color: #f5f5f5 !important;
-      z-index: 3;
+    button {
+      width: 100%;
+    }
+  }
+
+  // Hide desktop table view
+  .desktop-view {
+    display: none !important;
+  }
+
+  // Show mobile card view
+  .mobile-view {
+    display: block;
+  }
+
+  .search-container {
+    margin-bottom: 12px !important;
+  }
+
+  .empty-state {
+    padding: 40px 20px;
+
+    .large-icon {
+      font-size: 60px;
+      width: 60px;
+      height: 60px;
+    }
+
+    h2 {
+      font-size: 1.3rem;
     }
   }
 }
