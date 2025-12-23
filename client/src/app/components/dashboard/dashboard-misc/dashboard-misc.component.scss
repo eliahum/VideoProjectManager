@@ -1,0 +1,19 @@
+.dashboard-misc-container {
+  padding: 20px;
+
+  mat-card {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  mat-card-header {
+    margin-bottom: 16px;
+  }
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 24px;
+  }
+}

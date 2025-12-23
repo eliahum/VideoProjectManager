@@ -7,6 +7,14 @@ export const routes: Routes = [
     loadComponent: () => import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent)
   },
   { 
+    path: 'dashboard/charts', 
+    loadComponent: () => import('./components/dashboard/dashboard-charts/dashboard-charts.component').then(m => m.DashboardChartsComponent)
+  },
+  { 
+    path: 'dashboard/misc', 
+    loadComponent: () => import('./components/dashboard/dashboard-misc/dashboard-misc.component').then(m => m.DashboardMiscComponent)
+  },
+  { 
     path: 'leads', 
     loadComponent: () => import('./components/leads/leads-list/leads-list.component').then(m => m.LeadsListComponent)
   },

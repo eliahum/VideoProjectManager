@@ -5,6 +5,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
@@ -20,7 +21,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatListModule,
     MatIconModule,
     MatToolbarModule,
-    MatButtonModule
+    MatButtonModule,
+    MatExpansionModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
@@ -31,7 +33,10 @@ export class AppComponent {
   isMobile = false;
   
   menuItems = [
-    { path: '/dashboard', label: 'דשבורד', icon: 'dashboard' },
+    { path: '/dashboard', label: 'דשבורד', icon: 'dashboard', children: [
+      { path: '/dashboard/charts', label: 'גרפים', icon: 'bar_chart' },
+      { path: '/dashboard/misc', label: 'שונות', icon: 'settings' }
+    ]},
     { path: '/leads', label: 'Leads', icon: 'person_search' },
     { path: '/customers', label: 'לקוחות', icon: 'people' },
     { path: '/suppliers', label: 'ספקים', icon: 'business' },

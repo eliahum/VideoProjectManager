@@ -1,0 +1,57 @@
+<div class="dashboard-charts-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>bar_chart</mat-icon>
+        גרפים
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Loading spinner -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <!-- Chart -->
+      <div *ngIf="!loading" class="chart-section">
+        <h3>פרויקטים לפי שלבים</h3>
+        
+        <div *ngIf="stageData.length === 0" class="no-data">
+          <mat-icon>info</mat-icon>
+          <p>אין נתונים להצגה</p>
+        </div>
+
+        <div *ngIf="stageData.length > 0" class="pie-chart-container">
+          <div class="pie-chart">
+            <svg viewBox="0 0 100 100" class="pie-svg">
+              <circle 
+                *ngFor="let item of stageData; let i = index"
+                [attr.stroke]="getColor(i)"
+                [attr.stroke-dasharray]="getStrokeDasharray(item.projectCount)"
+                [attr.stroke-dashoffset]="getStrokeDashoffset(i)"
+                cx="50" 
+                cy="50" 
+                r="15.915494309"
+                fill="transparent"
+                stroke-width="31.83">
+              </circle>
+            </svg>
+            <div class="pie-center">
+              <div class="total-projects">{{ getTotalProjects() }}</div>
+              <div class="total-label">פרויקטים</div>
+            </div>
+          </div>
+          
+          <div class="legend">
+            <div *ngFor="let item of stageData; let i = index" class="legend-item">
+              <div class="legend-color" [style.background-color]="getColor(i)"></div>
+              <div class="legend-text">
+                <span class="legend-label"><strong>{{ item.stageName }}</strong> - כמות: <span class="legend-number">{{ item.projectCount }}</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>
