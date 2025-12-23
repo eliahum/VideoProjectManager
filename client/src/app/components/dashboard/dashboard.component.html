@@ -33,7 +33,7 @@
               <span><strong>סך לכל ספקים:</strong> ₪{{ getTotalSuppliersAmount(stat.project) | number:'1.2-2' }}</span>
             </div>
             
-            <div class="status-chip" *ngIf="stat.currentMilestone">
+            <div class="status-chip" *ngIf="stat.currentMilestone && stat.currentMilestone.status">
               <mat-chip [ngClass]="getMilestoneStatusClass(stat.currentMilestone.status)">
                 {{ stat.currentMilestone.status }}
               </mat-chip>
