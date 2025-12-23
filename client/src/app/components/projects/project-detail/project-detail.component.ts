@@ -9,11 +9,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProjectService } from '../../../services/project.service';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
 import { Project, Stage, Milestone } from '../../../models/project.model';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 
 @Component({
   selector: 'app-project-detail',
@@ -26,7 +28,8 @@ import { MilestoneFormComponent } from '../milestone-form/milestone-form.compone
     MatIconModule,
     MatChipsModule,
     MatDialogModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss'
@@ -35,6 +38,7 @@ export class ProjectDetailComponent implements OnInit {
   project: Project | undefined;
   selectedTabIndex = 0;
   milestoneStatuses: MilestoneStatus[] = [];
+  isLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,21 +46,31 @@ export class ProjectDetailComponent implements OnInit {
     private projectService: ProjectService,
     private milestoneStatusService: MilestoneStatusService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private messageDialogService: MessageDialogService
   ) {}
 
   setCurrentMilestone(milestone: Milestone, stage: Stage): void {
     
     if (!this.project) return;
+    this.isLoading = true;
     this.projectService.update(this.project.id, { 
       currentStageNumber: stage.stageNumber,
       currentStage: stage.name,
       currentMilestoneId: milestone.milestoneId
-    }).subscribe(response => {
-      if (response.isSuccess) {
-        this.reloadProject();
-      } else {
-        alert('שגיאה בעדכון milestone: ' + (response.errorText || 'Unknown error'));
+    }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess) {
+          this.messageDialogService.showSuccess('אבן דרך נבחרה בהצלחה');
+          this.reloadProject();
+        } else {
+          this.messageDialogService.showError('שגיאה בעדכון milestone: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בעדכון milestone');
       }
     });
   }
@@ -70,17 +84,19 @@ export class ProjectDetailComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.error('Error loading milestone statuses:', err);
+        this.messageDialogService.showError('שגיאה בטעינת סטטוסי milestone');
       }
     });
 
     const projectId = this.route.snapshot.paramMap.get('id');
     if (projectId) {
+      this.isLoading = true;
       this.projectService.getById(projectId).subscribe({
         next: (response) => {
+          this.isLoading = false;
           console.log('Project response:', response);
           if (!response.isSuccess || !response.data) {
-            console.error('Failed to load project:', response.errorText);
+            this.messageDialogService.showError('שגיאה בטעינת פרויקט: ' + (response.errorText || 'Unknown error'));
             this.router.navigate(['/projects']);
           } else {
             this.project = response.data;
@@ -97,7 +113,8 @@ export class ProjectDetailComponent implements OnInit {
           }
         },
         error: (err) => {
-          console.error('Error loading project:', err);
+          this.isLoading = false;
+          this.messageDialogService.showError('שגיאה בטעינת פרויקט');
           this.router.navigate(['/projects']);
         }
       });
@@ -134,10 +151,18 @@ export class ProjectDetailComponent implements OnInit {
 
   reloadProject(): void {
     if (this.project) {
-      this.projectService.getById(this.project.id).subscribe(response => {
-        if (response.isSuccess && response.data) {
-          this.project = response.data;
-          this.cdr.detectChanges();
+      this.isLoading = true;
+      this.projectService.getById(this.project.id).subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.isSuccess && response.data) {
+            this.project = response.data;
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.messageDialogService.showError('שגיאה בטעינת פרויקט');
         }
       });
     }
@@ -161,15 +186,27 @@ export class ProjectDetailComponent implements OnInit {
 
   changeStage(stage: string): void {
     if (!this.project) return;
-    if (confirm(`האם לעבור לשלב ${stage}?`)) {
-      this.projectService.update(this.project.id, { currentStage: stage }).subscribe(response => {
-        if (response.isSuccess) {
-          this.reloadProject();
-        } else {
-          alert('שגיאה בשינוי שלב: ' + (response.errorText || 'Unknown error'));
-        }
-      });
-    }
+    const projectId = this.project.id;
+    this.messageDialogService.confirm(`האם לעבור לשלב ${stage}?`).subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        this.isLoading = true;
+        this.projectService.update(projectId, { currentStage: stage }).subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('השלב עודכן בהצלחה');
+              this.reloadProject();
+            } else {
+              this.messageDialogService.showError('שגיאה בשינוי שלב: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.messageDialogService.showError('שגיאה בשינוי שלב');
+          }
+        });
+      }
+    });
   }
 
   goBack(): void {

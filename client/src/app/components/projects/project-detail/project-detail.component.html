@@ -1,4 +1,4 @@
-<div class="project-detail-container" *ngIf="project">
+<div class="project-detail-container" *ngIf="project && !isLoading">
   <div class="header">
     <button mat-icon-button (click)="goBack()">
       <mat-icon>arrow_forward</mat-icon>
@@ -78,3 +78,7 @@
     </button>
   </mat-card-content>
 </mat-card>
+
+<div class="loading-container" *ngIf="isLoading">
+  <mat-spinner></mat-spinner>
+</div>

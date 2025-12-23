@@ -43,6 +43,17 @@
   }
 }
 
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  
+  mat-spinner {
+    margin: auto;
+  }
+}
+
 /* Desktop Table View */
 .desktop-view {
   display: block;

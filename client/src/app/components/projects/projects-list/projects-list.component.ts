@@ -7,7 +7,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProjectService } from '../../../services/project.service';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Project } from '../../../models/project.model';
 import { ProjectFormComponent } from '../project-form/project-form.component';
 
@@ -22,7 +24,8 @@ import { ProjectFormComponent } from '../project-form/project-form.component';
     MatIconModule,
     MatDialogModule,
     MatChipsModule,
-    MatCardModule
+    MatCardModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss'
@@ -30,6 +33,7 @@ import { ProjectFormComponent } from '../project-form/project-form.component';
 export class ProjectsListComponent implements OnInit {
   projects: Project[] = [];
   displayedColumns: string[] = ['customerName', 'projectType', 'currentStage', 'currentMilestone', 'actions'];
+  isLoading: boolean = false;
 
   getCurrentMilestoneName(project: Project): string {
     if (!project.currentMilestoneId) return '-';
@@ -42,7 +46,8 @@ export class ProjectsListComponent implements OnInit {
   constructor(
     private projectService: ProjectService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private messageDialogService: MessageDialogService
   ) {}
 
   ngOnInit(): void {
@@ -50,12 +55,20 @@ export class ProjectsListComponent implements OnInit {
   }
 
   loadProjects(): void {
-    this.projectService.getAll().subscribe(response => {
-      if (response.isSuccess && response.data) {
-        this.projects = [...response.data];
-        this.cdr.detectChanges();
-      } else {
-        console.error('Failed to load projects:', response.errorText);
+    this.isLoading = true;
+    this.projectService.getAll().subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess && response.data) {
+          this.projects = [...response.data];
+          this.cdr.detectChanges();
+        } else {
+          this.messageDialogService.showError('שגיאה בטעינת פרויקטים: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בטעינת פרויקטים');
       }
     });
   }
@@ -76,14 +89,25 @@ export class ProjectsListComponent implements OnInit {
   }
 
   deleteProject(id: string): void {
-    if (confirm('האם אתה בטוח שברצונך למחוק פרוייקט זה?')) {
-      this.projectService.delete(id).subscribe(response => {
-        if (response.isSuccess) {
-          this.loadProjects();
-        } else {
-          alert('שגיאה במחיקת פרוייקט: ' + (response.errorText || 'Unknown error'));
-        }
-      });
-    }
+    this.messageDialogService.confirm('האם אתה בטוח שברצונך למחוק פרוייקט זה?').subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        this.isLoading = true;
+        this.projectService.delete(id).subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('הפרוייקט נמחק בהצלחה');
+              this.loadProjects();
+            } else {
+              this.messageDialogService.showError('שגיאה במחיקת פרוייקט: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.messageDialogService.showError('שגיאה במחיקת פרוייקט');
+          }
+        });
+      }
+    });
   }
 }

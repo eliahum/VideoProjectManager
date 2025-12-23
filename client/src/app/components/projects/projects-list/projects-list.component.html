@@ -7,7 +7,11 @@
     </button>
   </div>
 
-  <mat-card *ngIf="projects.length === 0" class="empty-state">
+  <div class="loading-container" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <mat-card *ngIf="projects.length === 0 && !isLoading" class="empty-state">
     <mat-card-content>
       <mat-icon class="large-icon">video_library</mat-icon>
       <h2>אין פרוייקטים</h2>
@@ -16,7 +20,7 @@
   </mat-card>
 
   <!-- Desktop Table View -->
-  <div class="table-container desktop-view" *ngIf="projects.length > 0">
+  <div class="table-container desktop-view" *ngIf="projects.length > 0 && !isLoading">
     <table mat-table [dataSource]="projects" class="projects-table">
       
       <ng-container matColumnDef="customerName">
@@ -62,7 +66,7 @@
   </div>
 
   <!-- Mobile Cards View -->
-  <div class="mobile-view" *ngIf="projects.length > 0">
+  <div class="mobile-view" *ngIf="projects.length > 0 && !isLoading">
     <mat-card *ngFor="let project of projects" class="project-card">
       <mat-card-header>
         <mat-card-title>{{ project.customerName }}</mat-card-title>
