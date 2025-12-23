@@ -1,4 +1,5 @@
 import { BaseDataResponse } from './base-response.model';
+import { SupplierType } from './supplier-type.model';
 
 export interface Supplier {
   id: string;
@@ -6,6 +7,7 @@ export interface Supplier {
   name: string;
   phone: string;
   email: string;
+  supplierType?: SupplierType;
   accountDetails: string;
   isPaid: boolean;
   notes: string;

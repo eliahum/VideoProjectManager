@@ -7,7 +7,7 @@ const supplierSchema = new mongoose.Schema(
     supplierNumber: { type: Number, unique: true },
     name: { type: String, required: true },
     phone: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String },
     supplierType: { type: mongoose.Schema.Types.ObjectId, ref: 'SupplierType' },
     accountDetails: { type: String },
     isPaid: { type: Boolean, default: false },

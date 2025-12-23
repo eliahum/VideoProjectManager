@@ -43,7 +43,7 @@ export class SuppliersListComponent implements OnInit {
   filteredSuppliers: Supplier[] = [];
   paginatedSuppliers: Supplier[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['supplierNumber', 'name', 'phone', 'email', 'isPaid', 'actions'];
+  displayedColumns: string[] = ['supplierNumber', 'name', 'phone', 'email', 'supplierType', 'isPaid', 'actions'];
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];

@@ -56,6 +56,11 @@
         <td mat-cell *matCellDef="let supplier">{{ supplier.email }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="supplierType">
+        <th mat-header-cell *matHeaderCellDef>סוג ספק</th>
+        <td mat-cell *matCellDef="let supplier">{{ supplier.supplierType?.name || '-' }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="isPaid">
         <th mat-header-cell *matHeaderCellDef>שולם</th>
         <td mat-cell *matCellDef="let supplier">
@@ -107,6 +112,11 @@
       </mat-card-header>
       
       <mat-card-content>
+        <div class="info-row" *ngIf="supplier.supplierType">
+          <mat-icon>category</mat-icon>
+          <span class="info-value">{{ supplier.supplierType.name }}</span>
+        </div>
+        
         <div class="info-row" *ngIf="supplier.phone">
           <mat-icon>phone</mat-icon>
           <a href="tel:{{ supplier.phone }}" class="info-value">{{ supplier.phone }}</a>
