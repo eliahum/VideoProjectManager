@@ -15,7 +15,8 @@
     </mat-card-content>
   </mat-card>
 
-  <div class="table-container" *ngIf="projects.length > 0">
+  <!-- Desktop Table View -->
+  <div class="table-container desktop-view" *ngIf="projects.length > 0">
     <table mat-table [dataSource]="projects" class="projects-table">
       
       <ng-container matColumnDef="customerName">
@@ -58,5 +59,36 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+  </div>
+
+  <!-- Mobile Cards View -->
+  <div class="mobile-view" *ngIf="projects.length > 0">
+    <mat-card *ngFor="let project of projects" class="project-card">
+      <mat-card-header>
+        <mat-card-title>{{ project.customerName }}</mat-card-title>
+        <mat-card-subtitle>{{ project.projectType }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="project-info">
+          <div class="info-row">
+            <span class="label">שלב נוכחי:</span>
+            <mat-chip class="stage-chip">{{ project.currentStage }}</mat-chip>
+          </div>
+          <div class="info-row">
+            <span class="label">אבן דרך נוכחית:</span>
+            <mat-chip color="accent">{{ getCurrentMilestoneName(project) }}</mat-chip>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" [routerLink]="['/projects', project.id]">
+          <mat-icon>visibility</mat-icon>
+          צפה
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteProject(project.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>

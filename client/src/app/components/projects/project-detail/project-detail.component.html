@@ -14,21 +14,11 @@
     <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
       <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
         <div class="tab-content">
-          <div class="stage-actions">
-            <button 
-              mat-raised-button 
-              color="primary" 
-              (click)="changeStage(stage.name)"
-              *ngIf="project.currentStage !== stage.name">
-              <mat-icon>play_arrow</mat-icon>
-              עבור לשלב זה
-            </button>
-          </div>
+          
 
           <mat-accordion class="milestones-accordion">
             <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel"
               [ngClass]="{'current-milestone-row':stage.stageNumber === project.currentStageNumber && project.currentMilestoneId === milestone.milestoneId}">
-              {{ project.currentMilestoneId}}
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>flag</mat-icon>

@@ -210,14 +210,124 @@
 @media (max-width: 768px) {
   .header {
     flex-wrap: wrap;
+    gap: 12px;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+    }
 
     .current-stage-chip {
       width: 100%;
       text-align: center;
+      font-size: 1rem;
+      padding: 8px 16px;
     }
   }
 
   .tab-content {
-    padding: 16px;
+    padding: 12px;
+  }
+
+  .milestones-accordion {
+    .milestone-panel {
+      mat-expansion-panel-header {
+        padding: 0 12px;
+
+        mat-panel-title {
+          flex-direction: row;
+          gap: 8px;
+          flex: 1;
+          min-width: 0;
+          max-width: 65%;
+
+          mat-icon {
+            flex-shrink: 0;
+          }
+
+          span {
+            font-size: 0.95rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.3;
+          }
+        }
+
+        mat-panel-description {
+          flex-direction: column;
+          align-items: flex-end;
+          justify-content: center;
+          flex: 0 0 auto;
+          
+          .status-chip {
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            min-height: 28px;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+
+  .milestone-details {
+    padding: 12px;
+
+    .detail-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+
+    .milestone-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+
+      button {
+        width: 100%;
+      }
+    }
+  }
+
+  .stage-actions {
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    h1 {
+      font-size: 1.25rem;
+    }
+  }
+
+  .milestones-accordion {
+    .milestone-panel {
+      mat-expansion-panel-header {
+        mat-panel-title {
+          span {
+            font-size: 0.9rem;
+          }
+        }
+
+        mat-panel-description {
+          flex: 0 0 auto;
+          
+          .status-chip {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            min-height: 26px;
+          }
+        }
+      }
+    }
   }
 }
