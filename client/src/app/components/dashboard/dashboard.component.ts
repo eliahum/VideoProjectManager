@@ -5,6 +5,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { finalize } from 'rxjs/operators';
 import { ProjectService } from '../../services/project.service';
 import { Project, Milestone } from '../../models/project.model';
 
@@ -17,7 +19,8 @@ import { Project, Milestone } from '../../models/project.model';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    MatChipsModule
+    MatChipsModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -25,6 +28,7 @@ import { Project, Milestone } from '../../models/project.model';
 export class DashboardComponent implements OnInit {
   activeProjects: Project[] = [];
   projectStats: { project: Project, currentMilestone: Milestone | null }[] = [];
+  isLoading = false;
 
   constructor(
     private projectService: ProjectService,
@@ -36,7 +40,15 @@ export class DashboardComponent implements OnInit {
   }
 
   loadData(): void {
-    this.projectService.getActiveProjects().subscribe({
+    this.isLoading = true;
+    this.projectService.getActiveProjects()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+          this.cdr.detectChanges();
+        })
+      )
+      .subscribe({
       next: (response) => {
         console.log('Dashboard response:', response);
         if (response.isSuccess && response.data) {

@@ -1,7 +1,12 @@
 <div class="dashboard-container">
   <h1 class="page-title">דשבורד</h1>
 
-  <div class="stats-section" *ngIf="activeProjects.length > 0; else noProjects">
+  <div class="loading-spinner" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>טוען פרוייקטים...</p>
+  </div>
+
+  <div class="stats-section" *ngIf="!isLoading && activeProjects.length > 0; else noProjects">
     <h2>פרוייקטים פעילים</h2>
     
     <div class="projects-grid">

@@ -9,6 +9,23 @@
   color: #333;
 }
 
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  
+  mat-spinner {
+    margin-bottom: 20px;
+  }
+  
+  p {
+    font-size: 1.1rem;
+    color: #666;
+  }
+}
+
 .stats-section {
   h2 {
     font-size: 1.5rem;
