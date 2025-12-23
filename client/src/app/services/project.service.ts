@@ -35,4 +35,16 @@ export class ProjectService {
   delete(id: string): Observable<ProjectResponse> {
     return this.http.delete<ProjectResponse>(`${this.apiUrl}/${id}`);
   }
+
+  updateMilestone(
+    projectId: string, 
+    stageNumber: number, 
+    milestoneId: number, 
+    milestoneData: any
+  ): Observable<ProjectResponse> {
+    return this.http.patch<ProjectResponse>(
+      `${this.apiUrl}/${projectId}/stages/${stageNumber}/milestones/${milestoneId}`, 
+      milestoneData
+    );
+  }
 }

@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProjectService } from '../../../services/project.service';
 import { SupplierService } from '../../../services/supplier.service';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Milestone, MilestoneSupplier } from '../../../models/project.model';
 import { Supplier } from '../../../models/supplier.model';
 
@@ -43,6 +44,7 @@ export class MilestoneFormComponent implements OnInit {
     private fb: FormBuilder,
     private projectService: ProjectService,
     private supplierService: SupplierService,
+    private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<MilestoneFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { 
       projectId: string, 
@@ -108,32 +110,41 @@ export class MilestoneFormComponent implements OnInit {
   onSubmit(): void {
     debugger;
     if (this.milestoneForm.valid) {
-      const milestoneData = this.milestoneForm.value;
+      const milestoneData = {
+        documentReference: this.milestoneForm.value.documentReference,
+        date: this.milestoneForm.value.date,
+        statusNumber: this.getStatusNumber(this.milestoneForm.value.status),
+        suppliers: this.milestoneForm.value.suppliers
+      };
+
+      // עדכון המילסטון דרך ה-endpoint החדש
+      this.projectService.updateMilestone(
+        this.data.projectId,
+        this.data.milestone.stageNumber!,
+        this.data.milestone.milestoneId,
+        milestoneData
+      ).subscribe(updateResponse => {
       
-      // עדכון המילסטון דרך הפרויקט
-      this.projectService.getById(this.data.projectId).subscribe(response => {
-            debugger;
-        if (response.isSuccess && response.data) {
-          const project = response.data;
-          const stage = project.stages.find(s => s.name === this.data.stageName);
-          if (stage) {
-            const milestone = stage.milestones.find(m => m.id === this.data.milestone.id);
-            if (milestone) {
-              Object.assign(milestone, milestoneData);
-              this.projectService.update(project.id, project).subscribe(updateResponse => {
-                if (updateResponse.isSuccess) {
-                  this.dialogRef.close(true);
-                } else {
-                  alert('שגיאה בעדכון milestone: ' + (updateResponse.errorText || 'Unknown error'));
-                }
-              });
-            }
-          }
+        if (updateResponse.isSuccess) {
+          this.dialogRef.close(true);
         } else {
-          alert('שגיאה בטעינת פרוייקט: ' + (response.errorText || 'Unknown error'));
+          this.messageDialogService.showError(
+            updateResponse.errorText || 'Unknown error',
+            'שגיאה בעדכון milestone'
+          );
         }
       });
     }
+  }
+
+  private getStatusNumber(statusText: string): number {
+    const statusMap: { [key: string]: number } = {
+      'לפני התחלה': 1,
+      'בעבודה': 2,
+      'אצל הלקוח': 3,
+      'הושלם': 4
+    };
+    return statusMap[statusText] || 1;
   }
 
   close(): void {

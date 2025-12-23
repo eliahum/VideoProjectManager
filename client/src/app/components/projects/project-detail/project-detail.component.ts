@@ -133,12 +133,18 @@ export class ProjectDetailComponent implements OnInit {
   openMilestoneForm(stage: Stage, milestone: Milestone): void {
     if (!this.project) return;
 
+    // הוספת stageNumber ל-milestone
+    const milestoneWithStageNumber = {
+      ...milestone,
+      stageNumber: stage.stageNumber
+    };
+
     const dialogRef = this.dialog.open(MilestoneFormComponent, {
       width: '700px',
       data: { 
         projectId: this.project.id, 
         stageName: stage.name, 
-        milestone 
+        milestone: milestoneWithStageNumber
       }
     });
 

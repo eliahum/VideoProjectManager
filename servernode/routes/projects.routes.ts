@@ -31,4 +31,15 @@ router.delete('/:id', async (req, res) => {
   res.json(result);
 });
 
+router.patch('/:projectId/stages/:stageNumber/milestones/:milestoneId', async (req, res) => {
+  const { projectId, stageNumber, milestoneId } = req.params;
+  const result = await projectsService.updateMilestone(
+    projectId, 
+    parseInt(stageNumber), 
+    parseInt(milestoneId), 
+    req.body
+  );
+  res.json(result);
+});
+
 export default router;

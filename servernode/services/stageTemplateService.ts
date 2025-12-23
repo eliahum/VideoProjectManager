@@ -73,7 +73,7 @@ export class StageTemplateService {
     }
   }
 
-  private mapToDTO(stageTemplate: IStageTemplate): StageTemplateDTO {
+  private  mapToDTO(stageTemplate: IStageTemplate): StageTemplateDTO {
     return {
       _id: stageTemplate._id?.toString(),
       id: stageTemplate.id,

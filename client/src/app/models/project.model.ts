@@ -29,6 +29,7 @@ export interface Stage {
 export interface Milestone {
   id: string;
   milestoneId: number;
+  stageNumber?: number;
   name: string;
   documentReference: string;
   statusNumber: number;

@@ -77,6 +77,99 @@ export class ProjectsService {
     }
   }
 
+  async updateMilestone(
+    projectId: string, 
+    stageNumber: number, 
+    milestoneId: number, 
+    milestoneData: Partial<MilestoneDTO>
+  ): Promise<ProjectResponseDTO> {
+    try {
+      await connectToDatabase();
+ 
+      // מוצא את הפרויקט
+      const project = await Project.findOne({ id: projectId });
+      if (!project) {
+        return { isSuccess: false, errorText: 'Project not found' };
+      }
+
+      // מוצא את ה-stage index
+      const stageIndex = project.stages.findIndex(s => s.stageNumber === stageNumber);
+      
+      if (stageIndex === -1) {
+        // יוצר stage חדש אם לא קיים
+        const templatesResponse = await stageTemplateService.getAllStageTemplates();
+        const template = templatesResponse.data?.find(t => t.stageNumber === stageNumber);
+        
+        const newStage: any = {
+          stageNumber: stageNumber,
+          stageName: template?.hebName || `שלב ${stageNumber}`,
+          milestones: []
+        };
+        project.stages.push(newStage);
+      }
+
+      // מוצא שוב את ה-stage (עכשיו הוא בטוח קיים)
+      const stage = project.stages.find(s => s.stageNumber === stageNumber)!;
+      
+      // מוצא את ה-milestone index
+      const milestoneIndex = stage.milestones.findIndex(m => m.milestoneId === milestoneId);
+      
+      if (milestoneIndex === -1) {
+        // יוצר milestone חדש אם לא קיים
+        const templatesResponse = await stageTemplateService.getAllStageTemplates();
+        const template = templatesResponse.data?.find(t => t.stageNumber === stageNumber);
+        const milestoneTemplate = template?.milestones.find(m => m.id === milestoneId);
+        
+        const newMilestone: any = {
+          id: `${projectId}-${stageNumber}-${milestoneId}`,
+          milestoneId: milestoneId,
+          name: milestoneTemplate?.name || `Milestone ${milestoneId}`,
+          documentReference: milestoneData.documentReference !== undefined ? milestoneData.documentReference : '',
+          statusNumber: milestoneData.statusNumber !== undefined ? milestoneData.statusNumber : 1,
+          date: milestoneData.date || undefined,
+          suppliers: milestoneData.suppliers ? milestoneData.suppliers.map(s => ({
+            supplierId: s.supplierId,
+            supplierName: s.supplierName,
+            amount: s.amount
+          })) : []
+        };
+        
+        stage.milestones.push(newMilestone);
+      } else {
+        // מעדכן milestone קיים
+        const milestone = stage.milestones[milestoneIndex];
+        
+        if (milestoneData.documentReference !== undefined) {
+          milestone.documentReference = milestoneData.documentReference;
+        }
+        if (milestoneData.date !== undefined) {
+          milestone.date = milestoneData.date;
+        }
+        if (milestoneData.statusNumber !== undefined) {
+          milestone.statusNumber = milestoneData.statusNumber;
+        }
+        if (milestoneData.suppliers !== undefined) {
+          milestone.suppliers = milestoneData.suppliers.map(s => ({
+            supplierId: s.supplierId,
+            supplierName: s.supplierName,
+            amount: s.amount
+          }));
+        }
+      }
+
+      // מסמן את ה-stages כ-modified
+      project.markModified('stages');
+
+      // שומר את הפרויקט עם העדכון
+      await project.save();
+      
+      const data = await this.mapToDTO(project);
+      return { isSuccess: true, data };
+    } catch (error: any) {
+      return { isSuccess: false, errorText: `Error updating milestone: ${error.message}` };
+    }
+  }
+
   private async mapToDTO(project: IProject): Promise<ProjectDTO> {
     // Find current stage name from stages array
     const currentStage = project.stages.find(s => s.stageNumber === project.currentStageNumber);

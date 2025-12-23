@@ -66,7 +66,6 @@ const milestoneSchema = new Schema<IMilestone>({
   },
   documentReference: {
     type: String,
-    required: true,
     default: ''
   },
   date: {
