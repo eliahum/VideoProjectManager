@@ -3,7 +3,7 @@ import { InMemoryDbService } from 'angular-in-memory-web-api';
 import { Lead, LeadStatus } from '../models/lead.model';
 import { Customer } from '../models/customer.model';
 import { Supplier } from '../models/supplier.model';
-import { Project, ProjectStage, PRE_MILESTONES, PRODUCTION_MILESTONES, POST_MILESTONES, MilestoneStatus } from '../models/project.model';
+import { Project, PRE_MILESTONES, PRODUCTION_MILESTONES, POST_MILESTONES } from '../models/project.model';
 
 @Injectable({
   providedIn: 'root'
@@ -81,35 +81,45 @@ export class InMemoryDataService implements InMemoryDbService {
         customerId: '1',
         customerName: 'דוד ישראלי',
         projectType: 'וידאו פרסומי',
-        currentStage: ProjectStage.PRE,
+        currentStage: 'פרה',
+        currentStageNumber: 1,
         stages: [
           {
-            name: ProjectStage.PRE,
+            stageNumber: 1,
+            stageName: 'פרה',
+            name: 'פרה',
             milestones: PRE_MILESTONES.map((name, index) => ({
               id: `1-pre-${index}`,
               name,
               documentReference: '',
-              status: MilestoneStatus.BEFORE_START,
+              statusNumber: 1,
+              status: 'לפני התחלה',
               suppliers: []
             }))
           },
           {
-            name: ProjectStage.PRODUCTION,
+            stageNumber: 2,
+            stageName: 'פרודקשן',
+            name: 'פרודקשן',
             milestones: PRODUCTION_MILESTONES.map((name, index) => ({
               id: `1-prod-${index}`,
               name,
               documentReference: '',
-              status: MilestoneStatus.BEFORE_START,
+              statusNumber: 1,
+              status: 'לפני התחלה',
               suppliers: []
             }))
           },
           {
-            name: ProjectStage.POST,
+            stageNumber: 3,
+            stageName: 'פוסט',
+            name: 'פוסט',
             milestones: POST_MILESTONES.map((name, index) => ({
               id: `1-post-${index}`,
               name,
               documentReference: '',
-              status: MilestoneStatus.BEFORE_START,
+              statusNumber: 1,
+              status: 'לפני התחלה',
               suppliers: []
             }))
           }

@@ -7,7 +7,7 @@ export interface Project {
   customerId: string;
   customerName: string;
   projectType: string;
-  currentStage: ProjectStage;
+  currentStage: string;
   currentStageNumber: number;
   stages: Stage[];
   currentMilestoneId?: string;
@@ -19,16 +19,10 @@ export interface ProjectResponse extends BaseDataResponse<Project> {}
 
 export interface ProjectListResponse extends BaseDataResponse<Project[]> {}
 
-export enum ProjectStage {
-  PRE = 'פרה',
-  PRODUCTION = 'פרודקשן',
-  POST = 'פוסט'
-}
-
 export interface Stage {
   stageNumber: number;
   stageName: string;
-  name: ProjectStage;
+  name: string;
   milestones: Milestone[];
 }
 
@@ -38,7 +32,7 @@ export interface Milestone {
   documentReference: string;
   statusNumber: number;
   date?: Date;
-  status: MilestoneStatus;
+  status?: string;
   suppliers: MilestoneSupplier[];
 }
 
@@ -46,13 +40,6 @@ export interface MilestoneSupplier {
   supplierId: string;
   supplierName: string;
   amount: number;
-}
-
-export enum MilestoneStatus {
-  BEFORE_START = 'לפני התחלה',
-  WORKING = 'בעבודה',
-  WITH_CLIENT = 'אצל הלקוח',
-  COMPLETED = 'הושלם'
 }
 
 export const PRE_MILESTONES = [

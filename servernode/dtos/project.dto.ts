@@ -12,12 +12,14 @@ export interface MilestoneDTO {
   documentReference: string;
   date?: Date;
   statusNumber: number;
+  status?: string;
   suppliers: MilestoneSupplierDTO[];
 }
 
 export interface StageDTO {
   stageNumber: number;
   stageName: string;
+  name: string;
   milestones: MilestoneDTO[];
 }
 
@@ -28,6 +30,7 @@ export interface ProjectDTO {
   customerId: string;
   customerName: string;
   projectType: string;
+  currentStage?: string;
   currentStageNumber: number;
   stages: StageDTO[];
   currentMilestoneId?: string;

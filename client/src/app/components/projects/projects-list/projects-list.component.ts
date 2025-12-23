@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -41,7 +41,8 @@ export class ProjectsListComponent implements OnInit {
 
   constructor(
     private projectService: ProjectService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -52,6 +53,7 @@ export class ProjectsListComponent implements OnInit {
     this.projectService.getAll().subscribe(response => {
       if (response.isSuccess && response.data) {
         this.projects = [...response.data];
+        this.cdr.detectChanges();
       } else {
         console.error('Failed to load projects:', response.errorText);
       }

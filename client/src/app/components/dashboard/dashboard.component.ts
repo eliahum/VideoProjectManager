@@ -6,7 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { ProjectService } from '../../services/project.service';
-import { Project, Milestone, MilestoneStatus } from '../../models/project.model';
+import { Project, Milestone } from '../../models/project.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -56,15 +56,16 @@ export class DashboardComponent implements OnInit {
       if (found) return found;
     }
     // אחרת נחזיר את הראשונה שלא הושלמה
-    return currentStage.milestones.find(m => m.status !== MilestoneStatus.COMPLETED) || null;
+    return currentStage.milestones.find(m => m.status !== 'הושלם') || null;
   }
 
-  getMilestoneStatusClass(status: MilestoneStatus): string {
+  getMilestoneStatusClass(status?: string): string {
+    if (!status) return '';
     switch (status) {
-      case MilestoneStatus.BEFORE_START: return 'status-before';
-      case MilestoneStatus.WORKING: return 'status-working';
-      case MilestoneStatus.WITH_CLIENT: return 'status-client';
-      case MilestoneStatus.COMPLETED: return 'status-completed';
+      case 'לפני התחלה': return 'status-before';
+      case 'בעבודה': return 'status-working';
+      case 'אצל הלקוח': return 'status-client';
+      case 'הושלם': return 'status-completed';
       default: return '';
     }
   }

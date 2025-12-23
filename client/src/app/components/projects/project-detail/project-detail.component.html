@@ -28,14 +28,15 @@
           <mat-accordion class="milestones-accordion">
             <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel"
               [ngClass]="{'current-milestone-row': project.currentMilestoneId === milestone.id}">
+              {{milestone | json}}
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon>flag</mat-icon>
                   <span>{{ milestone.name }}</span>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <mat-chip [ngClass]="getMilestoneStatusClass(milestone.status)" class="status-chip">
-                    {{ milestone.status }}
+                  <mat-chip [ngClass]="getMilestoneStatusClass(getStatusByNumber(milestone.statusNumber))" class="status-chip">
+                    {{ getStatusByNumber(milestone.statusNumber) }}
                   </mat-chip>
                 </mat-panel-description>
               </mat-expansion-panel-header>

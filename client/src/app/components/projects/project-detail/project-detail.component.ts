@@ -1,5 +1,5 @@
     // ...existing code...
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -10,7 +10,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ProjectService } from '../../../services/project.service';
-import { Project, ProjectStage, Stage, Milestone, MilestoneStatus } from '../../../models/project.model';
+import { MilestoneStatusService } from '../../../services/milestone-status.service';
+import { Project, Stage, Milestone } from '../../../models/project.model';
+import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
 
 @Component({
@@ -32,12 +34,15 @@ import { MilestoneFormComponent } from '../milestone-form/milestone-form.compone
 export class ProjectDetailComponent implements OnInit {
   project: Project | undefined;
   selectedTabIndex = 0;
+  milestoneStatuses: MilestoneStatus[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
-    private dialog: MatDialog
+    private milestoneStatusService: MilestoneStatusService,
+    private dialog: MatDialog,
+    private cdr: ChangeDetectorRef
   ) {}
 
   setCurrentMilestone(milestone: Milestone): void {
@@ -52,25 +57,53 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Load milestone statuses first
+    this.milestoneStatusService.getAllMilestoneStatuses().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.milestoneStatuses = response.data;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading milestone statuses:', err);
+      }
+    });
+
     const projectId = this.route.snapshot.paramMap.get('id');
     if (projectId) {
-      this.projectService.getById(projectId).subscribe(response => {
-        if (!response.isSuccess || !response.data) {
+      this.projectService.getById(projectId).subscribe({
+        next: (response) => {
+          console.log('Project response:', response);
+          if (!response.isSuccess || !response.data) {
+            console.error('Failed to load project:', response.errorText);
+            this.router.navigate(['/projects']);
+          } else {
+            this.project = response.data;
+            
+            console.log('Project loaded:', this.project);
+            // Set tab index based on current stage number
+            if (this.project.currentStageNumber && this.project.stages) {
+              let stageIndex = this.project.stages.findIndex(s => s.stageNumber === this.project!.currentStageNumber);
+              if (stageIndex !== -1) {
+                this.selectedTabIndex = stageIndex;
+              }
+            }
+            this.cdr.detectChanges();
+          }
+        },
+        error: (err) => {
+          console.error('Error loading project:', err);
           this.router.navigate(['/projects']);
-        } else {
-          this.project = response.data;
-          // Set tab index based on current stage
-          this.selectedTabIndex = this.getTabIndex(this.project.currentStage);
         }
       });
     }
   }
 
-  getTabIndex(stage: ProjectStage): number {
+  getTabIndex(stage: string): number {
     switch (stage) {
-      case ProjectStage.PRE: return 0;
-      case ProjectStage.PRODUCTION: return 1;
-      case ProjectStage.POST: return 2;
+      case 'פרה': return 0;
+      case 'פרודקשן': return 1;
+      case 'פוסט': return 2;
       default: return 0;
     }
   }
@@ -99,22 +132,29 @@ export class ProjectDetailComponent implements OnInit {
       this.projectService.getById(this.project.id).subscribe(response => {
         if (response.isSuccess && response.data) {
           this.project = response.data;
+          this.cdr.detectChanges();
         }
       });
     }
   }
 
-  getMilestoneStatusClass(status: MilestoneStatus): string {
+  getStatusByNumber(statusNumber: number): string {
+    const status = this.milestoneStatuses.find(s => s.milestoneStatusNumber === statusNumber);
+    return status ? status.hebName : '';
+  }
+
+  getMilestoneStatusClass(status?: string): string {
+    if (!status) return '';
     switch (status) {
-      case MilestoneStatus.BEFORE_START: return 'status-before';
-      case MilestoneStatus.WORKING: return 'status-working';
-      case MilestoneStatus.WITH_CLIENT: return 'status-client';
-      case MilestoneStatus.COMPLETED: return 'status-completed';
+      case 'לפני התחלה': return 'status-before';
+      case 'בעבודה': return 'status-working';
+      case 'אצל הלקוח': return 'status-client';
+      case 'הושלם': return 'status-completed';
       default: return '';
     }
   }
 
-  changeStage(stage: ProjectStage): void {
+  changeStage(stage: string): void {
     if (!this.project) return;
     if (confirm(`האם לעבור לשלב ${stage}?`)) {
       this.projectService.update(this.project.id, { currentStage: stage }).subscribe(response => {

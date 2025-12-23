@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
-import { Project, ProjectStage } from '../../../models/project.model';
+import { Project } from '../../../models/project.model';
 import { Customer } from '../../../models/customer.model';
 
 @Component({
@@ -32,7 +32,7 @@ export class ProjectFormComponent implements OnInit {
   projectForm: FormGroup;
   isEditMode = false;
   customers: Customer[] = [];
-  projectStages = Object.values(ProjectStage);
+  projectStages = ['פרה', 'פרודקשן', 'פוסט'];
 
   constructor(
     private fb: FormBuilder,
@@ -44,7 +44,7 @@ export class ProjectFormComponent implements OnInit {
     this.projectForm = this.fb.group({
       customerId: ['', Validators.required],
       projectType: ['', Validators.required],
-      currentStage: [ProjectStage.PRE, Validators.required]
+      currentStage: ['פרה', Validators.required]
     });
   }
 

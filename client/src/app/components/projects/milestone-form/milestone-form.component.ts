@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { ProjectService } from '../../../services/project.service';
 import { SupplierService } from '../../../services/supplier.service';
-import { Milestone, MilestoneStatus, ProjectStage, MilestoneSupplier } from '../../../models/project.model';
+import { Milestone, MilestoneSupplier } from '../../../models/project.model';
 import { Supplier } from '../../../models/supplier.model';
 
 @Component({
@@ -37,7 +37,7 @@ import { Supplier } from '../../../models/supplier.model';
 export class MilestoneFormComponent implements OnInit {
   milestoneForm: FormGroup;
   availableSuppliers: Supplier[] = [];
-  milestoneStatuses = Object.values(MilestoneStatus);
+  milestoneStatuses = ['לפני התחלה', 'בעבודה', 'אצל הלקוח', 'הושלם'];
 
   constructor(
     private fb: FormBuilder,
@@ -46,14 +46,14 @@ export class MilestoneFormComponent implements OnInit {
     private dialogRef: MatDialogRef<MilestoneFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { 
       projectId: string, 
-      stageName: ProjectStage, 
+      stageName: string, 
       milestone: Milestone 
     }
   ) {
     this.milestoneForm = this.fb.group({
       documentReference: [''],
       date: [null],
-      status: [MilestoneStatus.BEFORE_START, Validators.required],
+      status: ['לפני התחלה', Validators.required],
       suppliers: this.fb.array([])
     });
   }

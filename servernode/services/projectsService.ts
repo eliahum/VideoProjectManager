@@ -1,6 +1,8 @@
 import { Project, IProject } from '../models/project.model';
-import { ProjectDTO, ProjectResponseDTO, ProjectListResponseDTO } from '../dtos/project.dto';
+import { ProjectDTO, ProjectResponseDTO, ProjectListResponseDTO, StageDTO, MilestoneDTO, MilestoneSupplierDTO } from '../dtos/project.dto';
 import { connectToDatabase } from '../utils/db';
+import { stageTemplateService } from './stageTemplateService';
+import { milestoneStatusService } from './milestoneStatusService';
 
 export class ProjectsService {
 
@@ -8,7 +10,9 @@ export class ProjectsService {
     try {
       await connectToDatabase();
       const projects = await Project.find().sort({ projectNumber: -1 });
-      const data: ProjectDTO[] = projects.map(project => this.mapToDTO(project));
+      const data: ProjectDTO[] = await Promise.all(
+        projects.map(async project => await this.enrichProjectWithTemplates(await this.mapToDTO(project)))
+      );
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error retrieving projects: ${error.message}` };
@@ -22,7 +26,7 @@ export class ProjectsService {
       if (!project) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
-      const data = this.mapToDTO(project);
+      const data = await this.enrichProjectWithTemplates(await this.mapToDTO(project));
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error retrieving project: ${error.message}` };
@@ -34,7 +38,7 @@ export class ProjectsService {
       await connectToDatabase();
       const newProject = new Project(projectData);
       const savedProject = await newProject.save();
-      const data = this.mapToDTO(savedProject);
+      const data = await this.mapToDTO(savedProject);
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error creating project: ${error.message}` };
@@ -52,7 +56,7 @@ export class ProjectsService {
       if (!updatedProject) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
-      const data = this.mapToDTO(updatedProject);
+      const data = await this.mapToDTO(updatedProject);
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error updating project: ${error.message}` };
@@ -66,14 +70,22 @@ export class ProjectsService {
       if (!deletedProject) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
-      const data = this.mapToDTO(deletedProject);
+      const data = await this.mapToDTO(deletedProject);
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error deleting project: ${error.message}` };
     }
   }
 
-  private mapToDTO(project: IProject): ProjectDTO {
+  private async mapToDTO(project: IProject): Promise<ProjectDTO> {
+    // Find current stage name from stages array
+    const currentStage = project.stages.find(s => s.stageNumber === project.currentStageNumber);
+    
+    // Get all milestone statuses for mapping
+    const statusesResponse = await milestoneStatusService.getAllMilestoneStatuses();
+    const statuses = statusesResponse.isSuccess ? statusesResponse.data : [];
+    const statusMap = new Map(statuses.map(s => [s.milestoneStatusNumber, s.hebName]));
+    
     return {
       _id: project._id?.toString(),
       id: project.id,
@@ -81,16 +93,19 @@ export class ProjectsService {
       customerId: project.customerId,
       customerName: project.customerName,
       projectType: project.projectType,
+      currentStage: currentStage?.stageName,
       currentStageNumber: project.currentStageNumber,
       stages: project.stages.map(stage => ({
         stageNumber: stage.stageNumber,
         stageName: stage.stageName,
+        name: stage.stageName, // Adding name field
         milestones: stage.milestones.map(milestone => ({
           id: milestone.id,
           name: milestone.name,
           documentReference: milestone.documentReference,
           date: milestone.date,
           statusNumber: milestone.statusNumber,
+          status: statusMap.get(milestone.statusNumber),
           suppliers: milestone.suppliers.map(supplier => ({
             supplierId: supplier.supplierId,
             supplierName: supplier.supplierName,
@@ -102,6 +117,84 @@ export class ProjectsService {
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     };
+  }
+
+  /**
+   * מאחד את הפרויקט עם stage-templates כך שתמיד יוצגו כל השלבים ואבני הדרך
+   */
+  private async enrichProjectWithTemplates(project: ProjectDTO): Promise<ProjectDTO> {
+    try {
+      // מביא את כל ה-stage templates
+      const templatesResponse = await stageTemplateService.getAllStageTemplates();
+      if (!templatesResponse.isSuccess || !templatesResponse.data) {
+        return project; // אם יש בעיה, מחזיר את הפרויקט כמו שהוא
+      }
+
+      const templates = templatesResponse.data;
+      const enrichedStages: StageDTO[] = [];
+
+      // עובר על כל template ומוסיף/משלב עם השלב הקיים
+      for (const template of templates) {
+        // מחפש אם השלב הזה כבר קיים בפרויקט
+        const existingStage = project.stages.find(s => s.stageNumber === template.stageNumber);
+
+        if (existingStage) {
+          // אם השלב קיים, נוודא שיש את כל המילסטונים מה-template
+          const enrichedMilestones: MilestoneDTO[] = [];
+          
+          for (const milestoneName of template.milestoneNames) {
+            // מחפש אם המילסטון כבר קיים
+            const existingMilestone = existingStage.milestones.find(m => m.name === milestoneName);
+            
+            if (existingMilestone) {
+              // אם קיים, שומר אותו עם כל הנתונים
+              enrichedMilestones.push(existingMilestone);
+            } else {
+              // אם לא קיים, יוצר מילסטון חדש עם ערכי ברירת מחדל
+              enrichedMilestones.push({
+                id: `${project.id}-${template.stageNumber}-${milestoneName}`,
+                name: milestoneName,
+                documentReference: '',
+                statusNumber: 1,
+                suppliers: [] as MilestoneSupplierDTO[]
+              });
+            }
+          }
+          
+          enrichedStages.push({
+            stageNumber: existingStage.stageNumber,
+            stageName: existingStage.stageName,
+            name: template.hebName,
+            milestones: enrichedMilestones
+          });
+        } else {
+          // אם השלב לא קיים, יוצר אותו חדש מה-template
+          const newMilestones: MilestoneDTO[] = template.milestoneNames.map(milestoneName => ({
+            id: `${project.id}-${template.stageNumber}-${milestoneName}`,
+            name: milestoneName,
+            documentReference: '',
+            statusNumber: 1,
+            suppliers: [] as MilestoneSupplierDTO[]
+          }));
+
+          enrichedStages.push({
+            stageNumber: template.stageNumber,
+            stageName: template.hebName,
+            name: template.hebName,
+            milestones: newMilestones
+          });
+        }
+      }
+
+      // מחזיר את הפרויקט עם השלבים המועשרים
+      return {
+        ...project,
+        stages: enrichedStages
+      };
+    } catch (error) {
+      console.error('Error enriching project with templates:', error);
+      return project; // במקרה של שגיאה, מחזיר את הפרויקט המקורי
+    }
   }
 }
 
