@@ -1,12 +1,24 @@
 .dashboard-container {
   max-width: 1400px;
   margin: 0 auto;
+  padding: 16px;
 }
 
 .page-title {
   font-size: 2rem;
   margin-bottom: 30px;
   color: #333;
+}
+
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 8px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+  }
 }
 
 .loading-spinner {
@@ -39,6 +51,14 @@
   grid-template-columns: repeat(auto-fill, minmax(245px, 0.7fr));
   gap: 20px;
   margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
 }
 
 .project-card {

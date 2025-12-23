@@ -17,6 +17,18 @@
     font-size: 24px;
   }
 
+  @media (max-width: 768px) {
+    padding: 8px;
+
+    mat-card-title {
+      font-size: 20px;
+    }
+
+    mat-card-header {
+      margin-bottom: 16px;
+    }
+  }
+
   .loading-container {
     display: flex;
     justify-content: center;
@@ -108,10 +120,26 @@
       padding: 20px;
       flex-wrap: wrap;
 
+      @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 30px;
+        padding: 10px;
+      }
+
       .pie-chart {
         position: relative;
         width: 280px;
         height: 280px;
+
+        @media (max-width: 768px) {
+          width: 240px;
+          height: 240px;
+        }
+
+        @media (max-width: 480px) {
+          width: 200px;
+          height: 200px;
+        }
 
         .pie-svg {
           width: 100%;
@@ -150,11 +178,21 @@
         flex-direction: column;
         gap: 16px;
 
+        @media (max-width: 768px) {
+          width: 100%;
+          max-width: 400px;
+        }
+
         .legend-item {
           display: flex;
           align-items: center;
           gap: 12px;
           min-width: 200px;
+
+          @media (max-width: 768px) {
+            min-width: auto;
+            width: 100%;
+          }
 
           .legend-color {
             width: 24px;
