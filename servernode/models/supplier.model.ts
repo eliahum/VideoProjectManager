@@ -8,6 +8,7 @@ const supplierSchema = new mongoose.Schema(
     name: { type: String, required: true },
     phone: { type: String, required: true },
     email: { type: String, required: true },
+    supplierType: { type: mongoose.Schema.Types.ObjectId, ref: 'SupplierType' },
     accountDetails: { type: String },
     isPaid: { type: Boolean, default: false },
     notes: { type: String }
@@ -34,6 +35,7 @@ export interface SupplierDocument extends Document {
   name: string;
   phone: string;
   email: string;
+  supplierType?: mongoose.Types.ObjectId;
   accountDetails: string;
   isPaid: boolean;
   notes: string;

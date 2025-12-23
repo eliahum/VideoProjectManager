@@ -1,4 +1,5 @@
 import { BaseDataResponseDTO } from './base-response.dto';
+import { SupplierTypeDTO } from './supplier-type.dto';
 
 export interface SupplierDTO {
     id: string;
@@ -6,6 +7,7 @@ export interface SupplierDTO {
     name: string;
     phone: string;
     email: string;
+    supplierType?: SupplierTypeDTO;
     accountDetails: string;
     isPaid: boolean;
     notes: string;

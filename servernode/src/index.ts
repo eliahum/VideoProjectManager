@@ -7,12 +7,14 @@ import customerRoutes from '../routes/customers.routes';
 import leadRoutes from '../routes/leads.routes';
 import leadStatusRoutes from '../routes/lead-status.routes';
 import supplierRoutes from '../routes/suppliers.routes';
+import supplierTypeRoutes from '../routes/supplier-type.routes';
 import milestoneStatusRoutes from '../routes/milestone-status.routes';
 import stageTemplateRoutes from '../routes/stage-template.routes';
 import projectRoutes from '../routes/projects.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
+import supplierTypeService from '../services/supplierTypeService';
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
@@ -28,6 +30,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/lead-statuses', leadStatusRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/supplier-types', supplierTypeRoutes);
 app.use('/api/milestone-statuses', milestoneStatusRoutes);
 app.use('/api/stage-templates', stageTemplateRoutes);
 app.use('/api/projects', projectRoutes);
@@ -54,8 +57,10 @@ mongoose.connect(DATABASE_URL, {
     serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
     socketTimeoutMS: 45000,
 })
-    .then(() => {
+    .then(async () => {
         console.log('Connected to MongoDB');
+        // Initialize default supplier types
+        await supplierTypeService.initializeDefaults();
     })
     .catch(err => {
         console.error('Failed to connect to MongoDB', err);

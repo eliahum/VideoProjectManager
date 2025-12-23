@@ -1,0 +1,58 @@
+// MongoDB Playground Script for VS Code MongoDB extension
+// Use this script to initialize supplier types in MongoDB
+
+// Select the database
+use('videoprojectmanager');
+
+// Check current count
+const currentCount = db.suppliertypes.countDocuments();
+console.log(`Current supplier types: ${currentCount}`);
+
+// Only insert if empty
+if (currentCount === 0) {
+  // Get current counter or start from 0
+  let counter = db.counters.findOne({ _id: 'supplierTypeNumber' });
+  let startSeq = counter ? counter.seq : 0;
+  
+  // Supplier types data
+  const supplierTypesData = [
+    { name: 'צילום', description: 'צלמי וידאו ותמונה' },
+    { name: 'תאורה', description: 'אנשי תאורה וציוד תאורה' },
+    { name: 'קרינות', description: 'מפעילי מנוף ומערכות קרינות' },
+    { name: 'ארט', description: 'עיצוב אמנותי וסט' },
+    { name: 'איפור', description: 'מאפרים וסטייליסטים' },
+    { name: 'תסריט', description: 'כותבי תסריטים' },
+    { name: 'בימוי', description: 'במאים ועוזרי במאי' },
+    { name: 'אפטר', description: 'אפקטים ויזואליים ואפטר' },
+    { name: 'עריכה', description: 'עורכי וידאו' },
+    { name: 'תלבושות', description: 'מעצבי תלבושות' },
+    { name: 'מוזיקה', description: 'מלחינים והנדסת סאונד' }
+  ];
+  
+  // Prepare documents with auto-increment numbers
+  const supplierTypes = supplierTypesData.map((type, index) => ({
+    supplierTypeNumber: startSeq + index + 1,
+    name: type.name,
+    description: type.description,
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }));
+  
+  // Insert all at once using insertMany
+  const result = db.suppliertypes.insertMany(supplierTypes);
+  
+  // Update counter
+  db.counters.updateOne(
+    { _id: 'supplierTypeNumber' },
+    { $set: { seq: startSeq + supplierTypes.length } },
+    { upsert: true }
+  );
+  
+  console.log(`✅ Inserted ${Object.keys(result.insertedIds).length} supplier types`);
+} else {
+  console.log('⚠️  Supplier types already exist');
+}
+
+// Display all supplier types
+db.suppliertypes.find().sort({ supplierTypeNumber: 1 });
