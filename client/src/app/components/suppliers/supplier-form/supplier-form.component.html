@@ -11,6 +11,17 @@
       </mat-error>
     </mat-form-field>
 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>סוג ספק</mat-label>
+      <mat-select formControlName="supplierTypeId">
+        <mat-option [value]="null">ללא סוג</mat-option>
+        <mat-option *ngFor="let type of supplierTypes" [value]="type.id">
+          {{ type.name }}
+        </mat-option>
+      </mat-select>
+      <mat-icon matPrefix>category</mat-icon>
+    </mat-form-field>
+
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>טלפון</mat-label>
@@ -30,17 +41,6 @@
         </mat-error>
       </mat-form-field>
     </div>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>סוג ספק</mat-label>
-      <mat-select formControlName="supplierTypeId">
-        <mat-option [value]="null">ללא סוג</mat-option>
-        <mat-option *ngFor="let type of supplierTypes" [value]="type.id">
-          {{ type.name }}
-        </mat-option>
-      </mat-select>
-      <mat-icon matPrefix>category</mat-icon>
-    </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>פרטי חשבון</mat-label>
