@@ -30,6 +30,7 @@ export interface IProject extends Document {
   customerId: string;
   customerName: string;
   projectName: string;
+  statusNumber: number;
   currentStageNumber: number;
   stages: IStage[];
   currentMilestoneId?: number;
@@ -122,6 +123,11 @@ const projectSchema = new Schema<IProject>({
   projectName: {
     type: String,
     required: true
+  },
+  statusNumber: {
+    type: Number,
+    required: true,
+    default: 1
   },
   currentStageNumber: {
     type: Number,

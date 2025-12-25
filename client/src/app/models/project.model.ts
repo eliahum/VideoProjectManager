@@ -7,6 +7,7 @@ export interface Project {
   customerId: string;
   customerName: string;
   projectName: string;
+  statusNumber: number;
   currentStage: string;
   currentStageNumber: number;
   stages: Stage[];

@@ -216,6 +216,7 @@ export class ProjectsService {
       customerId: project.customerId,
       customerName: project.customerName,
       projectName: project.projectName,
+      statusNumber: project.statusNumber,
       currentStage: currentStage?.stageName,
       currentStageNumber: project.currentStageNumber,
       stages: project.stages.map(stage => ({

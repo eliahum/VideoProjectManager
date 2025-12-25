@@ -1,4 +1,3 @@
-    // ...existing code...
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,13 +6,17 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProjectService } from '../../../services/project.service';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
+import { ProjectStatusService } from '../../../services/project-status.service';
 import { Project, Stage, Milestone } from '../../../models/project.model';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
+import { ProjectStatus } from '../../../models/project-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 
@@ -27,6 +30,8 @@ import { MessageDialogService } from '../../../services/message-dialog.service';
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
+    MatSelectModule,
+    MatFormFieldModule,
     MatDialogModule,
     MatExpansionModule,
     MatProgressSpinnerModule
@@ -38,6 +43,7 @@ export class ProjectDetailComponent implements OnInit {
   project: Project | undefined;
   selectedTabIndex = 0;
   milestoneStatuses: MilestoneStatus[] = [];
+  projectStatuses: ProjectStatus[] = [];
   isLoading: boolean = false;
 
   constructor(
@@ -45,6 +51,7 @@ export class ProjectDetailComponent implements OnInit {
     private router: Router,
     private projectService: ProjectService,
     private milestoneStatusService: MilestoneStatusService,
+    private projectStatusService: ProjectStatusService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private messageDialogService: MessageDialogService
@@ -85,6 +92,18 @@ export class ProjectDetailComponent implements OnInit {
       },
       error: (err) => {
         this.messageDialogService.showError('שגיאה בטעינת סטטוסי milestone');
+      }
+    });
+
+    // Load project statuses
+    this.projectStatusService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.projectStatuses = response.data;
+        }
+      },
+      error: (err) => {
+        this.messageDialogService.showError('שגיאה בטעינת סטטוסי פרויקט');
       }
     });
 
@@ -217,5 +236,25 @@ export class ProjectDetailComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/projects']);
+  }
+
+  updateProjectStatus(statusNumber: number): void {
+    if (!this.project) return;
+    this.isLoading = true;
+    this.projectService.update(this.project.id, { statusNumber }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess) {
+          this.messageDialogService.showSuccess('סטטוס הפרויקט עודכן בהצלחה');
+          this.reloadProject();
+        } else {
+          this.messageDialogService.showError('שגיאה בעדכון סטטוס: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בעדכון סטטוס');
+      }
+    });
   }
 }

@@ -7,7 +7,17 @@
       <h1>{{ project.customerName }}</h1>
       <p class="subtitle">{{ project.projectName }}</p>
     </div>
-    <mat-chip class="current-stage-chip">{{ project.currentStage }}</mat-chip>
+    <div class="header-actions">
+      <mat-form-field class="status-select" appearance="outline">
+        <mat-label>סטטוס פרויקט</mat-label>
+        <mat-select [value]="project.statusNumber" (selectionChange)="updateProjectStatus($event.value)">
+          <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
+            {{ status.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-chip class="current-stage-chip">{{ project.currentStage }}</mat-chip>
+    </div>
   </div>
 
   <mat-card class="stages-card">

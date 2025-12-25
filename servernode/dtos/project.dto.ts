@@ -32,6 +32,7 @@ export interface ProjectDTO {
   customerId: string;
   customerName: string;
   projectName: string;
+  statusNumber: number;
   currentStage?: string;
   currentStageNumber: number;
   stages: StageDTO[];
