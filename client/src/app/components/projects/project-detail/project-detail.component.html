@@ -20,17 +20,18 @@
     </div>
   </div>
 
+  <div class="add-milestone-section">
+    <button mat-raised-button color="primary" (click)="addNewMilestoneToCurrentStage()">
+      <mat-icon>add</mat-icon>
+      הוסף אבן דרך
+    </button>
+  </div>
+
   <mat-card class="stages-card">
     <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
       <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
         <div class="tab-content">
           
-          <div class="stage-header">
-            <button mat-raised-button color="primary" (click)="addNewMilestone(stage)">
-              <mat-icon>add</mat-icon>
-              הוסף אבן דרך
-            </button>
-          </div>
 
           <mat-accordion class="milestones-accordion" 
                          cdkDropList

@@ -313,6 +313,16 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
+  addNewMilestoneToCurrentStage(): void {
+    if (!this.project || !this.project.stages) return;
+    
+    // מוצא את השלב הנוכחי לפי ה-tab שנבחר
+    const currentStage = this.project.stages[this.selectedTabIndex];
+    if (currentStage) {
+      this.addNewMilestone(currentStage);
+    }
+  }
+
   onMilestoneDrop(event: CdkDragDrop<Milestone[]>, stage: Stage): void {
     if (!this.project) return;
 
