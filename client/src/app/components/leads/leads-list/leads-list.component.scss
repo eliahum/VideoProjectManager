@@ -241,32 +241,164 @@
   font-weight: 500 !important;
 }
 
+// Desktop view - show by default
+.desktop-view {
+  display: block;
+}
+
+// Mobile view - hide by default
+.mobile-view {
+  display: none;
+}
+
+.status-positive {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
+  font-weight: 500 !important;
+}
+
+.status-negative {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
+  color: white !important;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
+  font-weight: 500 !important;
+}
+
+// Mobile card styles
+.leads-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.lead-card {
+  background: rgba(19, 16, 33, 0.95);
+  border: 1px solid rgba(209, 196, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+
+  .mat-mdc-card-content {
+    padding: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(209, 196, 255, 0.2);
+
+    .lead-number {
+      font-size: 18px;
+      font-weight: bold;
+      color: #4ade80;
+    }
+
+    .mat-mdc-chip {
+      height: 28px !important;
+      font-size: 13px !important;
+    }
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    .info-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: rgba(209, 196, 255, 0.7);
+        margin-top: 2px;
+        flex-shrink: 0;
+      }
+
+      .info-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+
+        .info-label {
+          font-size: 12px;
+          color: rgba(209, 196, 255, 0.7);
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .info-value {
+          font-size: 15px;
+          color: #4ade80;
+          font-weight: bold;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+          line-height: 1.4;
+        }
+      }
+    }
+  }
+
+  .card-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(209, 196, 255, 0.2);
+
+    .mat-mdc-icon-button {
+      width: 40px;
+      height: 40px;
+    }
+
+    .mat-icon {
+      font-size: 20px;
+    }
+  }
+}
+
 @media (max-width: 768px) {
+  // Hide desktop table, show mobile cards
+  .desktop-view {
+    display: none !important;
+  }
+
+  .mobile-view {
+    display: block !important;
+  }
+
   .header {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
-  }
+    align-items: stretch;
+    gap: 12px;
 
-  .table-container {
-    overflow-x: auto;
-  }
-
-  .leads-table {
-    min-width: 800px;
-
-    th:last-child,
-    td:last-child {
-      position: sticky !important;
-      left: 0;
-      background-color: rgba(36, 26, 62, 0.96) !important;
-      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.55);
-      z-index: 2;
+    h1 {
+      font-size: 1.5rem;
     }
 
-    th:last-child {
-      background-color: rgba(60, 38, 102, 0.95) !important;
-      z-index: 3;
+    button {
+      width: 100%;
     }
+  }
+
+  .search-container {
+    margin-bottom: 12px !important;
   }
 }

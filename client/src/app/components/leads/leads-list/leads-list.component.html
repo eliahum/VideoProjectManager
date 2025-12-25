@@ -31,7 +31,8 @@
     </mat-card-content>
   </mat-card>
 
-  <div class="table-container" *ngIf="filteredLeads.length > 0">
+  <!-- Desktop Table View -->
+  <div class="table-container desktop-view" *ngIf="filteredLeads.length > 0">
     <table mat-table [dataSource]="paginatedLeads" class="leads-table">
       
       <ng-container matColumnDef="leadid">
@@ -91,6 +92,91 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+    
+    <mat-paginator 
+      [length]="totalItems"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageIndex"
+      (page)="onPageChange($event)"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
+
+  <!-- Mobile Card View -->
+  <div class="mobile-view" *ngIf="filteredLeads.length > 0">
+    <div class="leads-cards">
+      <mat-card *ngFor="let lead of paginatedLeads" class="lead-card">
+        <mat-card-content>
+          <div class="card-header">
+            <div class="lead-number">Lead #{{ lead.leadId }}</div>
+            <mat-chip [ngClass]="getStatusClass(lead.statusNumber)">
+              {{ getStatusName(lead.statusNumber) }}
+            </mat-chip>
+          </div>
+          
+          <div class="card-body">
+            <div class="info-group">
+              <div class="info-item">
+                <mat-icon>business</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">חברה</div>
+                  <div class="info-value">{{ lead.companyName }}</div>
+                </div>
+              </div>
+              
+              <div class="info-item">
+                <mat-icon>person</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">איש קשר</div>
+                  <div class="info-value">{{ lead.name }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-group">
+              <div class="info-item">
+                <mat-icon>phone</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">טלפון</div>
+                  <div class="info-value">{{ lead.phone }}</div>
+                </div>
+              </div>
+              
+              <div class="info-item" *ngIf="lead.email">
+                <mat-icon>email</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">מייל</div>
+                  <div class="info-value">{{ lead.email }}</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="info-group">
+              <div class="info-item">
+                <mat-icon>calendar_today</mat-icon>
+                <div class="info-content">
+                  <div class="info-label">תאריך יצירה</div>
+                  <div class="info-value">{{ lead.createdAt | date:'dd/MM/yyyy' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-actions">
+            <button mat-icon-button color="primary" (click)="openLeadForm(lead)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="accent" (click)="convertLeadToCustomer(lead)" [disabled]="lead.hasCustomer">
+              <mat-icon>person_add</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="deleteLead(lead.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
     
     <mat-paginator 
       [length]="totalItems"
