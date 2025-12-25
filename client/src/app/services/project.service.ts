@@ -47,4 +47,25 @@ export class ProjectService {
       milestoneData
     );
   }
+
+  deleteMilestone(
+    projectId: string, 
+    stageNumber: number, 
+    milestoneId: number
+  ): Observable<ProjectResponse> {
+    return this.http.delete<ProjectResponse>(
+      `${this.apiUrl}/${projectId}/stages/${stageNumber}/milestones/${milestoneId}`
+    );
+  }
+
+  createMilestone(
+    projectId: string, 
+    stageNumber: number, 
+    milestoneData: any
+  ): Observable<ProjectResponse> {
+    return this.http.post<ProjectResponse>(
+      `${this.apiUrl}/${projectId}/stages/${stageNumber}/milestones`,
+      milestoneData
+    );
+  }
 }

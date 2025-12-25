@@ -43,6 +43,7 @@ export class MilestoneFormComponent implements OnInit {
   milestoneForm: FormGroup;
   availableSuppliers: Supplier[] = [];
   milestoneStatuses = ['לפני התחלה', 'בעבודה', 'אצל הלקוח', 'הושלם'];
+  isEditMode: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -52,11 +53,14 @@ export class MilestoneFormComponent implements OnInit {
     private dialogRef: MatDialogRef<MilestoneFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { 
       projectId: string, 
-      stageName: string, 
-      milestone: Milestone 
+      stageName: string,
+      stageNumber: number,
+      milestone: Milestone | null
     }
   ) {
+    this.isEditMode = !!this.data.milestone;
     this.milestoneForm = this.fb.group({
+      name: ['', Validators.required],
       documentReference: [''],
       date: [null],
       status: ['לפני התחלה', Validators.required],
@@ -74,6 +78,7 @@ export class MilestoneFormComponent implements OnInit {
     
     if (this.data.milestone) {
       this.milestoneForm.patchValue({
+        name: this.data.milestone.name,
         documentReference: this.data.milestone.documentReference,
         date: this.data.milestone.date,
         status: this.data.milestone.status,
@@ -116,6 +121,7 @@ export class MilestoneFormComponent implements OnInit {
   onSubmit(): void {
     if (this.milestoneForm.valid) {
       const milestoneData = {
+        name: this.milestoneForm.value.name,
         documentReference: this.milestoneForm.value.documentReference,
         date: this.milestoneForm.value.date,
         statusNumber: this.getStatusNumber(this.milestoneForm.value.status),
@@ -123,23 +129,40 @@ export class MilestoneFormComponent implements OnInit {
         suppliers: this.milestoneForm.value.suppliers
       };
 
-      // עדכון המילסטון דרך ה-endpoint החדש
-      this.projectService.updateMilestone(
-        this.data.projectId,
-        this.data.milestone.stageNumber!,
-        this.data.milestone.milestoneId,
-        milestoneData
-      ).subscribe(updateResponse => {
-      
-        if (updateResponse.isSuccess) {
-          this.dialogRef.close(true);
-        } else {
-          this.messageDialogService.showError(
-            updateResponse.errorText || 'Unknown error',
-            'שגיאה בעדכון milestone'
-          );
-        }
-      });
+      if (this.isEditMode && this.data.milestone) {
+        // עדכון מילסטון קיים
+        this.projectService.updateMilestone(
+          this.data.projectId,
+          this.data.milestone.stageNumber!,
+          this.data.milestone.milestoneId,
+          milestoneData
+        ).subscribe(updateResponse => {
+          if (updateResponse.isSuccess) {
+            this.dialogRef.close(true);
+          } else {
+            this.messageDialogService.showError(
+              updateResponse.errorText || 'Unknown error',
+              'שגיאה בעדכון milestone'
+            );
+          }
+        });
+      } else {
+        // יצירת מילסטון חדש
+        this.projectService.createMilestone(
+          this.data.projectId,
+          this.data.stageNumber,
+          milestoneData
+        ).subscribe(createResponse => {
+          if (createResponse.isSuccess) {
+            this.dialogRef.close(true);
+          } else {
+            this.messageDialogService.showError(
+              createResponse.errorText || 'Unknown error',
+              'שגיאה ביצירת milestone'
+            );
+          }
+        });
+      }
     }
   }
 

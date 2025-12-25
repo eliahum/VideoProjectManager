@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -33,6 +34,7 @@ import { MessageDialogService } from '../../../services/message-dialog.service';
     MatChipsModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatTooltipModule,
     MatDialogModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
@@ -260,6 +262,57 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
+  deleteMilestone(event: Event, stage: Stage, milestone: Milestone): void {
+    event.stopPropagation();
+    if (!this.project) return;
+
+    this.messageDialogService.confirm(`האם למחוק את אבן הדרך "${milestone.name}"?`).subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes' && this.project) {
+        this.isLoading = true;
+        this.projectService.deleteMilestone(
+          this.project.id,
+          stage.stageNumber,
+          milestone.milestoneId
+        ).subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('אבן דרך נמחקה בהצלחה');
+              this.reloadProject();
+            } else {
+              this.messageDialogService.showError('שגיאה במחיקת אבן דרך: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.messageDialogService.showError('שגיאה במחיקת אבן דרך');
+          }
+        });
+      }
+    });
+  }
+
+  addNewMilestone(stage: Stage): void {
+    if (!this.project) return;
+
+    // פותח את הטופס ללא milestone קיים (מצב יצירה)
+    const dialogRef = this.dialog.open(MilestoneFormComponent, {
+      width: '700px',
+      data: { 
+        projectId: this.project.id, 
+        stageName: stage.name,
+        stageNumber: stage.stageNumber,
+        milestone: null // null מסמן שזו יצירה חדשה
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.reloadProject();
+      }
+    });
+  }
+
   onMilestoneDrop(event: CdkDragDrop<Milestone[]>, stage: Stage): void {
     if (!this.project) return;
 
@@ -277,14 +330,7 @@ export class ProjectDetailComponent implements OnInit {
     // Move item in array for UI update
     moveItemInArray(milestones, event.previousIndex, event.currentIndex);
 
-    // Update milestones sequentially to avoid version conflicts
-    console.log('Updating fromMilestone:', {
-      projectId: projectId,
-      stageNumber: stage.stageNumber,
-      milestoneId: fromMilestone.milestoneId,
-      sort: fromMilestone.sort
-    });
-    
+    // Update both milestones on the server
     this.projectService.updateMilestone(
       projectId,
       stage.stageNumber,
@@ -297,13 +343,7 @@ export class ProjectDetailComponent implements OnInit {
           this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
         } else {
           // Only update second milestone after first succeeds
-          console.log('Updating toMilestone:', {
-            projectId: projectId,
-            stageNumber: stage.stageNumber,
-            milestoneId: toMilestone.milestoneId,
-            sort: toMilestone.sort
-          });
-
+    
           this.projectService.updateMilestone(
             projectId,
             stage.stageNumber,
@@ -314,8 +354,10 @@ export class ProjectDetailComponent implements OnInit {
               if (!response2.isSuccess) {
                 console.error('Failed to update second milestone sort:', response2.errorText);
                 this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
+              } else {
+                // Reload project data after successful update
+                this.reloadProject();
               }
-              this.cdr.detectChanges();
             },
             error: (err) => {
               console.error('Error updating second milestone sort:', err);

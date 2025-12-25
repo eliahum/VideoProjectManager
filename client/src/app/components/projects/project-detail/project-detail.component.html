@@ -25,6 +25,12 @@
       <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
         <div class="tab-content">
           
+          <div class="stage-header">
+            <button mat-raised-button color="primary" (click)="addNewMilestone(stage)">
+              <mat-icon>add</mat-icon>
+              הוסף אבן דרך
+            </button>
+          </div>
 
           <mat-accordion class="milestones-accordion" 
                          cdkDropList
@@ -40,6 +46,12 @@
                   <span>{{ milestone.name }}</span>
                 </mat-panel-title>
                 <mat-panel-description><span style="color:white"> {{milestone.sort}}</span>
+                  <button mat-icon-button 
+                          class="delete-milestone-btn" 
+                          (click)="deleteMilestone($event, stage, milestone)"
+                          matTooltip="מחק אבן דרך">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                   <mat-chip [class]="getMilestoneStatusClass(getStatusByNumber(milestone.statusNumber))">
                     {{ getStatusByNumber(milestone.statusNumber) }}
                   </mat-chip>

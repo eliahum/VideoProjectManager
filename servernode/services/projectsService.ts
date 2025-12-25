@@ -184,6 +184,112 @@ export class ProjectsService {
     }
   }
 
+  async deleteMilestone(
+    projectId: string, 
+    stageNumber: number, 
+    milestoneId: number
+  ): Promise<ProjectResponseDTO> {
+    try {
+      await connectToDatabase();
+ 
+      // מוצא את הפרויקט
+      const project = await Project.findOne({ id: projectId });
+      if (!project) {
+        return { isSuccess: false, errorText: 'Project not found' };
+      }
+
+      // מוצא את ה-stage
+      const stage = project.stages.find(s => s.stageNumber === stageNumber);
+      if (!stage) {
+        return { isSuccess: false, errorText: `Stage ${stageNumber} not found` };
+      }
+      
+      // מוצא את האינדקס של ה-milestone
+      const milestoneIndex = stage.milestones.findIndex(m => m.milestoneId === milestoneId);
+      if (milestoneIndex === -1) {
+        return { isSuccess: false, errorText: `Milestone ${milestoneId} not found in stage ${stageNumber}` };
+      }
+
+      // מוחק את ה-milestone
+      stage.milestones.splice(milestoneIndex, 1);
+
+      // מסמן את ה-stages כ-modified
+      project.markModified('stages');
+
+      // שומר את הפרויקט עם העדכון
+      await project.save();
+      
+      const data = await this.mapToDTO(project);
+      return { isSuccess: true, data };
+    } catch (error: any) {
+      return { isSuccess: false, errorText: `Error deleting milestone: ${error.message}` };
+    }
+  }
+
+  async createMilestone(
+    projectId: string, 
+    stageNumber: number, 
+    milestoneData: Partial<MilestoneDTO>
+  ): Promise<ProjectResponseDTO> {
+    try {
+      await connectToDatabase();
+ 
+      // מוצא את הפרויקט
+      const project = await Project.findOne({ id: projectId });
+      if (!project) {
+        return { isSuccess: false, errorText: 'Project not found' };
+      }
+
+      // מוצא את ה-stage
+      const stage = project.stages.find(s => s.stageNumber === stageNumber);
+      if (!stage) {
+        return { isSuccess: false, errorText: `Stage ${stageNumber} not found` };
+      }
+
+      // יוצר counter חדש ל-milestoneId
+      const Counter = (await import('../models/counter.model')).Counter;
+      const counter = await Counter.findByIdAndUpdate(
+        'milestoneNumber',
+        { $inc: { seq: 1 } },
+        { new: true, upsert: true }
+      );
+
+      const newMilestoneId = counter!.seq;
+
+      // מחשב sort - תמיד בסוף
+      const maxSort = stage.milestones.length > 0 
+        ? Math.max(...stage.milestones.map(m => m.sort || 0))
+        : -1;
+
+      // יוצר אבן דרך חדשה
+      const newMilestone = {
+        id: `${projectId}-${stageNumber}-${newMilestoneId}`,
+        milestoneId: newMilestoneId,
+        name: milestoneData.name || 'אבן דרך חדשה',
+        documentReference: milestoneData.documentReference || '',
+        date: milestoneData.date,
+        statusNumber: milestoneData.statusNumber || 1,
+        isUrgent: milestoneData.isUrgent || false,
+        sort: maxSort + 1,
+        suppliers: milestoneData.suppliers || []
+      };
+
+      // מוסיף את אבן הדרך למערך
+      stage.milestones.push(newMilestone as any);
+
+      // מסמן את ה-stages כ-modified
+      project.markModified('stages');
+
+      // שומר את הפרויקט עם העדכון
+      await project.save();
+      
+      const data = await this.mapToDTO(project);
+      return { isSuccess: true, data };
+    } catch (error: any) {
+      return { isSuccess: false, errorText: `Error creating milestone: ${error.message}` };
+    }
+  }
+
   private async mapToDTO(project: IProject): Promise<ProjectDTO> {
     // Find current stage name from stages array
     const currentStage = project.stages.find(s => s.stageNumber === project.currentStageNumber);

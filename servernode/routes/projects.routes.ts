@@ -31,6 +31,16 @@ router.delete('/:id', async (req, res) => {
   res.json(result);
 });
 
+router.post('/:projectId/stages/:stageNumber/milestones', async (req, res) => {
+  const { projectId, stageNumber } = req.params;
+  const result = await projectsService.createMilestone(
+    projectId, 
+    parseInt(stageNumber), 
+    req.body
+  );
+  res.json(result);
+});
+
 router.patch('/:projectId/stages/:stageNumber/milestones/:milestoneId', async (req, res) => {
   const { projectId, stageNumber, milestoneId } = req.params;
   const result = await projectsService.updateMilestone(
@@ -38,6 +48,16 @@ router.patch('/:projectId/stages/:stageNumber/milestones/:milestoneId', async (r
     parseInt(stageNumber), 
     parseInt(milestoneId), 
     req.body
+  );
+  res.json(result);
+});
+
+router.delete('/:projectId/stages/:stageNumber/milestones/:milestoneId', async (req, res) => {
+  const { projectId, stageNumber, milestoneId } = req.params;
+  const result = await projectsService.deleteMilestone(
+    projectId, 
+    parseInt(stageNumber), 
+    parseInt(milestoneId)
   );
   res.json(result);
 });

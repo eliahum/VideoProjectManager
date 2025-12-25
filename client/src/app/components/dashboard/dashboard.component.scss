@@ -248,6 +248,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 20px;
+  max-height: calc(4 * 180px + 3 * 20px); // 4 cards * ~180px height + 3 gaps
+  overflow-y: auto;
+  padding-right: 8px;
+
+  // Custom scrollbar styling
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(139, 92, 246, 0.1);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(139, 92, 246, 0.4);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(139, 92, 246, 0.6);
+    }
+  }
 }
 
 .project-card {

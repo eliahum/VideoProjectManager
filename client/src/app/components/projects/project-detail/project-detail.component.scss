@@ -165,6 +165,32 @@
   padding: 24px;
 }
 
+.stage-header {
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
+
+  button {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    color: white;
+    font-weight: 600;
+    padding: 0 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(168,85,247,0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      box-shadow: 0 6px 16px rgba(168,85,247,0.4);
+      transform: translateY(-2px);
+    }
+
+    mat-icon {
+      margin-left: 8px;
+    }
+  }
+}
+
 .stage-actions {
   margin-bottom: 20px;
 
@@ -225,6 +251,26 @@
       display: flex;
       align-items: center;
       justify-content: flex-start;
+      gap: 8px;
+
+      .delete-milestone-btn {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          color: #ef4444;
+          transition: all 0.3s ease;
+        }
+
+        &:hover mat-icon {
+          color: #dc2626;
+          transform: scale(1.1);
+        }
+      }
 
       mat-chip {
         font-weight: 700 !important;

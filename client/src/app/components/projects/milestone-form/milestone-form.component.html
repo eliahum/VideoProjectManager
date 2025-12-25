@@ -1,7 +1,16 @@
-<h2 mat-dialog-title>עריכת אבן דרך: {{ data.milestone.name }}</h2>
+<h2 mat-dialog-title>{{ isEditMode ? 'עריכת אבן דרך: ' + data.milestone?.name : 'הוספת אבן דרך חדשה' }}</h2>
 
 <mat-dialog-content>
   <form [formGroup]="milestoneForm" class="milestone-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>שם אבן הדרך</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-icon matPrefix>flag</mat-icon>
+      <mat-error *ngIf="milestoneForm.get('name')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>הפנייה למסמך</mat-label>
       <input matInput formControlName="documentReference">
