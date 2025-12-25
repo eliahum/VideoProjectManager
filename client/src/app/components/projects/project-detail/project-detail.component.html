@@ -25,7 +25,7 @@
                   <span>{{ milestone.name }}</span>
                 </mat-panel-title>
                 <mat-panel-description>
-                  <mat-chip [ngClass]="getMilestoneStatusClass(getStatusByNumber(milestone.statusNumber))" class="status-chip">
+                  <mat-chip [class]="getMilestoneStatusClass(getStatusByNumber(milestone.statusNumber))">
                     {{ getStatusByNumber(milestone.statusNumber) }}
                   </mat-chip>
                 </mat-panel-description>
