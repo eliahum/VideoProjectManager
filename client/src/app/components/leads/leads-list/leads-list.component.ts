@@ -216,13 +216,16 @@ export class LeadsListComponent implements OnInit {
   }
 
   getStatusClass(statusNumber: number): string {
-    switch (statusNumber) {
-      case 1: return 'status-new';
-      case 2: return 'status-quote';
-      case 3: return 'status-paused';
-      case 4: return 'status-not-interested';
-      case 5: return 'status-closed';
-      default: return '';
+    // Positive statuses: 1 (new), 2 (quote), 5 (closed)
+    // Negative statuses: 3 (paused), 4 (not interested)
+    const positiveStatuses = [1, 2, 5];
+    const negativeStatuses = [3, 4];
+    
+    if (positiveStatuses.includes(statusNumber)) {
+      return 'status-positive';
+    } else if (negativeStatuses.includes(statusNumber)) {
+      return 'status-negative';
     }
+    return '';
   }
 }

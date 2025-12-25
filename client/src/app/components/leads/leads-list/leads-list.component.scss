@@ -135,12 +135,14 @@
 
 .leads-table {
   width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
 
   th {
     background: rgba(74, 46, 122, 0.95);
     font-weight: 600;
     color: #fefbff;
-    padding: 10px 14px !important;
+    padding: 6px 10px !important;
     height: auto !important;
     font-size: 15px;
     border-bottom: 1px solid rgba(209, 196, 255, 0.45);
@@ -149,16 +151,17 @@
   }
 
   td {
-    padding: 12px 16px !important;
-    height: 48px !important;
-    font-size: 13px;
-    color: #f7f2ff;
+    padding: 4px 8px !important;
+    height: 32px !important;
+    font-size: 16px;
+    color: #4ade80;
+    font-weight: bold;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     background-color: rgba(32, 24, 58, 0.92);
   }
 
   tr.mat-mdc-row {
-    height: 48px !important;
+    height: 32px !important;
   }
 
   tr:nth-child(even) td {
@@ -172,34 +175,70 @@
   }
 
   .mat-mdc-cell {
-    padding: 10px 14px !important;
-    height: 46px !important;
+    padding: 4px 8px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+  }
+
+  .mat-mdc-header-cell {
+    padding: 4px 8px !important;
+    height: 32px !important;
+  }
+
+  // Ensure no extra margins or oversized inner components inflate row height
+  td, th {
+    margin: 0 !important;
+    line-height: 1.2;
+  }
+
+  // Override MDC Data Table internal defaults
+  .mdc-data-table__row {
+    min-height: 32px !important;
+  }
+
+  .mdc-data-table__cell,
+  .mdc-data-table__header-cell {
+    padding: 4px 8px !important;
+    font-size: 16px !important;
+  }
+
+  // Shrink icon buttons in actions column
+  .mat-mdc-icon-button {
+    width: 28px;
+    height: 28px;
+    padding: 0 !important;
+  }
+
+  .mat-mdc-icon-button .mat-mdc-button-touch-target {
+    width: 28px;
+    height: 28px;
+  }
+
+  .mat-mdc-icon-button .mat-icon {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  // Make status chip smaller
+  .mat-mdc-chip {
+    height: 24px !important;
+    font-size: 12px !important;
+    padding: 0 6px !important;
   }
 }
 
-.status-new {
-  background-color: #3498db !important;
+.status-positive {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
   color: white !important;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
+  font-weight: 500 !important;
 }
 
-.status-quote {
-  background-color: #9b59b6 !important;
+.status-negative {
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
   color: white !important;
-}
-
-.status-paused {
-  background-color: #f39c12 !important;
-  color: white !important;
-}
-
-.status-not-interested {
-  background-color: #95a5a6 !important;
-  color: white !important;
-}
-
-.status-closed {
-  background-color: #27ae60 !important;
-  color: white !important;
+  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
+  font-weight: 500 !important;
 }
 
 @media (max-width: 768px) {
