@@ -155,9 +155,41 @@
     height: 32px !important;
     font-size: 16px;
     color: #ffffff;
-    font-weight: bold;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     background-color: rgba(32, 24, 58, 0.92);
+  }
+
+  // Date cell with calendar icon
+  .date-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #86efac !important;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #86efac !important;
+    }
+  }
+
+  .phone-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #ffffff !important;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: #60a5fa !important;
+    }
+  }
+
+  .company-name {
+    color: #60a5fa !important;
   }
 
   tr.mat-mdc-row {
@@ -228,38 +260,141 @@
     padding: 0 6px !important;
   }
 
-  // Edit button with positive color
-  .edit-button {
-    color: #4ade80 !important;
-    background: rgba(34, 197, 94, 0.2) !important;
-    border: 1px solid rgba(34, 197, 94, 0.4) !important;
-    border-radius: 50% !important;
-    width: 36px !important;
-    height: 36px !important;
+  // Action buttons container
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
 
-    .mat-icon {
-      color: #4ade80 !important;
-    }
+  // Base action button style
+  .action-btn {
+    background-color: rgba(255,255,255,0.05) !important;
+    border: none !important;
+    padding: 0.1rem 0.5rem !important;
+    border-radius: 0.5rem !important;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
     &:hover {
-      background: rgba(34, 197, 94, 0.3) !important;
-      border-color: rgba(34, 197, 94, 0.6) !important;
+      background-color: rgba(255,255,255,0.1) !important;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  // Convert/Download button - Purple
+  .btn-convert {
+    .mat-icon {
+      color: #a78bfa !important;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  // Edit button - Yellow
+  .btn-edit {
+    .mat-icon {
+      color: #fde047 !important;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  // Delete button - Red
+  .btn-delete {
+    .mat-icon {
+      color: #fca5a5 !important;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
     }
   }
 }
 
-.status-positive {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
-  color: white !important;
-  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
-  font-weight: 500 !important;
+::ng-deep .status-new {
+  background-color: #2A2C5F !important;
+  color:  #83C0ED !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #83C0ED !important;
+    font-weight: 700 !important;
+  }
 }
 
-.status-negative {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
-  color: white !important;
-  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
-  font-weight: 500 !important;
+::ng-deep .status-quote {
+  background-color: rgba(234,179,8,0.2) !important;
+  color: #eab308 !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #eab308 !important;
+    font-weight: 700 !important;
+  }
+}
+
+::ng-deep .status-paused {
+  background-color: rgba(168,85,247,0.2) !important;
+  color: #a855f7 !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #a855f7 !important;
+    font-weight: 700 !important;
+  }
+}
+
+::ng-deep .status-not-interested {
+  background-color: rgba(239,68,68,0.2) !important;
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #ef4444 !important;
+    font-weight: 700 !important;
+  }
+}
+
+::ng-deep .status-closed {
+  background-color: rgba(34,197,94,0.2) !important;
+  color: #22c55e !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #22c55e !important;
+    font-weight: 700 !important;
+  }
 }
 
 // Desktop view - show by default
@@ -270,20 +405,6 @@
 // Mobile view - hide by default
 .mobile-view {
   display: none;
-}
-
-.status-positive {
-  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
-  color: white !important;
-  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
-  font-weight: 500 !important;
-}
-
-.status-negative {
-  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%) !important;
-  color: white !important;
-  box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3) !important;
-  font-weight: 500 !important;
 }
 
 // Mobile card styles
@@ -314,7 +435,6 @@
 
     .lead-number {
       font-size: 18px;
-      font-weight: bold;
       color: #4ade80;
     }
 
@@ -368,7 +488,6 @@
         .info-value {
           font-size: 15px;
           color: #4ade80;
-          font-weight: bold;
           word-wrap: break-word;
           overflow-wrap: break-word;
           line-height: 1.4;
@@ -384,9 +503,19 @@
     padding-top: 12px;
     border-top: 1px solid rgba(209, 196, 255, 0.2);
 
-    .mat-mdc-icon-button {
-      width: 40px;
-      height: 40px;
+    .action-btn {
+      background-color: rgba(255,255,255,0.05) !important;
+      padding: 0.1rem 0.5rem !important;
+      border-radius: 0.5rem !important;
+      width: auto !important;
+      height: auto !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+
+      &:hover {
+        background-color: rgba(255,255,255,0.1) !important;
+      }
     }
 
     .mat-icon {

@@ -42,7 +42,9 @@
 
       <ng-container matColumnDef="companyName">
         <th mat-header-cell *matHeaderCellDef>חברה</th>
-        <td mat-cell *matCellDef="let lead">{{ lead.companyName }}</td>
+        <td mat-cell *matCellDef="let lead">
+          <span class="company-name">{{ lead.companyName }}</span>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="name">
@@ -52,7 +54,12 @@
 
       <ng-container matColumnDef="phone">
         <th mat-header-cell *matHeaderCellDef>טלפון</th>
-        <td mat-cell *matCellDef="let lead">{{ lead.phone }}</td>
+        <td mat-cell *matCellDef="let lead">
+          <div class="phone-cell">
+            <mat-icon>phone</mat-icon>
+            <span>{{ lead.phone }}</span>
+          </div>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="email">
@@ -63,7 +70,7 @@
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>סטטוס</th>
         <td mat-cell *matCellDef="let lead">
-          <mat-chip [ngClass]="getStatusClass(lead.statusNumber)">
+          <mat-chip [class]="getStatusClass(lead.statusNumber)">
             {{ getStatusName(lead.statusNumber) }}
           </mat-chip>
         </td>
@@ -71,21 +78,28 @@
 
       <ng-container matColumnDef="contactDate">
         <th mat-header-cell *matHeaderCellDef>ת.יצירה</th>
-        <td mat-cell *matCellDef="let lead">{{ lead.createdAt | date:'dd/MM/yyyy' }}</td>
+        <td mat-cell *matCellDef="let lead">
+          <div class="date-cell">
+            <mat-icon>calendar_month</mat-icon>
+            <span>{{ lead.createdAt | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>פעולות</th>
         <td mat-cell *matCellDef="let lead">
-          <button mat-icon-button class="edit-button" (click)="openLeadForm(lead)">
-            <mat-icon>edit</mat-icon>
-          </button>
-            <button mat-icon-button color="accent" (click)="convertLeadToCustomer(lead)" [disabled]="lead.hasCustomer">
+          <div class="action-buttons">
+            <button mat-icon-button class="action-btn btn-convert" (click)="convertLeadToCustomer(lead)" [disabled]="lead.hasCustomer">
               <mat-icon>person_add</mat-icon>
             </button>
-          <button mat-icon-button color="warn" (click)="deleteLead(lead.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
+            <button mat-icon-button class="action-btn btn-edit" (click)="openLeadForm(lead)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="action-btn btn-delete" (click)="deleteLead(lead.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 
@@ -164,13 +178,13 @@
           </div>
           
           <div class="card-actions">
-            <button mat-icon-button class="edit-button" (click)="openLeadForm(lead)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="accent" (click)="convertLeadToCustomer(lead)" [disabled]="lead.hasCustomer">
+            <button mat-icon-button class="action-btn btn-convert" (click)="convertLeadToCustomer(lead)" [disabled]="lead.hasCustomer">
               <mat-icon>person_add</mat-icon>
             </button>
-            <button mat-icon-button color="warn" (click)="deleteLead(lead.id)">
+            <button mat-icon-button class="action-btn btn-edit" (click)="openLeadForm(lead)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button class="action-btn btn-delete" (click)="deleteLead(lead.id)">
               <mat-icon>delete</mat-icon>
             </button>
           </div>

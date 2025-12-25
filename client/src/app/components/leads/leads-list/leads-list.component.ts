@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -216,16 +216,13 @@ export class LeadsListComponent implements OnInit {
   }
 
   getStatusClass(statusNumber: number): string {
-    // Positive statuses: 1 (new), 2 (quote), 5 (closed)
-    // Negative statuses: 3 (paused), 4 (not interested)
-    const positiveStatuses = [1, 2, 5];
-    const negativeStatuses = [3, 4];
-    
-    if (positiveStatuses.includes(statusNumber)) {
-      return 'status-positive';
-    } else if (negativeStatuses.includes(statusNumber)) {
-      return 'status-negative';
+    switch (statusNumber) {
+      case 1: return 'status-new';
+      case 2: return 'status-quote';
+      case 3: return 'status-paused';
+      case 4: return 'status-not-interested';
+      case 5: return 'status-closed';
+      default: return '';
     }
-    return '';
   }
 }
