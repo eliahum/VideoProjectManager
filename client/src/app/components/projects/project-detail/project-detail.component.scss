@@ -608,3 +608,44 @@
     }
   }
 }
+
+// Drag & Drop Styles
+.drag-handle {
+  cursor: move;
+  color: rgba(168,85,247,0.6) !important;
+  margin-left: 8px;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: rgba(168,85,247,1) !important;
+  }
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(168,85,247,0.5);
+  background: rgba(74,46,122,0.95);
+  backdrop-filter: blur(10px);
+  opacity: 0.9;
+  
+  mat-expansion-panel-header {
+    background: rgba(74,46,122,0.8);
+  }
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  background: rgba(168,85,247,0.2);
+  border: 2px dashed rgba(168,85,247,0.5);
+  border-radius: 12px;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.milestones-accordion.cdk-drop-list-dragging .milestone-panel:not(.cdk-drag-placeholder) {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+

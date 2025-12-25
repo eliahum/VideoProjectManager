@@ -15,6 +15,7 @@ export interface MilestoneDTO {
   statusNumber: number;
   status?: string;
   isUrgent: boolean;
+  sort: number;
   suppliers: MilestoneSupplierDTO[];
 }
 

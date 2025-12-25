@@ -26,15 +26,20 @@
         <div class="tab-content">
           
 
-          <mat-accordion class="milestones-accordion">
-            <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel"
+          <mat-accordion class="milestones-accordion" 
+                         cdkDropList
+                         (cdkDropListDropped)="onMilestoneDrop($event, stage)">
+            <mat-expansion-panel *ngFor="let milestone of stage.milestones" 
+                                 class="milestone-panel"
+                                 cdkDrag
               [ngClass]="{'current-milestone-row':stage.stageNumber === project.currentStageNumber && project.currentMilestoneId === milestone.milestoneId}">
               <mat-expansion-panel-header>
                 <mat-panel-title>
+                  <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
                   <mat-icon>flag</mat-icon>
                   <span>{{ milestone.name }}</span>
                 </mat-panel-title>
-                <mat-panel-description>
+                <mat-panel-description><span style="color:white"> {{milestone.sort}}</span>
                   <mat-chip [class]="getMilestoneStatusClass(getStatusByNumber(milestone.statusNumber))">
                     {{ getStatusByNumber(milestone.statusNumber) }}
                   </mat-chip>

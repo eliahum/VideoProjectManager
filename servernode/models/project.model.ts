@@ -15,6 +15,7 @@ export interface IMilestone {
   date?: Date;
   statusNumber: number;
   isUrgent: boolean;
+  sort: number;
   suppliers: IMilestoneSupplier[];
 }
 
@@ -81,6 +82,11 @@ const milestoneSchema = new Schema<IMilestone>({
   isUrgent: {
     type: Boolean,
     default: false
+  },
+  sort: {
+    type: Number,
+    required: true,
+    default: 0
   },
   suppliers: {
     type: [milestoneSupplierSchema],

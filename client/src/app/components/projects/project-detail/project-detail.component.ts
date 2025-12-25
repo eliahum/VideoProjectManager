@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ProjectService } from '../../../services/project.service';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
 import { ProjectStatusService } from '../../../services/project-status.service';
@@ -34,7 +35,8 @@ import { MessageDialogService } from '../../../services/message-dialog.service';
     MatFormFieldModule,
     MatDialogModule,
     MatExpansionModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    DragDropModule
   ],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss'
@@ -254,6 +256,79 @@ export class ProjectDetailComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.messageDialogService.showError('שגיאה בעדכון סטטוס');
+      }
+    });
+  }
+
+  onMilestoneDrop(event: CdkDragDrop<Milestone[]>, stage: Stage): void {
+    if (!this.project) return;
+
+    const projectId = this.project.id;
+    const milestones = stage.milestones;
+    
+    // Get the two milestones being swapped
+    const fromMilestone = milestones[event.previousIndex];
+    const toMilestone = milestones[event.currentIndex];
+    // Swap their sort values
+    const tempSort = fromMilestone.sort;
+    fromMilestone.sort = toMilestone.sort;
+    toMilestone.sort = tempSort;
+    
+    // Move item in array for UI update
+    moveItemInArray(milestones, event.previousIndex, event.currentIndex);
+
+    // Update milestones sequentially to avoid version conflicts
+    console.log('Updating fromMilestone:', {
+      projectId: projectId,
+      stageNumber: stage.stageNumber,
+      milestoneId: fromMilestone.milestoneId,
+      sort: fromMilestone.sort
+    });
+    
+    this.projectService.updateMilestone(
+      projectId,
+      stage.stageNumber,
+      fromMilestone.milestoneId,
+      { sort: fromMilestone.sort }
+    ).subscribe({
+      next: (response) => {
+        if (!response.isSuccess) {
+          console.error('Failed to update first milestone sort:', response.errorText);
+          this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
+        } else {
+          // Only update second milestone after first succeeds
+          console.log('Updating toMilestone:', {
+            projectId: projectId,
+            stageNumber: stage.stageNumber,
+            milestoneId: toMilestone.milestoneId,
+            sort: toMilestone.sort
+          });
+
+          this.projectService.updateMilestone(
+            projectId,
+            stage.stageNumber,
+            toMilestone.milestoneId,
+            { sort: toMilestone.sort }
+          ).subscribe({
+            next: (response2) => {
+              if (!response2.isSuccess) {
+                console.error('Failed to update second milestone sort:', response2.errorText);
+                this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
+              }
+              this.cdr.detectChanges();
+            },
+            error: (err) => {
+              console.error('Error updating second milestone sort:', err);
+              this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
+              this.cdr.detectChanges();
+            }
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Error updating first milestone sort:', err);
+        this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
+        this.cdr.detectChanges();
       }
     });
   }

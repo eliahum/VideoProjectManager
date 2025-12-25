@@ -38,6 +38,7 @@ export interface Milestone {
   date?: Date;
   status?: string;
   isUrgent: boolean;
+  sort: number;
   suppliers: MilestoneSupplier[];
 }
 

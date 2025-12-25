@@ -11,7 +11,7 @@ export class ProjectsService {
       await connectToDatabase();
       const projects = await Project.find().sort({ projectNumber: -1 });
       const data: ProjectDTO[] = await Promise.all(
-        projects.map(async project => await this.enrichProjectWithTemplates(await this.mapToDTO(project)))
+        projects.map(async project => await this.mapToDTO(project))
       );
       return { isSuccess: true, data };
     } catch (error: any) {
@@ -26,7 +26,7 @@ export class ProjectsService {
       if (!project) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
-      const data = await this.enrichProjectWithTemplates(await this.mapToDTO(project));
+      const data = await this.mapToDTO(project);
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error retrieving project: ${error.message}` };
@@ -47,16 +47,30 @@ export class ProjectsService {
           const stages = templatesResponse.data.map(template => ({
             stageNumber: template.stageNumber,
             stageName: template.hebName,
-            milestones: template.milestones.map(m => ({
+            milestones: template.milestones.map((m, index) => ({
               id: `${savedProject.id}-${template.stageNumber}-${m.id}`,
               milestoneId: m.id,
               name: m.name,
               documentReference: '',
               statusNumber: 1,
               isUrgent: false,
+              sort: index,
               date: undefined as Date | undefined,
               suppliers: [] as MilestoneSupplierDTO[]
             }))
+          }));
+          savedProject.stages = stages as any;
+          savedProject.markModified('stages');
+          await savedProject.save();
+        }
+      } else {
+        // אם לא אותחל, רק יוצר שלבים ריקים ללא אבני דרך
+        const templatesResponse = await stageTemplateService.getAllStageTemplates();
+        if (templatesResponse.isSuccess && templatesResponse.data) {
+          const stages = templatesResponse.data.map(template => ({
+            stageNumber: template.stageNumber,
+            stageName: template.hebName,
+            milestones: [] as any[]
           }));
           savedProject.stages = stages as any;
           savedProject.markModified('stages');
@@ -118,73 +132,43 @@ export class ProjectsService {
         return { isSuccess: false, errorText: 'Project not found' };
       }
 
-      // מוצא את ה-stage index
-      const stageIndex = project.stages.findIndex(s => s.stageNumber === stageNumber);
+      // מוצא את ה-stage
+      const stage = project.stages.find(s => s.stageNumber === stageNumber);
+      if (!stage) {
+        return { isSuccess: false, errorText: `Stage ${stageNumber} not found` };
+      }
       
-      if (stageIndex === -1) {
-        // יוצר stage חדש אם לא קיים
-        const templatesResponse = await stageTemplateService.getAllStageTemplates();
-        const template = templatesResponse.data?.find(t => t.stageNumber === stageNumber);
-        
-        const newStage: any = {
-          stageNumber: stageNumber,
-          stageName: template?.hebName || `שלב ${stageNumber}`,
-          milestones: []
-        };
-        project.stages.push(newStage);
+      // מוצא את ה-milestone
+      const milestone = stage.milestones.find(m => m.milestoneId === milestoneId);
+      if (!milestone) {
+        return { isSuccess: false, errorText: `Milestone ${milestoneId} not found in stage ${stageNumber}` };
       }
 
-      // מוצא שוב את ה-stage (עכשיו הוא בטוח קיים)
-      const stage = project.stages.find(s => s.stageNumber === stageNumber)!;
-      
-      // מוצא את ה-milestone index
-      const milestoneIndex = stage.milestones.findIndex(m => m.milestoneId === milestoneId);
-      
-      if (milestoneIndex === -1) {
-        // יוצר milestone חדש אם לא קיים
-        const templatesResponse = await stageTemplateService.getAllStageTemplates();
-        const template = templatesResponse.data?.find(t => t.stageNumber === stageNumber);
-        const milestoneTemplate = template?.milestones.find(m => m.id === milestoneId);
-        
-        const newMilestone: any = {
-          id: `${projectId}-${stageNumber}-${milestoneId}`,
-          milestoneId: milestoneId,
-          name: milestoneTemplate?.name || `Milestone ${milestoneId}`,
-          documentReference: milestoneData.documentReference !== undefined ? milestoneData.documentReference : '',
-          statusNumber: milestoneData.statusNumber !== undefined ? milestoneData.statusNumber : 1,
-          isUrgent: milestoneData.isUrgent !== undefined ? milestoneData.isUrgent : false,
-          date: milestoneData.date || undefined,
-          suppliers: milestoneData.suppliers ? milestoneData.suppliers.map(s => ({
-            supplierId: s.supplierId,
-            supplierName: s.supplierName,
-            amount: s.amount
-          })) : []
-        };
-        
-        stage.milestones.push(newMilestone);
-      } else {
-        // מעדכן milestone קיים
-        const milestone = stage.milestones[milestoneIndex];
-        
-        if (milestoneData.documentReference !== undefined) {
-          milestone.documentReference = milestoneData.documentReference;
-        }
-        if (milestoneData.date !== undefined) {
-          milestone.date = milestoneData.date;
-        }
-        if (milestoneData.statusNumber !== undefined) {
-          milestone.statusNumber = milestoneData.statusNumber;
-        }
-        if (milestoneData.isUrgent !== undefined) {
-          milestone.isUrgent = milestoneData.isUrgent;
-        }
-        if (milestoneData.suppliers !== undefined) {
-          milestone.suppliers = milestoneData.suppliers.map(s => ({
-            supplierId: s.supplierId,
-            supplierName: s.supplierName,
-            amount: s.amount
-          }));
-        }
+      // מעדכן את ה-milestone
+      if (milestoneData.name !== undefined) {
+        milestone.name = milestoneData.name;
+      }
+      if (milestoneData.documentReference !== undefined) {
+        milestone.documentReference = milestoneData.documentReference;
+      }
+      if (milestoneData.date !== undefined) {
+        milestone.date = milestoneData.date;
+      }
+      if (milestoneData.statusNumber !== undefined) {
+        milestone.statusNumber = milestoneData.statusNumber;
+      }
+      if (milestoneData.isUrgent !== undefined) {
+        milestone.isUrgent = milestoneData.isUrgent;
+      }
+      if (milestoneData.sort !== undefined) {
+        milestone.sort = milestoneData.sort;
+      }
+      if (milestoneData.suppliers !== undefined) {
+        milestone.suppliers = milestoneData.suppliers.map(s => ({
+          supplierId: s.supplierId,
+          supplierName: s.supplierName,
+          amount: s.amount
+        }));
       }
 
       // מסמן את ה-stages כ-modified
@@ -223,21 +207,24 @@ export class ProjectsService {
         stageNumber: stage.stageNumber,
         stageName: stage.stageName,
         name: stage.stageName, // Adding name field
-        milestones: stage.milestones.map(milestone => ({
-          id: milestone.id,
-          milestoneId: milestone.milestoneId,
-          name: milestone.name,
-          documentReference: milestone.documentReference,
-          date: milestone.date,
-          statusNumber: milestone.statusNumber,
-          status: statusMap.get(milestone.statusNumber),
-          isUrgent: milestone.isUrgent || false,
-          suppliers: milestone.suppliers.map(supplier => ({
-            supplierId: supplier.supplierId,
-            supplierName: supplier.supplierName,
-            amount: supplier.amount
+        milestones: stage.milestones
+          .sort((a, b) => (a.sort || 0) - (b.sort || 0))
+          .map(milestone => ({
+            id: milestone.id,
+            milestoneId: milestone.milestoneId,
+            name: milestone.name,
+            documentReference: milestone.documentReference,
+            date: milestone.date,
+            statusNumber: milestone.statusNumber,
+            status: statusMap.get(milestone.statusNumber),
+            isUrgent: milestone.isUrgent || false,
+            sort: milestone.sort || 0,
+            suppliers: milestone.suppliers.map(supplier => ({
+              supplierId: supplier.supplierId,
+              supplierName: supplier.supplierName,
+              amount: supplier.amount
+            }))
           }))
-        }))
       })),
       currentMilestoneId: project.currentMilestoneId,
       createdAt: project.createdAt,
@@ -284,6 +271,7 @@ export class ProjectsService {
                 documentReference: '',
                 statusNumber: 1,
                 isUrgent: false,
+                sort: milestoneTemplate.id,
                 suppliers: [] as MilestoneSupplierDTO[]
               });
             }
@@ -293,7 +281,7 @@ export class ProjectsService {
             stageNumber: existingStage.stageNumber,
             stageName: existingStage.stageName,
             name: template.hebName,
-            milestones: enrichedMilestones
+            milestones: enrichedMilestones.sort((a, b) => (a.sort || 0) - (b.sort || 0))
           });
         } else {
           // אם השלב לא קיים, יוצר אותו חדש מה-template
@@ -304,6 +292,7 @@ export class ProjectsService {
             documentReference: '',
             statusNumber: 1,
             isUrgent: false,
+            sort: milestoneTemplate.id,
             suppliers: [] as MilestoneSupplierDTO[]
           }));
 
@@ -311,7 +300,7 @@ export class ProjectsService {
             stageNumber: template.stageNumber,
             stageName: template.hebName,
             name: template.hebName,
-            milestones: newMilestones
+            milestones: newMilestones.sort((a, b) => (a.sort || 0) - (b.sort || 0))
           });
         }
       }
