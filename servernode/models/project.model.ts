@@ -14,6 +14,7 @@ export interface IMilestone {
   documentReference: string;
   date?: Date;
   statusNumber: number;
+  isUrgent: boolean;
   suppliers: IMilestoneSupplier[];
 }
 
@@ -28,7 +29,7 @@ export interface IProject extends Document {
   projectNumber: number;
   customerId: string;
   customerName: string;
-  projectType: string;
+  projectName: string;
   currentStageNumber: number;
   stages: IStage[];
   currentMilestoneId?: number;
@@ -76,6 +77,10 @@ const milestoneSchema = new Schema<IMilestone>({
     required: true,
     default: 1
   },
+  isUrgent: {
+    type: Boolean,
+    default: false
+  },
   suppliers: {
     type: [milestoneSupplierSchema],
     default: []
@@ -114,7 +119,7 @@ const projectSchema = new Schema<IProject>({
     type: String,
     required: true
   },
-  projectType: {
+  projectName: {
     type: String,
     required: true
   },

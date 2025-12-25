@@ -6,11 +6,12 @@ export interface Project {
   projectNumber: number;
   customerId: string;
   customerName: string;
-  projectType: string;
+  projectName: string;
   currentStage: string;
   currentStageNumber: number;
   stages: Stage[];
   currentMilestoneId?: number;
+  initializeAllStages?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -35,6 +36,7 @@ export interface Milestone {
   statusNumber: number;
   date?: Date;
   status?: string;
+  isUrgent: boolean;
   suppliers: MilestoneSupplier[];
 }
 

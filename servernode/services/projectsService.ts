@@ -36,8 +36,34 @@ export class ProjectsService {
   async createProject(projectData: Partial<ProjectDTO>): Promise<ProjectResponseDTO> {
     try {
       await connectToDatabase();
+      
       const newProject = new Project(projectData);
       const savedProject = await newProject.save();
+      
+      // אם המשתמש ביקש לאתחל את כל השלבים - נעשה זאת אחרי ה-save כדי שיהיה לנו ID
+      if (projectData.initializeAllStages) {
+        const templatesResponse = await stageTemplateService.getAllStageTemplates();
+        if (templatesResponse.isSuccess && templatesResponse.data) {
+          const stages = templatesResponse.data.map(template => ({
+            stageNumber: template.stageNumber,
+            stageName: template.hebName,
+            milestones: template.milestones.map(m => ({
+              id: `${savedProject.id}-${template.stageNumber}-${m.id}`,
+              milestoneId: m.id,
+              name: m.name,
+              documentReference: '',
+              statusNumber: 1,
+              isUrgent: false,
+              date: undefined as Date | undefined,
+              suppliers: [] as MilestoneSupplierDTO[]
+            }))
+          }));
+          savedProject.stages = stages as any;
+          savedProject.markModified('stages');
+          await savedProject.save();
+        }
+      }
+      
       const data = await this.mapToDTO(savedProject);
       return { isSuccess: true, data };
     } catch (error: any) {
@@ -126,6 +152,7 @@ export class ProjectsService {
           name: milestoneTemplate?.name || `Milestone ${milestoneId}`,
           documentReference: milestoneData.documentReference !== undefined ? milestoneData.documentReference : '',
           statusNumber: milestoneData.statusNumber !== undefined ? milestoneData.statusNumber : 1,
+          isUrgent: milestoneData.isUrgent !== undefined ? milestoneData.isUrgent : false,
           date: milestoneData.date || undefined,
           suppliers: milestoneData.suppliers ? milestoneData.suppliers.map(s => ({
             supplierId: s.supplierId,
@@ -147,6 +174,9 @@ export class ProjectsService {
         }
         if (milestoneData.statusNumber !== undefined) {
           milestone.statusNumber = milestoneData.statusNumber;
+        }
+        if (milestoneData.isUrgent !== undefined) {
+          milestone.isUrgent = milestoneData.isUrgent;
         }
         if (milestoneData.suppliers !== undefined) {
           milestone.suppliers = milestoneData.suppliers.map(s => ({
@@ -185,7 +215,7 @@ export class ProjectsService {
       projectNumber: project.projectNumber,
       customerId: project.customerId,
       customerName: project.customerName,
-      projectType: project.projectType,
+      projectName: project.projectName,
       currentStage: currentStage?.stageName,
       currentStageNumber: project.currentStageNumber,
       stages: project.stages.map(stage => ({
@@ -200,6 +230,7 @@ export class ProjectsService {
           date: milestone.date,
           statusNumber: milestone.statusNumber,
           status: statusMap.get(milestone.statusNumber),
+          isUrgent: milestone.isUrgent || false,
           suppliers: milestone.suppliers.map(supplier => ({
             supplierId: supplier.supplierId,
             supplierName: supplier.supplierName,
@@ -251,6 +282,7 @@ export class ProjectsService {
                 name: milestoneTemplate.name,
                 documentReference: '',
                 statusNumber: 1,
+                isUrgent: false,
                 suppliers: [] as MilestoneSupplierDTO[]
               });
             }
@@ -270,6 +302,7 @@ export class ProjectsService {
             name: milestoneTemplate.name,
             documentReference: '',
             statusNumber: 1,
+            isUrgent: false,
             suppliers: [] as MilestoneSupplierDTO[]
           }));
 

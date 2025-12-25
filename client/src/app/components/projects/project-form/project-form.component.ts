@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
 import { Project } from '../../../models/project.model';
@@ -23,7 +24,8 @@ import { Customer } from '../../../models/customer.model';
     MatInputModule,
     MatButtonModule,
     MatSelectModule,
-    MatIconModule
+    MatIconModule,
+    MatCheckboxModule
   ],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss'
@@ -43,8 +45,9 @@ export class ProjectFormComponent implements OnInit {
   ) {
     this.projectForm = this.fb.group({
       customerId: ['', Validators.required],
-      projectType: ['', Validators.required],
-      currentStage: ['פרה', Validators.required]
+      projectName: ['', Validators.required],
+      currentStage: ['פרה', Validators.required],
+      initializeAllStages: [false]
     });
   }
 
@@ -77,7 +80,8 @@ export class ProjectFormComponent implements OnInit {
       const fullProjectData = {
         ...projectData,
         customerName: customer.name,
-        stages: []
+        stages: [],
+        initializeAllStages: projectData.initializeAllStages
       };
       
       if (this.isEditMode) {

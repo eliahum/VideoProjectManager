@@ -10,6 +10,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
 import { ProjectService } from '../../../services/project.service';
 import { SupplierService } from '../../../services/supplier.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
@@ -30,7 +32,9 @@ import { Supplier } from '../../../models/supplier.model';
     MatDatepickerModule,
     MatNativeDateModule,
     MatIconModule,
-    MatListModule
+    MatListModule,
+    MatCheckboxModule,
+    MatCardModule
   ],
   templateUrl: './milestone-form.component.html',
   styleUrl: './milestone-form.component.scss'
@@ -56,6 +60,7 @@ export class MilestoneFormComponent implements OnInit {
       documentReference: [''],
       date: [null],
       status: ['לפני התחלה', Validators.required],
+      isUrgent: [false],
       suppliers: this.fb.array([])
     });
   }
@@ -63,7 +68,6 @@ export class MilestoneFormComponent implements OnInit {
   ngOnInit(): void {
     this.supplierService.getAll().subscribe(response => {
       if (response.isSuccess && response.data) {
-        debugger;
         this.availableSuppliers = response.data;
       }
     });
@@ -72,7 +76,8 @@ export class MilestoneFormComponent implements OnInit {
       this.milestoneForm.patchValue({
         documentReference: this.data.milestone.documentReference,
         date: this.data.milestone.date,
-        status: this.data.milestone.status
+        status: this.data.milestone.status,
+        isUrgent: this.data.milestone.isUrgent || false
       });
 
       // Load existing suppliers
@@ -109,12 +114,12 @@ export class MilestoneFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    debugger;
     if (this.milestoneForm.valid) {
       const milestoneData = {
         documentReference: this.milestoneForm.value.documentReference,
         date: this.milestoneForm.value.date,
         statusNumber: this.getStatusNumber(this.milestoneForm.value.status),
+        isUrgent: this.milestoneForm.value.isUrgent || false,
         suppliers: this.milestoneForm.value.suppliers
       };
 

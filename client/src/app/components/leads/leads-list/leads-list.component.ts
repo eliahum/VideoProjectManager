@@ -77,7 +77,6 @@ export class LeadsListComponent implements OnInit {
   }
 
   convertLeadToCustomer(lead: Lead): void {
-    debugger;
     // בדוק אם הסטטוס הנוכחי הוא סופי
     const currentStatus = this.leadStatuses.find(s => s.statusNumber === lead.statusNumber);
     if (currentStatus?.isFinal) {

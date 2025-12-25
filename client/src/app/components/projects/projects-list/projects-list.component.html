@@ -31,8 +31,8 @@
       </ng-container>
 
       <ng-container matColumnDef="projectType">
-        <th mat-header-cell *matHeaderCellDef>סוג פרוייקט</th>
-        <td mat-cell *matCellDef="let project">{{ project.projectType }}</td>
+        <th mat-header-cell *matHeaderCellDef>שם פרוייקט</th>
+        <td mat-cell *matCellDef="let project">{{ project.projectName }}</td>
       </ng-container>
 
       <ng-container matColumnDef="currentStage">
@@ -74,7 +74,7 @@
     <mat-card *ngFor="let project of projects" class="project-card">
       <mat-card-header>
         <mat-card-title>{{ project.customerName }}</mat-card-title>
-        <mat-card-subtitle>{{ project.projectType }}</mat-card-subtitle>
+        <mat-card-subtitle>{{ project.projectName }}</mat-card-subtitle>
       </mat-card-header>
       <mat-card-content>
         <div class="project-info">

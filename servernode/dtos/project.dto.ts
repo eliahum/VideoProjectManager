@@ -14,6 +14,7 @@ export interface MilestoneDTO {
   date?: Date;
   statusNumber: number;
   status?: string;
+  isUrgent: boolean;
   suppliers: MilestoneSupplierDTO[];
 }
 
@@ -30,11 +31,12 @@ export interface ProjectDTO {
   projectNumber: number;
   customerId: string;
   customerName: string;
-  projectType: string;
+  projectName: string;
   currentStage?: string;
   currentStageNumber: number;
   stages: StageDTO[];
   currentMilestoneId?: number;
+  initializeAllStages?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -18,8 +18,8 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>סוג פרוייקט</mat-label>
       <mat-icon matPrefix>video_library</mat-icon>
-      <input matInput formControlName="projectType" required>
-      <mat-error *ngIf="projectForm.get('projectType')?.hasError('required')">
+      <input matInput formControlName="projectName" required>
+      <mat-error *ngIf="projectForm.get('projectName')?.hasError('required')">
         שדה חובה
       </mat-error>
     </mat-form-field>
@@ -33,6 +33,12 @@
       </mat-select>
       <mat-icon matPrefix>layers</mat-icon>
     </mat-form-field>
+
+    <div class="initialize-checkbox" *ngIf="!isEditMode">
+      <mat-checkbox formControlName="initializeAllStages">
+        <span class="checkbox-label">אתחל את כל השלבים ואבני הדרך</span>
+      </mat-checkbox>
+    </div>
   </form>
 </mat-dialog-content>
 
