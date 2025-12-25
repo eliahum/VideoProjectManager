@@ -2,6 +2,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 16px;
+  color: #f4f0ff;
 }
 
 .header {
@@ -13,7 +14,7 @@
   h1 {
     font-size: 2rem;
     margin: 0;
-    color: #333;
+    color: #ffffff;
   }
 
   button mat-icon {
@@ -64,27 +65,119 @@
 }
 
 .table-container {
-  background: white;
-  border-radius: 8px;
+  background: rgba(19, 16, 33, 0.95);
+  border: 1px solid rgba(209, 196, 255, 0.3);
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
 .projects-table {
   width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
 
   th {
-    background-color: #f5f5f5;
+    background: rgba(74, 46, 122, 0.95);
     font-weight: 600;
-    color: #333;
+    color: #fefbff;
+    padding: 8px 12px !important;
+    height: 32px !important;
+    font-size: 16px;
+    border-bottom: 1px solid rgba(209, 196, 255, 0.45);
+  }
+
+  .mat-mdc-header-cell {
+    padding: 8px 12px !important;
+    height: 32px !important;
+  }
+
+  td {
+    padding: 8px 12px !important;
+    height: 32px !important;
+    font-size: 16px;
+    color: #ffffff;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: rgba(32, 24, 58, 0.92);
   }
 
   td, th {
-    padding: 16px;
+    margin: 0 !important;
+    line-height: 1.2;
   }
 
-  tr:hover {
-    background-color: #f9f9f9;
+  .mdc-data-table__row {
+    min-height: 32px !important;
+  }
+
+  .mdc-data-table__cell,
+  .mdc-data-table__header-cell {
+    padding: 8px 12px !important;
+    font-size: 16px !important;
+    color: #ffffff !important;
+  }
+
+  tr.mat-mdc-row {
+    height: 32px !important;
+  }
+
+  tr:nth-child(even) td {
+    background-color: rgba(45, 32, 74, 0.94);
+  }
+
+  tr:hover td {
+    background-color: rgba(186, 161, 255, 0.35);
+    color: #ffffff;
+    box-shadow: inset 0 0 0 999px rgba(0, 0, 0, 0.08);
+  }
+
+  .mat-mdc-cell {
+    padding: 8px 12px !important;
+    height: 32px !important;
+    font-size: 16px !important;
+    color: #ffffff !important;
+  }
+
+  // Action buttons container
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  // Base action button style
+  .action-btn {
+    background-color: rgba(255,255,255,0.05) !important;
+    border: none !important;
+    padding: 0.1rem 0.5rem !important;
+    border-radius: 0.5rem !important;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: auto !important;
+    height: auto !important;
+    min-width: auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    &:hover {
+      background-color: rgba(255,255,255,0.1) !important;
+    }
+
+    .mat-icon {
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  // Delete button - Red
+  .btn-delete {
+    .mat-icon {
+      color: #fca5a5 !important;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
   }
 
   button {
@@ -96,9 +189,34 @@
   }
 }
 
-.stage-chip {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white !important;
+::ng-deep .stage-chip {
+  background-color: rgba(168,85,247,0.2) !important;
+  color: #a855f7 !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #a855f7 !important;
+    font-weight: 700 !important;
+  }
+}
+
+::ng-deep .milestone-chip {
+  background-color: rgba(234,179,8,0.2) !important;
+  color: #eab308 !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  
+  .mdc-evolution-chip__cell,
+  .mdc-evolution-chip__action,
+  .mdc-evolution-chip__text-label {
+    color: #eab308 !important;
+    font-weight: 700 !important;
+  }
 }
 
 /* Mobile Cards View */

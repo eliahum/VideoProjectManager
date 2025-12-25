@@ -88,12 +88,14 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>פעולות</th>
         <td mat-cell *matCellDef="let customer">
-          <button mat-icon-button color="primary" (click)="openCustomerForm(customer)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteCustomer(customer.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
+          <div class="action-buttons">
+            <button class="action-btn btn-edit" (click)="openCustomerForm(customer)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteCustomer(customer.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 

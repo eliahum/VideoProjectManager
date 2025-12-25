@@ -48,12 +48,22 @@
 
       <ng-container matColumnDef="phone">
         <th mat-header-cell *matHeaderCellDef>טלפון</th>
-        <td mat-cell *matCellDef="let supplier">{{ supplier.phone }}</td>
+        <td mat-cell *matCellDef="let supplier">
+          <div class="phone-cell">
+            <mat-icon>phone</mat-icon>
+            <span>{{ supplier.phone }}</span>
+          </div>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="email">
         <th mat-header-cell *matHeaderCellDef>מייל</th>
-        <td mat-cell *matCellDef="let supplier">{{ supplier.email }}</td>
+        <td mat-cell *matCellDef="let supplier">
+          <div class="email-cell">
+            <mat-icon>email</mat-icon>
+            <span>{{ supplier.email }}</span>
+          </div>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="supplierType">
@@ -64,7 +74,7 @@
       <ng-container matColumnDef="isPaid">
         <th mat-header-cell *matHeaderCellDef>שולם</th>
         <td mat-cell *matCellDef="let supplier">
-          <mat-chip [ngClass]="supplier.isPaid ? 'status-paid' : 'status-unpaid'">
+          <mat-chip [class]="supplier.isPaid ? 'status-paid' : 'status-unpaid'">
             {{ supplier.isPaid ? 'שולם' : 'לא שולם' }}
           </mat-chip>
         </td>
@@ -73,12 +83,14 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>פעולות</th>
         <td mat-cell *matCellDef="let supplier">
-          <button mat-icon-button color="primary" (click)="openSupplierForm(supplier)">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteSupplier(supplier.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
+          <div class="action-buttons">
+            <button class="action-btn btn-edit" (click)="openSupplierForm(supplier)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteSupplier(supplier.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 

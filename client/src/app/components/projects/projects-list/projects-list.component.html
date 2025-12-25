@@ -36,27 +36,29 @@
       <ng-container matColumnDef="currentStage">
         <th mat-header-cell *matHeaderCellDef>שלב נוכחי</th>
         <td mat-cell *matCellDef="let project">
-          <mat-chip class="stage-chip">{{ project.currentStage }}</mat-chip>
+          <mat-chip [class]="'stage-chip'">{{ project.currentStage }}</mat-chip>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="currentMilestone">
         <th mat-header-cell *matHeaderCellDef>אבן דרך נוכחית</th>
         <td mat-cell *matCellDef="let project">
-          <mat-chip color="accent">{{ getCurrentMilestoneName(project) }}</mat-chip>
+          <mat-chip [class]="'milestone-chip'">{{ getCurrentMilestoneName(project) }}</mat-chip>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>פעולות</th>
         <td mat-cell *matCellDef="let project">
-          <button mat-raised-button color="primary" [routerLink]="['/projects', project.id]">
-            <mat-icon>visibility</mat-icon>
-            צפה בפרוייקט
-          </button>
-          <button mat-icon-button color="warn" (click)="deleteProject(project.id)">
-            <mat-icon>delete</mat-icon>
-          </button>
+          <div class="action-buttons">
+            <button mat-raised-button color="primary" [routerLink]="['/projects', project.id]">
+              <mat-icon>visibility</mat-icon>
+              צפה בפרוייקט
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteProject(project.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
         </td>
       </ng-container>
 
