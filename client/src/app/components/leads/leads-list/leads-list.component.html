@@ -40,8 +40,13 @@
         <td mat-cell *matCellDef="let lead">{{ lead.leadId }}</td>
       </ng-container>
 
+      <ng-container matColumnDef="companyName">
+        <th mat-header-cell *matHeaderCellDef>חברה</th>
+        <td mat-cell *matCellDef="let lead">{{ lead.companyName }}</td>
+      </ng-container>
+
       <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>שם</th>
+        <th mat-header-cell *matHeaderCellDef>איש קשר</th>
         <td mat-cell *matCellDef="let lead">{{ lead.name }}</td>
       </ng-container>
 
@@ -53,11 +58,6 @@
       <ng-container matColumnDef="email">
         <th mat-header-cell *matHeaderCellDef>מייל</th>
         <td mat-cell *matCellDef="let lead">{{ lead.email || '-' }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="companyName">
-        <th mat-header-cell *matHeaderCellDef>חברה</th>
-        <td mat-cell *matCellDef="let lead">{{ lead.companyName }}</td>
       </ng-container>
 
       <ng-container matColumnDef="status">

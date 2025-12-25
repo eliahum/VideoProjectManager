@@ -8,7 +8,13 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs/operators';
 import { ProjectService } from '../../services/project.service';
+import { LeadService } from '../../services/lead.service';
 import { Project, Milestone } from '../../models/project.model';
+
+interface UrgentTask {
+  title: string;
+  time: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -29,14 +35,25 @@ export class DashboardComponent implements OnInit {
   activeProjects: Project[] = [];
   projectStats: { project: Project, currentMilestone: Milestone | null }[] = [];
   isLoading = false;
+  
+  // Dashboard statistics
+  totalLeads = 0;
+  pendingTasks = 0;
+  weeklyMeetings = 0;
+  
+  // Urgent tasks
+  urgentTasks: UrgentTask[] = [];
 
   constructor(
     private projectService: ProjectService,
+    private leadService: LeadService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadData();
+    this.loadLeadsData();
+    this.loadUrgentTasks();
   }
 
   loadData(): void {
@@ -58,6 +75,10 @@ export class DashboardComponent implements OnInit {
             project,
             currentMilestone: this.getCurrentMilestone(project)
           }));
+          
+          // Calculate pending tasks from milestones
+          this.calculatePendingTasks();
+          
           console.log('Project stats:', this.projectStats);
           this.cdr.detectChanges();
         } else {
@@ -67,6 +88,56 @@ export class DashboardComponent implements OnInit {
       error: (error) => {
         console.error('Error loading projects:', error);
       }
+    });
+  }
+
+  loadLeadsData(): void {
+    this.leadService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          // Count leads from today
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          this.totalLeads = response.data.filter(lead => {
+            const leadDate = new Date(lead.createdAt);
+            leadDate.setHours(0, 0, 0, 0);
+            return leadDate.getTime() === today.getTime();
+          }).length;
+          
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading leads:', error);
+      }
+    });
+  }
+
+  loadUrgentTasks(): void {
+    // Mock urgent tasks - in real app, this would come from a service
+    this.urgentTasks = [
+      { title: 'פגישה עם לקוח ABC', time: 'מחר 10:00' },
+      { title: 'הגשת הצעת מחיר', time: 'מחר 14:00' }
+    ];
+    
+    // Calculate weekly meetings
+    this.weeklyMeetings = 8; // Mock data
+  }
+
+  calculatePendingTasks(): void {
+    this.pendingTasks = 0;
+    this.activeProjects.forEach(project => {
+      project.stages.forEach(stage => {
+        if (stage.milestones) {
+          stage.milestones.forEach(milestone => {
+            // Count milestones that are not completed (status < 4)
+            if (milestone.statusNumber && milestone.statusNumber < 4) {
+              this.pendingTasks++;
+            }
+          });
+        }
+      });
     });
   }
 
@@ -89,6 +160,41 @@ export class DashboardComponent implements OnInit {
     
     // אם הכל הושלם, נחזיר את האחרונה
     return currentStage.milestones[currentStage.milestones.length - 1] || null;
+  }
+
+  getProjectProgress(project: Project): number {
+    if (!project.stages || project.stages.length === 0) return 0;
+    
+    let totalMilestones = 0;
+    let completedMilestones = 0;
+    
+    project.stages.forEach(stage => {
+      if (stage.milestones) {
+        totalMilestones += stage.milestones.length;
+        completedMilestones += stage.milestones.filter(m => m.statusNumber === 4).length;
+      }
+    });
+    
+    return totalMilestones > 0 ? Math.round((completedMilestones / totalMilestones) * 100) : 0;
+  }
+
+  getStatDifference(current: number, previous: number, inverse: boolean = false): string {
+    const diff = current - previous;
+    if (diff === 0) return '0';
+    
+    const sign = inverse ? (diff > 0 ? '-' : '+') : (diff > 0 ? '+' : '');
+    return `${sign}${Math.abs(diff)}`;
+  }
+
+  getStatBadgeClass(current: number, previous: number, inverse: boolean = false): string {
+    const diff = current - previous;
+    if (diff === 0) return '';
+    
+    if (inverse) {
+      return diff > 0 ? 'negative' : 'positive';
+    } else {
+      return diff > 0 ? 'positive' : 'negative';
+    }
   }
 
   getMilestoneStatusClass(status?: string): string {

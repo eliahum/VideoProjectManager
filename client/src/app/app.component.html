@@ -1,8 +1,14 @@
 <mat-toolbar color="primary" class="top-toolbar">
+  <div class="toolbar-right">
+    <div class="toolbar-logo" aria-label="Video Project Manager logo">
+      <img src="assets/logo.svg" alt="Video Project Manager logo" />
+    </div>
+    <span class="toolbar-title">{{ title }}</span>
+  </div>
+  <span class="toolbar-spacer"></span>
   <button mat-icon-button (click)="toggleMenu()" class="menu-button">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>{{ title }}</span>
 </mat-toolbar>
 
 <mat-sidenav-container class="sidenav-container">

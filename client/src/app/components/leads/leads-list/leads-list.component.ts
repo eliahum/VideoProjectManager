@@ -46,7 +46,7 @@ export class LeadsListComponent implements OnInit {
   filteredLeads: Lead[] = [];
   paginatedLeads: Lead[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['leadid','name', 'phone', 'email', 'companyName', 'status', 'contactDate', 'actions'];
+  displayedColumns: string[] = ['leadid', 'companyName', 'name', 'phone', 'email', 'status', 'contactDate', 'actions'];
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
