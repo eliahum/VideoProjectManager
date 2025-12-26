@@ -10,10 +10,15 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
 import { finalize } from 'rxjs/operators';
+import { SAMPLE_CUSTOMERS_WITH_PROJECTS } from './customers-sample-data';
 
 @Component({
   selector: 'app-customers-list',
@@ -29,16 +34,19 @@ import { finalize } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatExpansionModule,
+    MatChipsModule,
+    MatTooltipModule
   ],
   templateUrl: './customers-list.component.html',
   styleUrl: './customers-list.component.scss'
 })
 export class CustomersListComponent implements OnInit {
-  customers: Customer[] = [];
-  allCustomers: Customer[] = [];
-  filteredCustomers: Customer[] = [];
-  paginatedCustomers: Customer[] = [];
+  customers: any[] = [];
+  allCustomers: any[] = [];
+  filteredCustomers: any[] = [];
+  paginatedCustomers: any[] = [];
   searchText: string = '';
   displayedColumns: string[] = ['customerid','name', 'phone', 'email', 'leadId', 'actions'];
   pageSize: number = 10;
@@ -51,7 +59,8 @@ export class CustomersListComponent implements OnInit {
   constructor(
     private customerService: CustomerService,
     private dialog: MatDialog,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -60,11 +69,21 @@ export class CustomersListComponent implements OnInit {
 
   loadCustomers(): void {
     this.isLoading = true;
+    
+    // Use sample data for demo
+    setTimeout(() => {
+      this.allCustomers = SAMPLE_CUSTOMERS_WITH_PROJECTS as any;
+      this.applyFilter();
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }, 500);
+
+    // Uncomment below to use real data from server
+    /*
     this.customerService.getAll()
       .pipe(finalize(() => {
         this.isLoading = false;
         this.cdr.detectChanges();
-        console.log('Finalize called - isLoading set to false');
       }))
       .subscribe({
         next: (response) => {
@@ -82,6 +101,7 @@ export class CustomersListComponent implements OnInit {
           alert('שגיאה בטעינת לקוחות');
         }
       });
+    */
   }
 
   applyFilter(): void {
@@ -146,5 +166,19 @@ export class CustomersListComponent implements OnInit {
         }
       });
     }
+  }
+
+  createProjectForCustomer(customer: any): void {
+    console.log('Create project for customer:', customer);
+    // Navigate to project creation with customer pre-selected
+    this.router.navigate(['/projects/new'], { 
+      queryParams: { customerId: customer.id, customerName: customer.name } 
+    });
+  }
+
+  openProject(project: any): void {
+    console.log('Open project:', project);
+    // Navigate to project details
+    this.router.navigate(['/projects', project.projectNumber]);
   }
 }
