@@ -74,6 +74,15 @@
               </mat-error>
             </mat-form-field>
 
+            <button mat-raised-button 
+                    type="button" 
+                    class="paid-button"
+                    [class.paid]="supplier.get('isPaid')?.value"
+                    (click)="togglePaid(i)">
+              <mat-icon>{{ supplier.get('isPaid')?.value ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+              {{ supplier.get('isPaid')?.value ? 'שולם' : 'לא שולם' }}
+            </button>
+
             <button mat-icon-button color="warn" type="button" (click)="removeSupplier(i)">
               <mat-icon>delete</mat-icon>
             </button>
@@ -88,7 +97,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">ביטול</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!milestoneForm.valid">
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isFormValid">
     <mat-icon>save</mat-icon>
     שמור
   </button>

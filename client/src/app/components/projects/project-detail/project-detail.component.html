@@ -53,9 +53,16 @@
                           matTooltip="מחק אבן דרך">
                     <mat-icon>delete</mat-icon>
                   </button>
-                  <mat-chip [class]="getMilestoneStatusClass(getStatusByNumber(milestone.statusNumber))">
-                    {{ getStatusByNumber(milestone.statusNumber) }}
-                  </mat-chip>
+                  <mat-form-field class="status-select-inline" 
+                                  appearance="outline" 
+                                  (click)="$event.stopPropagation()">
+                    <mat-select [value]="milestone.statusNumber" 
+                                (selectionChange)="updateMilestoneStatus($event.value, stage, milestone)">
+                      <mat-option *ngFor="let status of milestoneStatuses" [value]="status.milestoneStatusNumber">
+                        {{ status.hebName }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
                 </mat-panel-description>
               </mat-expansion-panel-header>
 

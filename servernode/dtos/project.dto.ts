@@ -4,6 +4,7 @@ export interface MilestoneSupplierDTO {
   supplierId: string;
   supplierName: string;
   amount: number;
+  isPaid?: boolean;
 }
 
 export interface MilestoneDTO {

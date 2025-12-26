@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -51,6 +51,7 @@ export class MilestoneFormComponent implements OnInit {
     private supplierService: SupplierService,
     private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<MilestoneFormComponent>,
+    private cdr: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: { 
       projectId: string, 
       stageName: string,
@@ -73,6 +74,7 @@ export class MilestoneFormComponent implements OnInit {
     this.supplierService.getAll().subscribe(response => {
       if (response.isSuccess && response.data) {
         this.availableSuppliers = response.data;
+        this.cdr.detectChanges();
       }
     });
     
@@ -100,7 +102,8 @@ export class MilestoneFormComponent implements OnInit {
     const supplierGroup = this.fb.group({
       supplierId: [existing?.supplierId || '', Validators.required],
       supplierName: [existing?.supplierName || ''],
-      amount: [existing?.amount || 0, [Validators.required, Validators.min(0)]]
+      amount: [existing?.amount || 0, [Validators.required, Validators.min(0)]],
+      isPaid: [existing?.isPaid || false]
     });
 
     // Update supplier name when supplier is selected
@@ -114,8 +117,27 @@ export class MilestoneFormComponent implements OnInit {
     this.suppliers.push(supplierGroup);
   }
 
+  togglePaid(index: number): void {
+    const supplier = this.suppliers.at(index);
+    const currentValue = supplier.get('isPaid')?.value;
+    const newValue = !currentValue;
+    supplier.patchValue({ isPaid: newValue });
+    supplier.markAsDirty();
+    console.log('Toggle paid:', { index, currentValue, newValue, formValue: supplier.get('isPaid')?.value });
+  }
+
   removeSupplier(index: number): void {
     this.suppliers.removeAt(index);
+  }
+
+  get hasEmptySuppliers(): boolean {
+    return this.suppliers.controls.some(
+      supplier => !supplier.get('supplierId')?.value
+    );
+  }
+
+  get isFormValid(): boolean {
+    return this.milestoneForm.valid && !this.hasEmptySuppliers;
   }
 
   onSubmit(): void {

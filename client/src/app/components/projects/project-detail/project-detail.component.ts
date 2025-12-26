@@ -163,7 +163,7 @@ export class ProjectDetailComponent implements OnInit {
     };
 
     const dialogRef = this.dialog.open(MilestoneFormComponent, {
-      width: '700px',
+      width: '740px',
       data: { 
         projectId: this.project.id, 
         stageName: stage.name, 
@@ -262,6 +262,29 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
+  updateMilestoneStatus(statusNumber: number, stage: Stage, milestone: Milestone): void {
+    if (!this.project) return;
+    
+    this.projectService.updateMilestone(
+      this.project.id,
+      stage.stageNumber,
+      milestone.milestoneId,
+      { statusNumber }
+    ).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.messageDialogService.showSuccess('סטטוס אבן הדרך עודכן בהצלחה');
+          this.reloadProject();
+        } else {
+          this.messageDialogService.showError('שגיאה בעדכון סטטוס: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.messageDialogService.showError('שגיאה בעדכון סטטוס');
+      }
+    });
+  }
+
   deleteMilestone(event: Event, stage: Stage, milestone: Milestone): void {
     event.stopPropagation();
     if (!this.project) return;
@@ -297,7 +320,7 @@ export class ProjectDetailComponent implements OnInit {
 
     // פותח את הטופס ללא milestone קיים (מצב יצירה)
     const dialogRef = this.dialog.open(MilestoneFormComponent, {
-      width: '700px',
+      width: '740px',
       data: { 
         projectId: this.project.id, 
         stageName: stage.name,

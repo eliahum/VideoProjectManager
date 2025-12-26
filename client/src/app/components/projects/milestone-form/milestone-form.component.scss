@@ -1,9 +1,9 @@
 .milestone-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px 0;
-  min-width: 600px;
+  gap: 12px;
+  padding: 16px 0;
+  min-width: 500px;
   max-height: 70vh;
   overflow-y: auto;
   color: #f4f0ff;
@@ -11,7 +11,7 @@
 
 .form-row {
   display: flex;
-  gap: 16px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -21,6 +21,31 @@
 
 .half-width {
   flex: 1;
+}
+
+::ng-deep .milestone-form .mat-mdc-form-field {
+  font-size: 0.9rem;
+
+  .mat-mdc-text-field-wrapper {
+    background: rgba(36, 26, 62, 0.5) !important;
+    border: 1px solid rgba(198, 180, 255, 0.3);
+    border-radius: 8px;
+  }
+
+  .mdc-text-field {
+    padding: 0 12px;
+    height: 48px;
+  }
+
+  input.mat-mdc-input-element {
+    font-size: 0.9rem;
+  }
+
+  .mat-mdc-form-field-infix {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    min-height: 48px;
+  }
 }
 
 .urgent-checkbox {
@@ -183,18 +208,48 @@
       .supplier-form-row {
         display: flex;
         gap: 12px;
-        align-items: flex-start;
+        align-items: center;
+        height: 20px;
 
         .supplier-select {
           flex: 2;
+          height: 50px;
         }
 
         .amount-field {
           flex: 1;
+          height: 50px;
         }
 
-        button {
-          margin-top: 8px;
+        .paid-button {
+          flex-shrink: 0;
+          min-width: 120px;
+          height: 50px;
+          background: rgba(239, 68, 68, 0.2);
+          color: #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.4);
+          font-weight: 600;
+          transition: all 0.3s ease;
+
+          &.paid {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.4);
+          }
+
+          mat-icon {
+            margin-left: 4px;
+          }
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+          }
+        }
+
+        button[color="warn"] {
+          flex-shrink: 0;
+          height: 50px;
         }
       }
     }

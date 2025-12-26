@@ -167,7 +167,8 @@ export class ProjectsService {
         milestone.suppliers = milestoneData.suppliers.map(s => ({
           supplierId: s.supplierId,
           supplierName: s.supplierName,
-          amount: s.amount
+          amount: s.amount,
+          isPaid: s.isPaid ?? false
         }));
       }
 
@@ -328,7 +329,8 @@ export class ProjectsService {
             suppliers: milestone.suppliers.map(supplier => ({
               supplierId: supplier.supplierId,
               supplierName: supplier.supplierName,
-              amount: supplier.amount
+              amount: supplier.amount,
+              isPaid: supplier.isPaid
             }))
           }))
       })),
