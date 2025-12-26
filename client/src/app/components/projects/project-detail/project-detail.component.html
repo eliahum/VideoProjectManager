@@ -27,28 +27,6 @@
     </button>
   </div>
 
-  <mat-card class="customers-card">
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>people</mat-icon>
-        לקוחות
-      </mat-card-title>
-      <button mat-raised-button color="primary" (click)="manageCustomers()">
-        <mat-icon>edit</mat-icon>
-        ניהול לקוחות
-      </button>
-    </mat-card-header>
-    <mat-card-content>
-      <div class="customers-list">
-        <div class="customer-item" *ngFor="let customer of projectCustomers">
-          <mat-icon>person</mat-icon>
-          <span class="customer-name">{{ customer.customerName }}</span>
-        </div>
-        <p *ngIf="projectCustomers.length === 0" class="no-customers">לא נוספו לקוחות</p>
-      </div>
-    </mat-card-content>
-  </mat-card>
-
   <mat-card class="stages-card">
     <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
       <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
