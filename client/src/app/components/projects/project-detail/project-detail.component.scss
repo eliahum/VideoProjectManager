@@ -137,6 +137,105 @@
   }
 }
 
+.customers-card {
+  background: rgba(36,26,62,0.4);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  border-radius: 16px;
+  border: 1px solid rgba(168,85,247,0.2);
+  margin-bottom: 24px;
+
+  ::ng-deep .mat-mdc-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: rgba(74,46,122,0.3);
+    border-radius: 16px 16px 0 0;
+  }
+
+  ::ng-deep .mat-mdc-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0;
+
+    mat-icon {
+      color: #a855f7;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  button {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+    }
+
+    mat-icon {
+      margin-left: 8px;
+    }
+  }
+
+  ::ng-deep .mat-mdc-card-content {
+    padding: 24px;
+  }
+
+  .customers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .customer-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(74,46,122,0.25);
+      border-radius: 8px;
+      border: 1px solid rgba(168,85,247,0.2);
+      transition: all 0.3s ease;
+
+      &:hover {
+        background: rgba(74,46,122,0.4);
+        border-color: rgba(168,85,247,0.4);
+      }
+
+      mat-icon {
+        color: #a855f7;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .customer-name {
+        color: #ffffff;
+        font-weight: 500;
+        font-size: 1rem;
+      }
+    }
+
+    .no-customers {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      font-style: italic;
+      padding: 24px;
+      margin: 0;
+    }
+  }
+}
+
 .stages-card {
   background: rgba(36,26,62,0.4);
   backdrop-filter: blur(10px);

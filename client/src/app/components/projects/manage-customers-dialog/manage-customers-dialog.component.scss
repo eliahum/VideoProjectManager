@@ -1,0 +1,76 @@
+.customers-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 0;
+  min-width: 500px;
+}
+
+.form-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+
+  button {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    color: white;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
+    }
+
+    mat-icon {
+      margin-left: 8px;
+    }
+  }
+}
+
+.customers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 400px;
+  overflow-y: auto;
+
+  .customer-card {
+    padding: 16px;
+    background: rgba(74, 46, 122, 0.25);
+    border-radius: 12px;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+
+    .customer-form-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+
+      .customer-select {
+        flex: 1;
+      }
+
+      button[color="warn"] {
+        flex-shrink: 0;
+        height: 40px;
+      }
+    }
+  }
+
+  .no-customers {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-style: italic;
+    margin: 20px 0;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 10px;
+
+  button mat-icon {
+    margin-left: 8px;
+  }
+}

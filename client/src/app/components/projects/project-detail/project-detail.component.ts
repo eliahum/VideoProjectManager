@@ -20,6 +20,7 @@ import { Project, Stage, Milestone } from '../../../models/project.model';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
+import { ManageCustomersDialogComponent } from '../manage-customers-dialog/manage-customers-dialog.component';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 
 @Component({
@@ -49,6 +50,11 @@ export class ProjectDetailComponent implements OnInit {
   milestoneStatuses: MilestoneStatus[] = [];
   projectStatuses: ProjectStatus[] = [];
   isLoading: boolean = false;
+  projectCustomers: Array<{customerId: string, customerName: string}> = [
+    { customerId: '1', customerName: 'חברת הפקות ABC' },
+    { customerId: '2', customerName: 'סטודיו XYZ' },
+    { customerId: '3', customerName: 'לקוח פרטי - דוד כהן' }
+  ];
 
   constructor(
     private route: ActivatedRoute,
@@ -404,6 +410,22 @@ export class ProjectDetailComponent implements OnInit {
         console.error('Error updating first milestone sort:', err);
         this.messageDialogService.showError('שגיאה בעדכון סדר אבני דרך');
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  manageCustomers(): void {
+    const dialogRef = this.dialog.open(ManageCustomersDialogComponent, {
+      width: '600px',
+      data: {
+        customers: [...this.projectCustomers]
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.projectCustomers = result;
+        // כאן תוסיף שמירה לשרת בעתיד
       }
     });
   }

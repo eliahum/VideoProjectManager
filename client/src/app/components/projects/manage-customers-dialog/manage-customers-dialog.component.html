@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>ניהול לקוחות</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="customersForm" class="customers-form">
+    <div class="form-header">
+      <button mat-raised-button type="button" (click)="addCustomer()">
+        <mat-icon>add</mat-icon>
+        הוסף לקוח
+      </button>
+    </div>
+
+    <div class="customers-list" formArrayName="customers">
+      <mat-card *ngFor="let customer of customers.controls; let i = index" [formGroupName]="i" class="customer-card">
+        <div class="customer-form-row">
+          <mat-form-field appearance="outline" class="customer-select">
+            <mat-label>לקוח</mat-label>
+            <mat-select formControlName="customerId" required>
+              <mat-option *ngFor="let cust of availableCustomers" [value]="cust.id">
+                {{ cust.name }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="customer.get('customerId')?.hasError('required')">
+              שדה חובה
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-icon-button color="warn" type="button" (click)="removeCustomer(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </mat-card>
+
+      <p *ngIf="customers.length === 0" class="no-customers">לא נוספו לקוחות</p>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSave()">
+    <mat-icon>save</mat-icon>
+    שמור
+  </button>
+</mat-dialog-actions>
