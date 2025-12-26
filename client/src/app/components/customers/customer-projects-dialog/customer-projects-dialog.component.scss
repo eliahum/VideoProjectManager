@@ -122,6 +122,9 @@
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 20px;
+        max-height: 450px;
+        overflow-y: auto;
+        padding-right: 8px;
 
         .project-card {
           background: rgba(36, 26, 62, 0.5);
