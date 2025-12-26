@@ -3,20 +3,28 @@
     <button mat-icon-button (click)="goBack()">
       <mat-icon>arrow_forward</mat-icon>
     </button>
-    <div class="project-info">
-      <h1>{{ project.customerName }}</h1>
-      <p class="subtitle">{{ project.projectName }}</p>
-    </div>
+
+    <mat-form-field class="status-select" appearance="outline">
+      <mat-label>סטטוס פרויקט</mat-label>
+      <mat-select [value]="project.statusNumber" (selectionChange)="updateProjectStatus($event.value)">
+        <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
+          {{ status.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
     <div class="header-actions">
-      <mat-form-field class="status-select" appearance="outline">
-        <mat-label>סטטוס פרויקט</mat-label>
-        <mat-select [value]="project.statusNumber" (selectionChange)="updateProjectStatus($event.value)">
-          <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
-            {{ status.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-      <mat-chip class="current-stage-chip">{{ project.currentStage }}</mat-chip>
+
+      <span class="current-stage-label">פרוייקט:</span>
+      <span class="current-stage-value">{{ project.projectName }}</span>
+
+      <span class="current-stage-label">לקוח:</span>
+      <span class="current-stage-value">{{ project.customerName }}</span>
+
+
+
+      <span class="current-stage-label">שלב הנוכחי:</span>
+      <span class="current-stage-value">{{ project.currentStage }}</span>
     </div>
   </div>
 
@@ -31,14 +39,10 @@
     <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
       <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
         <div class="tab-content">
-          
 
-          <mat-accordion class="milestones-accordion" 
-                         cdkDropList
-                         (cdkDropListDropped)="onMilestoneDrop($event, stage)">
-            <mat-expansion-panel *ngFor="let milestone of stage.milestones" 
-                                 class="milestone-panel"
-                                 cdkDrag
+
+          <mat-accordion class="milestones-accordion" cdkDropList (cdkDropListDropped)="onMilestoneDrop($event, stage)">
+            <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel" cdkDrag
               [ngClass]="{'current-milestone-row':stage.stageNumber === project.currentStageNumber && project.currentMilestoneId === milestone.milestoneId}">
               <mat-expansion-panel-header>
                 <mat-panel-title>
@@ -47,17 +51,13 @@
                   <span>{{ milestone.name }}</span>
                 </mat-panel-title>
                 <mat-panel-description><span style="color:white"> {{milestone.sort}}</span>
-                  <button mat-icon-button 
-                          class="delete-milestone-btn" 
-                          (click)="deleteMilestone($event, stage, milestone)"
-                          matTooltip="מחק אבן דרך">
+                  <button mat-icon-button class="delete-milestone-btn"
+                    (click)="deleteMilestone($event, stage, milestone)" matTooltip="מחק אבן דרך">
                     <mat-icon>delete</mat-icon>
                   </button>
-                  <mat-form-field class="status-select-inline" 
-                                  appearance="outline" 
-                                  (click)="$event.stopPropagation()">
-                    <mat-select [value]="milestone.statusNumber" 
-                                (selectionChange)="updateMilestoneStatus($event.value, stage, milestone)">
+                  <mat-form-field class="status-select-inline" appearance="outline" (click)="$event.stopPropagation()">
+                    <mat-select [value]="milestone.statusNumber"
+                      (selectionChange)="updateMilestoneStatus($event.value, stage, milestone)">
                       <mat-option *ngFor="let status of milestoneStatuses" [value]="status.milestoneStatusNumber">
                         {{ status.hebName }}
                       </mat-option>
