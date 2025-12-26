@@ -13,162 +13,123 @@
   </div>
 
   <div *ngIf="!isLoading">
-    <!-- Search box -->
-    <div class="search-container">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>חפש לקוח</mat-label>
-        <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="חפש בכל השדות...">
-        <button *ngIf="searchText" matSuffix mat-icon-button aria-label="נקה חיפוש" (click)="clearSearch()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-form-field>
-    </div>
+  <!-- Search box -->
+  <div class="search-container" style="margin-bottom: 16px;">
+    <mat-form-field appearance="outline" style="width: 100%;">
+      <mat-label>חפש לקוח</mat-label>
+      <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="חפש בכל השדות...">
+      <button *ngIf="searchText" matSuffix mat-icon-button aria-label="נקה חיפוש" (click)="clearSearch()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
 
-    <!-- Empty State -->
-    <mat-card *ngIf="filteredCustomers.length === 0" class="empty-state">
-      <mat-card-content>
-        <mat-icon class="large-icon">people</mat-icon>
-        <h2>אין לקוחות</h2>
-        <p>התחל על ידי הוספת לקוח חדש</p>
-      </mat-card-content>
-    </mat-card>
+  <mat-card *ngIf="filteredCustomers.length === 0" class="empty-state">
+    <mat-card-content>
+      <mat-icon class="large-icon">people</mat-icon>
+      <h2>אין לקוחות</h2>
+      <p>התחל על ידי הוספת לקוח חדש</p>
+    </mat-card-content>
+  </mat-card>
+  
 
-    <!-- Customers Accordion with Projects -->
-    <mat-accordion class="customers-accordion" *ngIf="filteredCustomers.length > 0" multi>
-      <mat-expansion-panel *ngFor="let customer of paginatedCustomers" class="customer-panel">
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            <div class="customer-title">
-              <mat-icon class="customer-icon">business</mat-icon>
-              <div class="customer-main-info">
-                <span class="customer-name">{{ customer.name }}</span>
-                <span class="customer-id">#{{ customer.customerId }}</span>
-              </div>
-            </div>
-          </mat-panel-title>
-          <mat-panel-description>
-            <div class="customer-summary">
-              <div class="contact-info">
-                <mat-icon class="info-icon">phone</mat-icon>
-                <span>{{ customer.phone }}</span>
-              </div>
-              <div class="contact-info">
-                <mat-icon class="info-icon">email</mat-icon>
-                <span>{{ customer.email }}</span>
-              </div>
-              <div class="projects-badge" *ngIf="customer.projects && customer.projects.length > 0">
-                <mat-icon>work</mat-icon>
-                <span>{{ customer.projects.length }} פרוייקטים</span>
-              </div>
-              <div class="action-buttons" (click)="$event.stopPropagation()">
-                <button mat-icon-button class="action-btn btn-edit" (click)="openCustomerForm(customer)" matTooltip="ערוך לקוח">
-                  <mat-icon>edit</mat-icon>
-                </button>
-                <button mat-icon-button class="action-btn btn-delete" (click)="deleteCustomer(customer.id)" matTooltip="מחק לקוח">
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </div>
-          </mat-panel-description>
-        </mat-expansion-panel-header>
+  <div class="table-container" *ngIf="filteredCustomers.length > 0">
+    <table mat-table [dataSource]="paginatedCustomers" class="customers-table">
+      <!-- Lead ID Column -->
+        <ng-container matColumnDef="customerid">
+        <th mat-header-cell *matHeaderCellDef>מספר </th>
+        <td mat-cell *matCellDef="let customer">
+          <span *ngIf="customer.customerId; else noLead">{{ customer.customerId }}</span>
+          <ng-template #noLead>-</ng-template>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="leadId">
+        <th mat-header-cell *matHeaderCellDef>מספר Lead</th>
+        <td mat-cell *matCellDef="let customer">
+          <span *ngIf="customer.leadId; else noLead">{{ customer.leadId }}</span>
+          <ng-template #noLead>-</ng-template>
+        </td>
+      </ng-container>
 
-        <!-- Customer Details & Projects -->
-        <div class="customer-details">
-          <!-- Customer Info Section -->
-          <div class="info-section">
-            <h3>פרטי לקוח</h3>
-            <div class="info-grid">
-              <div class="info-item">
-                <mat-icon>badge</mat-icon>
-                <span class="label">מספר לקוח:</span>
-                <span class="value">{{ customer.customerId }}</span>
-              </div>
-              <div class="info-item" *ngIf="customer.leadId">
-                <mat-icon>trending_up</mat-icon>
-                <span class="label">Lead מקור:</span>
-                <span class="value">#{{ customer.leadId }}</span>
-              </div>
-              <div class="info-item">
-                <mat-icon>calendar_today</mat-icon>
-                <span class="label">נוצר בתאריך:</span>
-                <span class="value">{{ customer.createdAt | date:'dd/MM/yyyy' }}</span>
-              </div>
-            </div>
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>שם</th>
+        <td mat-cell *matCellDef="let customer">
+          <span class="company-name">{{ customer.name }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>טלפון</th>
+        <td mat-cell *matCellDef="let customer">
+          <div class="phone-cell">
+            <mat-icon>phone</mat-icon>
+            <span>{{ customer.phone }}</span>
           </div>
+        </td>
+      </ng-container>
 
-          <!-- Projects Section -->
-          <div class="projects-section" *ngIf="customer.projects && customer.projects.length > 0">
-            <div class="section-header">
-              <h3>
-                <mat-icon>work</mat-icon>
-                פרוייקטים ({{ customer.projects.length }})
-              </h3>
-              <button mat-raised-button color="accent" (click)="createProjectForCustomer(customer)">
-                <mat-icon>add</mat-icon>
-                פרוייקט חדש
-              </button>
-            </div>
-
-            <div class="projects-grid">
-              <mat-card *ngFor="let project of customer.projects" class="project-card" (click)="openProject(project)">
-                <mat-card-header>
-                  <mat-card-title>
-                    <div class="project-title">
-                      <mat-icon>movie</mat-icon>
-                      <span>{{ project.projectName }}</span>
-                    </div>
-                    <mat-chip [ngClass]="'status-' + project.statusNumber">
-                      {{ project.statusName }}
-                    </mat-chip>
-                  </mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                  <div class="project-info">
-                    <div class="info-row">
-                      <mat-icon>numbers</mat-icon>
-                      <span>פרוייקט #{{ project.projectNumber }}</span>
-                    </div>
-                    <div class="info-row">
-                      <mat-icon>flag</mat-icon>
-                      <span>{{ project.currentStage }}</span>
-                    </div>
-                    <div class="info-row">
-                      <mat-icon>event</mat-icon>
-                      <span>{{ project.createdAt | date:'dd/MM/yyyy' }}</span>
-                    </div>
-                  </div>
-                </mat-card-content>
-                <mat-card-actions>
-                  <button mat-button color="primary">
-                    <mat-icon>visibility</mat-icon>
-                    פתח פרוייקט
-                  </button>
-                </mat-card-actions>
-              </mat-card>
-            </div>
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>אימייל</th>
+        <td mat-cell *matCellDef="let customer">
+          <div class="email-cell">
+            <mat-icon>email</mat-icon>
+            <span>{{ customer.email }}</span>
           </div>
+        </td>
+      </ng-container>
 
-          <!-- No Projects State -->
-          <div class="no-projects" *ngIf="!customer.projects || customer.projects.length === 0">
-            <mat-icon>work_off</mat-icon>
-            <p>אין פרוייקטים ללקוח זה</p>
-            <button mat-raised-button color="primary" (click)="createProjectForCustomer(customer)">
-              <mat-icon>add</mat-icon>
-              צור פרוייקט ראשון
+      <!-- Projects Column -->
+      <ng-container matColumnDef="projects">
+        <th mat-header-cell *matHeaderCellDef>פרוייקטים</th>
+        <td mat-cell *matCellDef="let customer">
+          <div class="projects-cell">
+            <button 
+              mat-raised-button 
+              color="accent" 
+              (click)="openCustomerProjects(customer)"
+              [disabled]="!customer.projects || customer.projects.length === 0">
+              <mat-icon>work</mat-icon>
+              <span *ngIf="customer.projects && customer.projects.length > 0">
+                {{ customer.projects.length }} פרוייקטים
+              </span>
+              <span *ngIf="!customer.projects || customer.projects.length === 0">
+                אין פרוייקטים
+              </span>
             </button>
           </div>
-        </div>
-      </mat-expansion-panel>
-    </mat-accordion>
+        </td>
+      </ng-container>
 
-    <!-- Pagination -->
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>פעולות</th>
+        <td mat-cell *matCellDef="let customer">
+          <div class="action-buttons">
+            <button class="action-btn btn-edit" (click)="openCustomerForm(customer)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteCustomer(customer.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    
     <mat-paginator 
-      *ngIf="filteredCustomers.length > 0"
-      [length]="filteredCustomers.length"
+      [length]="totalItems"
       [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 25, 50]"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageIndex"
       (page)="onPageChange($event)"
       showFirstLastButtons>
     </mat-paginator>
+  </div>
   </div>
 </div>

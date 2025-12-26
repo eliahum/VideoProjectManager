@@ -1,11 +1,34 @@
 import Customer from '../models/customer.model';
-import { CustomerDTO, CustomerResponseDTO, CustomersListResponseDTO } from '../dtos/customer.dto';
+import Project, { IProject, IStage } from '../models/project.model';
+import ProjectStatus from '../models/project-status.model';
+import { CustomerDTO, CustomerResponseDTO, CustomersListResponseDTO, ProjectSummaryDTO } from '../dtos/customer.dto';
 
 export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
     try {
         const customers = await Customer.find();
+        const allProjects = await Project.find().populate('statusNumber');
+        
         const data = customers.map((customer) => {
             const { _id, customerId, name, email, phone, address, leadId } = customer;
+            
+            // Find all projects for this customer
+            const customerProjects = allProjects.filter((project: IProject) => 
+                project.customerId === customer.customerId
+            );
+            
+            // Map projects to summary format
+            const projectsSummary: ProjectSummaryDTO[] = customerProjects.map((project: IProject) => {
+                const currentStage = project.stages?.find((s: IStage) => s.stageNumber === project.currentStageNumber);
+                return {
+                    projectNumber: project.projectNumber,
+                    projectName: project.projectName,
+                    statusNumber: project.statusNumber,
+                    statusName: (project.statusNumber as any)?.name || 'לא ידוע',
+                    currentStage: currentStage?.stageName || 'לא מוגדר',
+                    createdAt: project.createdAt
+                };
+            });
+
             return {
                 id: _id.toString(),
                 customerId,
@@ -13,7 +36,8 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
                 email,
                 phone,
                 address,
-                leadId
+                leadId,
+                projects: projectsSummary
             };
         });
         return { isSuccess: true, data };
@@ -27,7 +51,25 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
     try {
         const customer = await Customer.findById(id);
         if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        
         const { _id, customerId, name, email, phone, address, leadId } = customer;
+        
+        // Find all projects for this customer
+        const customerProjects = await Project.find({ customerId: customer.customerId }).populate('statusNumber');
+        
+        // Map projects to summary format
+        const projectsSummary: ProjectSummaryDTO[] = customerProjects.map((project: IProject) => {
+            const currentStage = project.stages?.find((s: IStage) => s.stageNumber === project.currentStageNumber);
+            return {
+                projectNumber: project.projectNumber,
+                projectName: project.projectName,
+                statusNumber: project.statusNumber,
+                statusName: (project.statusNumber as any)?.name || 'לא ידוע',
+                currentStage: currentStage?.stageName || 'לא מוגדר',
+                createdAt: project.createdAt
+            };
+        });
+        
         const data = {
             id: _id.toString(),
             customerId,
@@ -35,7 +77,8 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
             email,
             phone,
             address,
-            leadId
+            leadId,
+            projects: projectsSummary
         };
         return { isSuccess: true, data };
     } catch (error) {

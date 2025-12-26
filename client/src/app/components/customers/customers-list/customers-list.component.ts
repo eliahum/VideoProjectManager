@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
+import { CustomerProjectsDialogComponent } from '../customer-projects-dialog/customer-projects-dialog.component';
 import { finalize } from 'rxjs/operators';
 import { SAMPLE_CUSTOMERS_WITH_PROJECTS } from './customers-sample-data';
 
@@ -48,7 +49,7 @@ export class CustomersListComponent implements OnInit {
   filteredCustomers: any[] = [];
   paginatedCustomers: any[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['customerid','name', 'phone', 'email', 'leadId', 'actions'];
+  displayedColumns: string[] = ['customerid','name', 'phone', 'email', 'leadId', 'projects', 'actions'];
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
@@ -70,16 +71,7 @@ export class CustomersListComponent implements OnInit {
   loadCustomers(): void {
     this.isLoading = true;
     
-    // Use sample data for demo
-    setTimeout(() => {
-      this.allCustomers = SAMPLE_CUSTOMERS_WITH_PROJECTS as any;
-      this.applyFilter();
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    }, 500);
-
-    // Uncomment below to use real data from server
-    /*
+    // Use real data from server
     this.customerService.getAll()
       .pipe(finalize(() => {
         this.isLoading = false;
@@ -101,7 +93,6 @@ export class CustomersListComponent implements OnInit {
           alert('שגיאה בטעינת לקוחות');
         }
       });
-    */
   }
 
   applyFilter(): void {
@@ -166,6 +157,20 @@ export class CustomersListComponent implements OnInit {
         }
       });
     }
+  }
+
+  openCustomerProjects(customer: any): void {
+    const dialogRef = this.dialog.open(CustomerProjectsDialogComponent, {
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: { customer }
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      // Optionally reload customers if projects were modified
+      this.loadCustomers();
+    });
   }
 
   createProjectForCustomer(customer: any): void {
