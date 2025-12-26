@@ -31,8 +31,8 @@ export interface ProjectDTO {
   _id?: string;
   id: string;
   projectNumber: number;
-  customerId: string;
-  customerName: string;
+  customerId: number;
+  customerName?: string; // Optional - populated from Customer lookup
   projectName: string;
   statusNumber: number;
   currentStage?: string;

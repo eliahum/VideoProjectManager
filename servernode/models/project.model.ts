@@ -29,8 +29,7 @@ export interface IStage {
 export interface IProject extends Document {
   id: string;
   projectNumber: number;
-  customerId: string;
-  customerName: string;
+  customerId: mongoose.Types.ObjectId;
   projectName: string;
   statusNumber: number;
   currentStageNumber: number;
@@ -124,11 +123,8 @@ const projectSchema = new Schema<IProject>({
     unique: true
   },
   customerId: {
-    type: String,
-    required: true
-  },
-  customerName: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'Customer',
     required: true
   },
   projectName: {

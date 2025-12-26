@@ -1,4 +1,5 @@
 import { Project, IProject } from '../models/project.model';
+import Customer from '../models/customer.model';
 import { ProjectDTO, ProjectResponseDTO, ProjectListResponseDTO, StageDTO, MilestoneDTO, MilestoneSupplierDTO } from '../dtos/project.dto';
 import { connectToDatabase } from '../utils/db';
 import { stageTemplateService } from './stageTemplateService';
@@ -9,7 +10,7 @@ export class ProjectsService {
   async getAllProjects(): Promise<ProjectListResponseDTO> {
     try {
       await connectToDatabase();
-      const projects = await Project.find().sort({ projectNumber: -1 });
+      const projects = await Project.find().populate('customerId').sort({ projectNumber: -1 });
       const data: ProjectDTO[] = await Promise.all(
         projects.map(async project => await this.mapToDTO(project))
       );
@@ -22,7 +23,7 @@ export class ProjectsService {
   async getProjectById(id: string): Promise<ProjectResponseDTO> {
     try {
       await connectToDatabase();
-      const project = await Project.findOne({ id });
+      const project = await Project.findOne({ id }).populate('customerId');
       if (!project) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
@@ -295,6 +296,26 @@ export class ProjectsService {
     // Find current stage name from stages array
     const currentStage = project.stages.find(s => s.stageNumber === project.currentStageNumber);
     
+    // Get customer data from populated field
+    let customerName: string | undefined;
+    let customerId: number | undefined;
+    
+    // Check if customerId was populated with customer object
+    const customerIdValue = project.customerId;
+    if (customerIdValue != null) {
+      if (typeof customerIdValue === 'object') {
+        // customerId was populated, it's now a customer object
+        const customer = customerIdValue as any;
+        if ('customerId' in customer) {
+          customerId = customer.customerId;
+          customerName = customer.name;
+        }
+      } else {
+        // customerId is still just a number (not populated)
+        customerId = typeof customerIdValue === 'string' ? parseInt(customerIdValue) : customerIdValue;
+      }
+    }
+    
     // Get all milestone statuses for mapping
     const statusesResponse = await milestoneStatusService.getAllMilestoneStatuses();
     const statuses = statusesResponse.isSuccess ? statusesResponse.data : [];
@@ -304,8 +325,8 @@ export class ProjectsService {
       _id: project._id?.toString(),
       id: project.id,
       projectNumber: project.projectNumber,
-      customerId: project.customerId,
-      customerName: project.customerName,
+      customerId: customerId,
+      customerName: customerName,
       projectName: project.projectName,
       statusNumber: project.statusNumber,
       currentStage: currentStage?.stageName,

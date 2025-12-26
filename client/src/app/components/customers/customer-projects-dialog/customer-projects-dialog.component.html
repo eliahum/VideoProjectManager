@@ -52,10 +52,6 @@
           <mat-icon>work</mat-icon>
           פרוייקטים ({{ data.customer.projects.length }})
         </h3>
-        <button mat-raised-button color="accent" (click)="createProjectForCustomer(data.customer)">
-          <mat-icon>add</mat-icon>
-          פרוייקט חדש
-        </button>
       </div>
 
       <div class="projects-grid">
@@ -101,10 +97,6 @@
     <div class="no-projects" *ngIf="!data.customer.projects || data.customer.projects.length === 0">
       <mat-icon>work_off</mat-icon>
       <p>אין פרוייקטים ללקוח זה</p>
-      <button mat-raised-button color="primary" (click)="createProjectForCustomer(data.customer)">
-        <mat-icon>add</mat-icon>
-        צור פרוייקט ראשון
-      </button>
     </div>
   </div>
 </div>

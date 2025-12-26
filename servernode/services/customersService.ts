@@ -1,5 +1,5 @@
 import Customer from '../models/customer.model';
-import Project, { IProject, IStage } from '../models/project.model';
+import { Project, IProject, IStage } from '../models/project.model';
 import ProjectStatus from '../models/project-status.model';
 import { CustomerDTO, CustomerResponseDTO, CustomersListResponseDTO, ProjectSummaryDTO } from '../dtos/customer.dto';
 
@@ -13,7 +13,7 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
             
             // Find all projects for this customer
             const customerProjects = allProjects.filter((project: IProject) => 
-                project.customerId === customer.customerId
+                project.customerId.toString() === customer._id.toString()
             );
             
             // Map projects to summary format
@@ -55,7 +55,7 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
         const { _id, customerId, name, email, phone, address, leadId } = customer;
         
         // Find all projects for this customer
-        const customerProjects = await Project.find({ customerId: customer.customerId }).populate('statusNumber');
+        const customerProjects = await Project.find({ customerId: customer._id }).populate('statusNumber');
         
         // Map projects to summary format
         const projectsSummary: ProjectSummaryDTO[] = customerProjects.map((project: IProject) => {
