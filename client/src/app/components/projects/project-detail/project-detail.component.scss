@@ -52,12 +52,61 @@
 
   .header-actions {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 12px;
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
     width: max-content;
+  }
+
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    &.payment-row {
+      justify-content: flex-start;
+      
+      .payment-info {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+      
+      .payment-field {
+        width: 180px;
+        
+        ::ng-deep .mat-mdc-text-field-wrapper {
+          background: rgba(168,85,247,0.1);
+          border-radius: 8px;
+        }
+
+        ::ng-deep .mdc-text-field--outlined .mdc-notched-outline {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: rgba(168,85,247,0.5) !important;
+          }
+        }
+
+        ::ng-deep .mat-mdc-form-field-label,
+        ::ng-deep .mdc-floating-label,
+        ::ng-deep input {
+          color: #ffffff !important;
+        }
+      }
+
+      button {
+        mat-icon {
+          color: #a855f7;
+        }
+      }
+
+      .edit-payment-btn {
+        box-shadow: 0 2px 8px rgba(168,85,247,0.4);
+      }
+    }
   }
 
   .current-stage-label {

@@ -34,7 +34,6 @@ export class ProjectFormComponent implements OnInit {
   projectForm: FormGroup;
   isEditMode = false;
   customers: Customer[] = [];
-  projectStages = ['פרה', 'פרודקשן', 'פוסט'];
 
   constructor(
     private fb: FormBuilder,
@@ -46,7 +45,9 @@ export class ProjectFormComponent implements OnInit {
     this.projectForm = this.fb.group({
       customerId: ['', Validators.required],
       projectName: ['', Validators.required],
-      currentStage: ['פרה', Validators.required],
+      paidAmount: [0],
+      paymentDate: [''],
+      paymentNote: [''],
       initializeAllStages: [false]
     });
   }

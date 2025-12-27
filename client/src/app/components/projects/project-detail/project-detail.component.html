@@ -14,17 +14,65 @@
     </mat-form-field>
 
     <div class="header-actions">
+      <div class="header-row">
+        <span class="current-stage-label">פרוייקט:</span>
+        <span class="current-stage-value">{{ project.projectName }}</span>
 
-      <span class="current-stage-label">פרוייקט:</span>
-      <span class="current-stage-value">{{ project.projectName }}</span>
+        <span class="current-stage-label">לקוח:</span>
+        <span class="current-stage-value">{{ project.customerName }}</span>
 
-      <span class="current-stage-label">לקוח:</span>
-      <span class="current-stage-value">{{ project.customerName }}</span>
+        <span class="current-stage-label">שלב הנוכחי:</span>
+        <span class="current-stage-value">{{ project.currentStage }}hsdgjsfjs</span>111
+      </div>
+
+      <div class="header-row payment-row" *ngIf="!isEditingPayment">
 
 
+        <div class="payment-info">
 
-      <span class="current-stage-label">שלב הנוכחי:</span>
-      <span class="current-stage-value">{{ project.currentStage }}</span>
+          <span class="current-stage-label">סכום ששולם:</span>
+          <span class="current-stage-value">{{ project.paidAmount ? '₪' + project.paidAmount : 'לא שולם' }}</span>
+
+          <span class="current-stage-label">תאריך תשלום:</span>
+          <span class="current-stage-value">{{ project.paymentDate ? (project.paymentDate | date:'dd/MM/yyyy') : '-'
+            }}</span>
+
+          <span class="current-stage-label">הערת תשלום:</span>
+          <span class="current-stage-value">{{ project.paymentNote || '-' }}</span>
+          <span class="current-stage-value">
+            <button mat-mini-fab color="accent" (click)="editPaymentInfo()" matTooltip="ערוך פרטי תשלום"
+              class="edit-payment-btn">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="header-row payment-row" *ngIf="isEditingPayment">
+        <mat-form-field appearance="outline" class="payment-field">
+          <mat-label>סכום ששולם</mat-label>
+          <input matInput type="number" [(ngModel)]="paymentData.paidAmount">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="payment-field">
+          <mat-label>תאריך תשלום</mat-label>
+          <input matInput [matDatepicker]="paymentPicker" [(ngModel)]="paymentData.paymentDate">
+          <mat-datepicker-toggle matIconSuffix [for]="paymentPicker"></mat-datepicker-toggle>
+          <mat-datepicker #paymentPicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="payment-field">
+          <mat-label>הערת תשלום</mat-label>
+          <input matInput [(ngModel)]="paymentData.paymentNote">
+        </mat-form-field>
+
+        <button mat-icon-button color="primary" (click)="savePaymentInfo()" matTooltip="שמור">
+          <mat-icon>check</mat-icon>
+        </button>
+        <button mat-icon-button (click)="cancelPaymentEdit()" matTooltip="בטל">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
     </div>
   </div>
 

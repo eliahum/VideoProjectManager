@@ -93,7 +93,7 @@ export class ProjectsService {
         { id },
         projectData,
         { new: true }
-      );
+      ).populate('customerId');
       if (!updatedProject) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
@@ -356,6 +356,9 @@ export class ProjectsService {
           }))
       })),
       currentMilestoneId: project.currentMilestoneId,
+      paidAmount: project.paidAmount,
+      paymentDate: project.paymentDate,
+      paymentNote: project.paymentNote,
       createdAt: project.createdAt,
       updatedAt: project.updatedAt
     };

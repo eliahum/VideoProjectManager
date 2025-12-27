@@ -25,13 +25,21 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>שלב נוכחי</mat-label>
-      <mat-select formControlName="currentStage" required>
-        <mat-option *ngFor="let stage of projectStages" [value]="stage">
-          {{ stage }}
-        </mat-option>
-      </mat-select>
-      <mat-icon matPrefix>layers</mat-icon>
+      <mat-label>סכום ששולם</mat-label>
+      <mat-icon matPrefix>payments</mat-icon>
+      <input matInput type="number" formControlName="paidAmount">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>תאריך תשלום</mat-label>
+      <mat-icon matPrefix>calendar_today</mat-icon>
+      <input matInput type="date" formControlName="paymentDate">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>הערת תשלום</mat-label>
+      <mat-icon matPrefix>note</mat-icon>
+      <input matInput formControlName="paymentNote">
     </mat-form-field>
 
     <div class="initialize-checkbox" *ngIf="!isEditMode">

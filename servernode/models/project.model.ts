@@ -35,6 +35,9 @@ export interface IProject extends Document {
   currentStageNumber: number;
   stages: IStage[];
   currentMilestoneId?: number;
+  paidAmount?: number;
+  paymentDate?: Date;
+  paymentNote?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -148,6 +151,17 @@ const projectSchema = new Schema<IProject>({
   },
   currentMilestoneId: {
     type: Number
+  },
+  paidAmount: {
+    type: Number,
+    default: 0
+  },
+  paymentDate: {
+    type: Date
+  },
+  paymentNote: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true

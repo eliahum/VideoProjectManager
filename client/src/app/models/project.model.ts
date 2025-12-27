@@ -12,6 +12,9 @@ export interface Project {
   currentStageNumber: number;
   stages: Stage[];
   currentMilestoneId?: number;
+  paidAmount?: number;
+  paymentDate?: Date;
+  paymentNote?: string;
   initializeAllStages?: boolean;
   createdAt?: Date;
   updatedAt?: Date;

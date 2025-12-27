@@ -39,6 +39,9 @@ export interface ProjectDTO {
   currentStageNumber: number;
   stages: StageDTO[];
   currentMilestoneId?: number;
+  paidAmount?: number;
+  paymentDate?: Date;
+  paymentNote?: string;
   initializeAllStages?: boolean;
   createdAt?: Date;
   updatedAt?: Date;

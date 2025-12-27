@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +9,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter, DateAdapter } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -22,11 +26,55 @@ import { ProjectStatus } from '../../../models/project-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 
+export class CustomDateAdapter extends NativeDateAdapter {
+  override parse(value: any): Date | null {
+    if (typeof value === 'string') {
+      const parts = value.split('/');
+      if (parts.length === 3) {
+        const day = Number(parts[0]);
+        const month = Number(parts[1]) - 1;
+        const year = Number(parts[2]);
+        return new Date(year, month, day);
+      }
+    }
+    return super.parse(value);
+  }
+
+  override format(date: Date, displayFormat: Object): string {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    return `${this.pad(day)}/${this.pad(month)}/${year}`;
+  }
+
+  private pad(n: number): string {
+    return n < 10 ? '0' + n : '' + n;
+  }
+}
+
+const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD/MM/YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 @Component({
   selector: 'app-project-detail',
   standalone: true,
+  providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'he-IL' }
+  ],
   imports: [
     CommonModule,
+    FormsModule,
     MatTabsModule,
     MatCardModule,
     MatButtonModule,
@@ -34,6 +82,9 @@ import { MessageDialogService } from '../../../services/message-dialog.service';
     MatChipsModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
     MatTooltipModule,
     MatDialogModule,
     MatExpansionModule,
@@ -49,6 +100,12 @@ export class ProjectDetailComponent implements OnInit {
   milestoneStatuses: MilestoneStatus[] = [];
   projectStatuses: ProjectStatus[] = [];
   isLoading: boolean = false;
+  isEditingPayment: boolean = false;
+  paymentData = {
+    paidAmount: 0,
+    paymentDate: null as Date | null,
+    paymentNote: ''
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -125,6 +182,7 @@ export class ProjectDetailComponent implements OnInit {
             this.project = response.data;
             
             console.log('Project loaded:', this.project);
+            this.initializePaymentData();
             // Set tab index based on current stage number
             if (this.project.currentStageNumber && this.project.stages) {
               let stageIndex = this.project.stages.findIndex(s => s.stageNumber === this.project!.currentStageNumber);
@@ -186,6 +244,7 @@ export class ProjectDetailComponent implements OnInit {
           this.isLoading = false;
           if (response.isSuccess && response.data) {
             this.project = response.data;
+            this.initializePaymentData();
             this.cdr.detectChanges();
           }
         },
@@ -236,6 +295,63 @@ export class ProjectDetailComponent implements OnInit {
         });
       }
     });
+  }
+
+  initializePaymentData(): void {
+    if (this.project) {
+      this.paymentData = {
+        paidAmount: this.project.paidAmount || 0,
+        paymentDate: this.project.paymentDate ? new Date(this.project.paymentDate) : null,
+        paymentNote: this.project.paymentNote || ''
+      };
+    }
+  }
+
+  editPaymentInfo(): void {
+    this.isEditingPayment = true;
+  }
+
+  savePaymentInfo(): void {
+    if (!this.project) return;
+
+    // Fix timezone issue - set time to noon UTC to avoid date shifting
+    let paymentDate: Date | undefined = undefined;
+    if (this.paymentData.paymentDate) {
+      const localDate = new Date(this.paymentData.paymentDate);
+      paymentDate = new Date(Date.UTC(
+        localDate.getFullYear(),
+        localDate.getMonth(),
+        localDate.getDate(),
+        12, 0, 0, 0
+      ));
+    }
+
+    this.isLoading = true;
+    this.projectService.update(this.project.id, {
+      paidAmount: this.paymentData.paidAmount,
+      paymentDate: paymentDate,
+      paymentNote: this.paymentData.paymentNote
+    }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess) {
+          this.isEditingPayment = false;
+          this.messageDialogService.showSuccess('פרטי תשלום עודכנו בהצלחה');
+          this.reloadProject();
+        } else {
+          this.messageDialogService.showError('שגיאה בעדכון פרטי תשלום: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בעדכון פרטי תשלום');
+      }
+    });
+  }
+
+  cancelPaymentEdit(): void {
+    this.isEditingPayment = false;
+    this.initializePaymentData();
   }
 
   goBack(): void {
