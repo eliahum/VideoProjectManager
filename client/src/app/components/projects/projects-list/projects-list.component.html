@@ -186,15 +186,15 @@
             <div class="section-title">תשלום לספקים</div>
             <div class="payment-grid">
               <div class="payment-item-mobile">
-                <span class="label">סה"כ</span>
+                <span class="label total">סה"כ</span>
                 <span class="amount-value total">₪{{ getTotalSuppliersAmount(project) }}</span>
               </div>
               <div class="payment-item-mobile">
-                <span class="label">שולם</span>
+                <span class="label paid">שולם</span>
                 <span class="amount-value paid">₪{{ getTotalSuppliersPaid(project) }}</span>
               </div>
               <div class="payment-item-mobile">
-                <span class="label">לא שולם</span>
+                <span class="label unpaid">לא שולם</span>
                 <span class="amount-value unpaid">₪{{ getTotalSuppliersUnpaid(project) }}</span>
               </div>
             </div>
@@ -203,11 +203,11 @@
           <!-- מידע כלכלי -->
           <div class="info-section financial-section">
             <div class="info-row-compact">
-              <span class="label">סכום ששלמו:</span>
-              <span class="amount-value">{{ project.paidAmount ? '₪' + project.paidAmount : '-' }}</span>
+              <span class="label total">סכום ששלמו:</span>
+              <span class="amount-value total">{{ project.paidAmount ? '₪' + project.paidAmount : '-' }}</span>
             </div>
             <div class="info-row-compact">
-              <span class="label">רווח:</span>
+              <span class="label" [ngClass]="getProfit(project) >= 0 ? 'profit-positive' : 'profit-negative'">רווח:</span>
               <span class="amount-value" [ngClass]="getProfit(project) >= 0 ? 'profit-positive' : 'profit-negative'">
                 <ng-container *ngIf="getProfit(project) >= 0">₪{{ getProfit(project) }}</ng-container>
                 <ng-container *ngIf="getProfit(project) < 0">-₪{{ Math.abs(getProfit(project)) }}</ng-container>

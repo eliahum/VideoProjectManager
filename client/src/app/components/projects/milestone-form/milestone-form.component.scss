@@ -365,22 +365,41 @@ mat-dialog-actions {
 @media (max-width: 768px) {
   .milestone-form {
     min-width: auto;
+    padding: 12px 0;
   }
 
   .form-row {
     flex-direction: column;
   }
 
-  .half-width {
+  .half-width,
+  .compact-field {
+    width: 100% !important;
+    flex: 1 !important;
+  }
+
+  .urgent-checkbox.inline {
     width: 100%;
+    padding: 12px;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 8px;
+    height: auto;
   }
 
   .suppliers-section .suppliers-list .supplier-card .supplier-form-row {
     flex-direction: column;
 
     .supplier-select,
-    .amount-field {
-      width: 100%;
+    .amount-field,
+    .date-field,
+    .paid-button {
+      width: 100% !important;
+      flex: 1 !important;
+    }
+
+    button[mat-icon-button] {
+      align-self: center;
     }
   }
 }

@@ -278,3 +278,57 @@
   color: #f4f0ff !important;
   border-radius: 16px !important;
 }
+
+@media (max-width: 768px) {
+  .customer-projects-dialog {
+    max-width: 100%;
+    
+    .dialog-header {
+      padding: 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .customer-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+
+        h2 {
+          font-size: 20px;
+        }
+      }
+    }
+
+    .dialog-content {
+      padding: 16px;
+
+      .info-section .info-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .projects-section {
+        .projects-grid {
+          grid-template-columns: 1fr;
+          max-height: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .customer-projects-dialog {
+    .dialog-header .customer-info .customer-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+    }
+
+    .dialog-content .projects-section .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+  }
+}
