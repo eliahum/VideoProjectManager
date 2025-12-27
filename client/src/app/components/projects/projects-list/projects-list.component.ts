@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { ProjectService } from '../../../services/project.service';
 import { ProjectStatusService } from '../../../services/project-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
@@ -35,7 +36,8 @@ import { ProjectFormComponent } from '../project-form/project-form.component';
     MatProgressSpinnerModule,
     MatPaginatorModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatSelectModule
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss'
@@ -53,6 +55,8 @@ export class ProjectsListComponent implements OnInit {
   pageSizeOptions: number[] = [5, 10, 25, 50];
   Math = Math;
   projectStatuses: ProjectStatus[] = [];
+  activeStatuses: ProjectStatus[] = []; // סטטוסים שאינם סופיים
+  selectedStatusNumbers: number[] = []; // סטטוסים נבחרים לפילטור
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -133,12 +137,30 @@ export class ProjectsListComponent implements OnInit {
       next: (response) => {
         if (response.isSuccess && response.data) {
           this.projectStatuses = response.data;
+          // סטטוסים פעילים (לא סופיים) בלבד
+          this.activeStatuses = response.data.filter(s => !s.isFinal);
+          // בחירה אוטומטית של כל הסטטוסים הפעילים
+          this.selectedStatusNumbers = this.activeStatuses.map(s => s.statusNumber);
         }
       },
       error: (err) => {
         console.error('Error loading project statuses:', err);
       }
     });
+  }
+
+  toggleStatusFilter(statusNumber: number): void {
+    const index = this.selectedStatusNumbers.indexOf(statusNumber);
+    if (index > -1) {
+      this.selectedStatusNumbers.splice(index, 1);
+    } else {
+      this.selectedStatusNumbers.push(statusNumber);
+    }
+    this.applyFilter();
+  }
+
+  isStatusSelected(statusNumber: number): boolean {
+    return this.selectedStatusNumbers.includes(statusNumber);
   }
 
   loadProjects(): void {
@@ -163,15 +185,22 @@ export class ProjectsListComponent implements OnInit {
 
   applyFilter(): void {
     const text = this.searchText ? this.searchText.trim().toLowerCase() : '';
-    if (!text) {
-      this.filteredProjects = [...this.allProjects];
-    } else {
-      this.filteredProjects = this.allProjects.filter(project => {
+    
+    // פילטור לפי סטטוסים נבחרים
+    let filtered = this.allProjects.filter(project => {
+      return this.selectedStatusNumbers.includes(project.statusNumber);
+    });
+
+    // פילטור לפי טקסט חיפוש
+    if (text) {
+      filtered = filtered.filter(project => {
         return Object.values(project).some(val =>
           val && val.toString().toLowerCase().includes(text)
         );
       });
     }
+
+    this.filteredProjects = filtered;
     this.projects = this.filteredProjects;
     this.pageIndex = 0;
     this.updatePaginatedProjects();

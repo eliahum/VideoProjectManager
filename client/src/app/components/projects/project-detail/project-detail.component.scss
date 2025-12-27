@@ -120,6 +120,29 @@
           color: #ffffff !important;
         }
       }
+      
+      // סגנון ספציפי ל-customer-field select
+      &.customer-field {
+        ::ng-deep .mat-mdc-select {
+          color: #ffffff !important;
+        }
+        
+        ::ng-deep .mat-mdc-select-value {
+          color: #ffffff !important;
+        }
+        
+        ::ng-deep .mat-mdc-select-value-text {
+          color: #ffffff !important;
+        }
+        
+        ::ng-deep .mat-mdc-select-arrow {
+          color: #ffffff !important;
+        }
+        
+        ::ng-deep .mat-mdc-select-trigger {
+          color: #ffffff !important;
+        }
+      }
 
       button {
         mat-icon {
@@ -1131,6 +1154,22 @@
     circle {
       stroke: #a855f7 !important;
     }
+  }
+}
+
+// Global customer field select styling
+::ng-deep .customer-field {
+  .mat-mdc-select-value,
+  .mat-mdc-select-value-text,
+  .mat-mdc-select-arrow,
+  .mat-mdc-select-trigger {
+    color: #ffffff !important;
+  }
+  
+  .mat-mdc-form-field-label,
+  .mdc-floating-label,
+  label {
+    color: #ffffff !important;
   }
 }
 
