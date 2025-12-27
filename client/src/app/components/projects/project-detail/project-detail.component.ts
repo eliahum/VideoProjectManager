@@ -354,6 +354,64 @@ export class ProjectDetailComponent implements OnInit {
     this.initializePaymentData();
   }
 
+  getTotalSupplierAmount(milestone: Milestone): number {
+    if (!milestone.suppliers || milestone.suppliers.length === 0) {
+      return 0;
+    }
+    return milestone.suppliers.reduce((total, supplier) => total + (supplier.amount || 0), 0);
+  }
+
+  getPaidAmount(milestone: Milestone): number {
+    if (!milestone.suppliers || milestone.suppliers.length === 0) {
+      return 0;
+    }
+    return milestone.suppliers
+      .filter(supplier => supplier.isPaid)
+      .reduce((total, supplier) => total + (supplier.amount || 0), 0);
+  }
+
+  getUnpaidAmount(milestone: Milestone): number {
+    if (!milestone.suppliers || milestone.suppliers.length === 0) {
+      return 0;
+    }
+    return milestone.suppliers
+      .filter(supplier => !supplier.isPaid)
+      .reduce((total, supplier) => total + (supplier.amount || 0), 0);
+  }
+
+  getTotalSuppliersAmount(): number {
+    if (!this.project || !this.project.stages) {
+      return 0;
+    }
+    return this.project.stages.reduce((stageTotal, stage) => {
+      return stageTotal + stage.milestones.reduce((milestoneTotal, milestone) => {
+        return milestoneTotal + this.getTotalSupplierAmount(milestone);
+      }, 0);
+    }, 0);
+  }
+
+  getTotalSuppliersPaid(): number {
+    if (!this.project || !this.project.stages) {
+      return 0;
+    }
+    return this.project.stages.reduce((stageTotal, stage) => {
+      return stageTotal + stage.milestones.reduce((milestoneTotal, milestone) => {
+        return milestoneTotal + this.getPaidAmount(milestone);
+      }, 0);
+    }, 0);
+  }
+
+  getTotalSuppliersUnpaid(): number {
+    if (!this.project || !this.project.stages) {
+      return 0;
+    }
+    return this.project.stages.reduce((stageTotal, stage) => {
+      return stageTotal + stage.milestones.reduce((milestoneTotal, milestone) => {
+        return milestoneTotal + this.getUnpaidAmount(milestone);
+      }, 0);
+    }, 0);
+  }
+
   goBack(): void {
     this.router.navigate(['/projects']);
   }

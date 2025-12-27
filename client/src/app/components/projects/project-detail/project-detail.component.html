@@ -4,14 +4,23 @@
       <mat-icon>arrow_forward</mat-icon>
     </button>
 
-    <mat-form-field class="status-select" appearance="outline">
-      <mat-label>סטטוס פרויקט</mat-label>
-      <mat-select [value]="project.statusNumber" (selectionChange)="updateProjectStatus($event.value)">
-        <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
-          {{ status.name }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <div class="status-column">
+      <mat-form-field class="status-select" appearance="outline">
+        <mat-label>סטטוס פרויקט</mat-label>
+        <mat-select [value]="project.statusNumber" (selectionChange)="updateProjectStatus($event.value)">
+          <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
+            {{ status.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <div class="status-actions">
+        <button mat-raised-button color="primary" (click)="addNewMilestoneToCurrentStage()">
+          <mat-icon>add</mat-icon>
+          הוסף אבן דרך
+        </button>
+      </div>
+    </div>
 
     <div class="header-actions">
       <div class="header-row">
@@ -22,7 +31,7 @@
         <span class="current-stage-value">{{ project.customerName }}</span>
 
         <span class="current-stage-label">שלב הנוכחי:</span>
-        <span class="current-stage-value">{{ project.currentStage }}hsdgjsfjs</span>111
+        <span class="current-stage-value">{{ project.currentStage }}</span>
       </div>
 
       <div class="header-row payment-row" *ngIf="!isEditingPayment">
@@ -30,7 +39,7 @@
 
         <div class="payment-info">
 
-          <span class="current-stage-label">סכום ששולם:</span>
+          <span class="current-stage-label">סכום ששלמו:</span>
           <span class="current-stage-value">{{ project.paidAmount ? '₪' + project.paidAmount : 'לא שולם' }}</span>
 
           <span class="current-stage-label">תאריך תשלום:</span>
@@ -46,6 +55,22 @@
             </button>
           </span>
         </div>
+      </div>
+
+      <div class="header-row suppliers-summary-row">
+        <span class="current-stage-label">תשלום לספקים:</span>
+        <span class="supplier-total" title="סה&quot;כ">
+          <mat-icon>payments</mat-icon>
+          ₪{{ getTotalSuppliersAmount() }}
+        </span>
+        <span class="supplier-paid" title="שולם">
+          <mat-icon>check_circle</mat-icon>
+          ₪{{ getTotalSuppliersPaid() }}
+        </span>
+        <span class="supplier-unpaid" title="לא שולם">
+          <mat-icon>pending</mat-icon>
+          ₪{{ getTotalSuppliersUnpaid() }}
+        </span>
       </div>
 
       <div class="header-row payment-row" *ngIf="isEditingPayment">
@@ -74,14 +99,11 @@
         </button>
       </div>
     </div>
+
+    
   </div>
 
-  <div class="add-milestone-section">
-    <button mat-raised-button color="primary" (click)="addNewMilestoneToCurrentStage()">
-      <mat-icon>add</mat-icon>
-      הוסף אבן דרך
-    </button>
-  </div>
+  
 
   <mat-card class="stages-card">
     <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
@@ -91,19 +113,34 @@
 
           <mat-accordion class="milestones-accordion" cdkDropList (cdkDropListDropped)="onMilestoneDrop($event, stage)">
             <mat-expansion-panel *ngFor="let milestone of stage.milestones" class="milestone-panel" cdkDrag
-              [ngClass]="{'current-milestone-row':stage.stageNumber === project.currentStageNumber && project.currentMilestoneId === milestone.milestoneId}">
+              [ngClass]="{'current-milestone-row':stage.stageNumber === project.currentStageNumber && project.currentMilestoneId === milestone.milestoneId}" hideToggle>
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <mat-icon cdkDragHandle class="drag-handle">drag_indicator</mat-icon>
                   <mat-icon>flag</mat-icon>
                   <span>{{ milestone.name }}</span>
+                  <span class="milestone-totals" *ngIf="milestone.suppliers.length > 0">
+                    <span class="total-amount">
+                      <mat-icon>payments</mat-icon>
+                      ₪{{ getTotalSupplierAmount(milestone) }}
+                    </span>
+                    <span class="paid-amount">
+                      <mat-icon>check_circle</mat-icon>
+                      ₪{{ getPaidAmount(milestone) }}
+                    </span>
+                    <span class="unpaid-amount">
+                      <mat-icon>pending</mat-icon>
+                      ₪{{ getUnpaidAmount(milestone) }}
+                    </span>
+                  </span>
+                 
                 </mat-panel-title>
-                <mat-panel-description><span style="color:white"> {{milestone.sort}}</span>
-                  <button mat-icon-button class="delete-milestone-btn"
-                    (click)="deleteMilestone($event, stage, milestone)" matTooltip="מחק אבן דרך">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                  <mat-form-field class="status-select-inline" appearance="outline" (click)="$event.stopPropagation()">
+                <mat-panel-description>
+                  <mat-form-field 
+                    class="status-select-inline" 
+                    [ngClass]="'status-' + milestone.statusNumber"
+                    appearance="outline" 
+                    (click)="$event.stopPropagation()">
                     <mat-select [value]="milestone.statusNumber"
                       (selectionChange)="updateMilestoneStatus($event.value, stage, milestone)">
                       <mat-option *ngFor="let status of milestoneStatuses" [value]="status.milestoneStatusNumber">
@@ -111,10 +148,15 @@
                       </mat-option>
                     </mat-select>
                   </mat-form-field>
+                  <button mat-icon-button class="delete-milestone-btn"
+                    (click)="deleteMilestone($event, stage, milestone)" matTooltip="מחק אבן דרך">
+                    <mat-icon>delete</mat-icon>
+                  </button>
                 </mat-panel-description>
               </mat-expansion-panel-header>
 
               <div class="milestone-details">
+                
                 <div class="detail-row" *ngIf="milestone.documentReference">
                   <mat-icon>description</mat-icon>
                   <span><strong>מסמך:</strong> {{ milestone.documentReference }}</span>
