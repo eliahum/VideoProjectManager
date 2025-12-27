@@ -495,6 +495,7 @@
       font-size: 1.05rem;
       flex: 1;
       min-width: 0;
+      position: relative;
 
       mat-icon {
         color: #a855f7;
@@ -515,9 +516,9 @@
       .milestone-totals {
         display: flex;
         align-items: center;
-        gap: 12px;
-        margin-left: auto;
-        margin-right: 116px;
+        gap: 8px;
+        position: absolute;
+        right: 340px;
         font-size: 0.9rem;
         font-weight: 500;
 
@@ -525,14 +526,18 @@
           display: flex;
           align-items: center;
           gap: 4px;
-          padding: 4px 8px;
+          padding: 4px 10px;
           border-radius: 6px;
           background: rgba(0, 0, 0, 0.2);
+          min-width: 95px;
+          max-width: 95px;
+          justify-content: center;
 
           mat-icon {
             font-size: 16px;
             width: 16px;
             height: 16px;
+            flex-shrink: 0;
           }
         }
 
