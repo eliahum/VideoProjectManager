@@ -1,5 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +9,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { ProjectService } from '../../../services/project.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Project } from '../../../models/project.model';
@@ -18,6 +22,7 @@ import { ProjectFormComponent } from '../project-form/project-form.component';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterLink,
     MatTableModule,
     MatButtonModule,
@@ -25,15 +30,27 @@ import { ProjectFormComponent } from '../project-form/project-form.component';
     MatDialogModule,
     MatChipsModule,
     MatCardModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss'
 })
 export class ProjectsListComponent implements OnInit {
   projects: Project[] = [];
+  allProjects: Project[] = [];
+  filteredProjects: Project[] = [];
+  paginatedProjects: Project[] = [];
+  searchText: string = '';
   displayedColumns: string[] = ['customerName', 'projectType', 'currentStage', 'currentMilestone', 'actions'];
   isLoading: boolean = false;
+  pageSize: number = 10;
+  pageIndex: number = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 50];
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   getCurrentMilestoneName(project: Project): string {
     if (!project.currentMilestoneId) return '-';
@@ -60,7 +77,8 @@ export class ProjectsListComponent implements OnInit {
       next: (response) => {
         this.isLoading = false;
         if (response.isSuccess && response.data) {
-          this.projects = [...response.data];
+          this.allProjects = [...response.data];
+          this.applyFilter();
           this.cdr.detectChanges();
         } else {
           this.messageDialogService.showError('שגיאה בטעינת פרויקטים: ' + (response.errorText || 'Unknown error'));
@@ -71,6 +89,43 @@ export class ProjectsListComponent implements OnInit {
         this.messageDialogService.showError('שגיאה בטעינת פרויקטים');
       }
     });
+  }
+
+  applyFilter(): void {
+    const text = this.searchText ? this.searchText.trim().toLowerCase() : '';
+    if (!text) {
+      this.filteredProjects = [...this.allProjects];
+    } else {
+      this.filteredProjects = this.allProjects.filter(project => {
+        return Object.values(project).some(val =>
+          val && val.toString().toLowerCase().includes(text)
+        );
+      });
+    }
+    this.projects = this.filteredProjects;
+    this.pageIndex = 0;
+    this.updatePaginatedProjects();
+  }
+
+  clearSearch(): void {
+    this.searchText = '';
+    this.applyFilter();
+  }
+
+  updatePaginatedProjects(): void {
+    const startIndex = this.pageIndex * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.paginatedProjects = this.projects.slice(startIndex, endIndex);
+  }
+
+  onPageChange(event: any): void {
+    this.pageIndex = event.pageIndex;
+    this.pageSize = event.pageSize;
+    this.updatePaginatedProjects();
+  }
+
+  get totalItems(): number {
+    return this.projects.length;
   }
 
   openProjectForm(project?: Project): void {
