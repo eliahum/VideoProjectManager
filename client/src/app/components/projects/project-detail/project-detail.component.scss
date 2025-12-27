@@ -97,7 +97,8 @@
         gap: 16px;
       }
       
-      .payment-field {
+      .payment-field,
+      .customer-field {
         width: 180px;
         
         ::ng-deep .mat-mdc-text-field-wrapper {
@@ -198,6 +199,22 @@
     font-size: 22px;
     font-weight: 700;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .edit-icon-btn {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #a855f7;
+      }
+    }
   }
 
   .customer-name {
@@ -844,13 +861,94 @@
 
 @media (max-width: 768px) {
   .project-detail-container {
-    padding: 16px;
+    padding: 12px;
   }
 
   .header {
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
     padding: 16px;
+
+    button {
+      order: 0;
+      align-self: flex-start;
+    }
+
+    .status-column {
+      order: 1;
+      width: 100%;
+      
+      .status-select {
+        width: 100%;
+        min-width: unset;
+      }
+
+      .status-actions {
+        width: 100%;
+        
+        button {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    }
+
+    .header-actions {
+      order: 2;
+      width: 100%;
+      align-items: stretch;
+      
+      .header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+
+        .current-stage-label,
+        .current-stage-value {
+          font-size: 16px;
+          white-space: normal;
+          word-break: break-word;
+        }
+
+        .customer-field {
+          width: 100%;
+        }
+
+        &.payment-row {
+          .payment-info {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+          }
+
+          .payment-field {
+            width: 100%;
+          }
+
+          button {
+            width: 100%;
+            margin-top: 8px;
+          }
+
+          .edit-payment-btn {
+            width: 40px !important;
+            height: 40px !important;
+            align-self: flex-end;
+          }
+        }
+
+        &.suppliers-summary-row {
+          flex-direction: row;
+          flex-wrap: wrap;
+          
+          span {
+            font-size: 14px;
+            padding: 8px 12px;
+          }
+        }
+      }
+    }
 
     h1 {
       font-size: 1.5rem;
@@ -868,6 +966,18 @@
     }
   }
 
+  .stages-card {
+    ::ng-deep .mat-mdc-tab-labels {
+      flex-wrap: wrap;
+      
+      .mat-mdc-tab {
+        min-width: unset;
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+    }
+  }
+
   .tab-content {
     padding: 12px;
   }
@@ -876,13 +986,14 @@
     .milestone-panel {
       mat-expansion-panel-header {
         padding: 0 12px;
+        min-height: 64px;
 
         mat-panel-title {
-          flex-direction: row;
+          flex-direction: column;
+          align-items: flex-start;
           gap: 8px;
           flex: 1;
           min-width: 0;
-          max-width: 65%;
 
           mat-icon {
             flex-shrink: 0;
@@ -896,6 +1007,23 @@
             word-break: break-word;
             line-height: 1.3;
           }
+
+          .milestone-totals {
+            position: static;
+            right: auto;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+            margin-top: 8px;
+
+            span {
+              font-size: 12px;
+              padding: 4px 8px;
+              min-width: auto;
+              max-width: none;
+            }
+          }
         }
 
         mat-panel-description {
@@ -903,12 +1031,16 @@
           align-items: flex-end;
           justify-content: center;
           flex: 0 0 auto;
+          gap: 8px;
           
-          .status-chip {
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            min-height: 28px;
-            white-space: nowrap;
+          .status-select-inline {
+            width: 120px;
+            font-size: 12px;
+          }
+
+          .delete-milestone-btn {
+            width: 36px;
+            height: 36px;
           }
         }
       }
@@ -922,6 +1054,19 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 4px;
+    }
+
+    .suppliers-section {
+      h4 {
+        font-size: 16px;
+      }
+
+      .supplier-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 8px;
+      }
     }
 
     .milestone-actions {

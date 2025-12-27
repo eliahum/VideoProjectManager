@@ -13,8 +13,10 @@ import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ProjectService } from '../../../services/project.service';
+import { ProjectStatusService } from '../../../services/project-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Project } from '../../../models/project.model';
+import { ProjectStatus } from '../../../models/project-status.model';
 import { ProjectFormComponent } from '../project-form/project-form.component';
 
 @Component({
@@ -44,13 +46,20 @@ export class ProjectsListComponent implements OnInit {
   filteredProjects: Project[] = [];
   paginatedProjects: Project[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['customerName', 'projectType', 'currentStage', 'currentMilestone', 'actions'];
+  displayedColumns: string[] = ['projectName','customerName', 'status', 'currentStage', 'currentMilestone', 'suppliersPayment', 'paidAmount', 'profit', 'actions'];
   isLoading: boolean = false;
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
+  Math = Math;
+  projectStatuses: ProjectStatus[] = [];
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  getStatusName(statusNumber: number): string {
+    const status = this.projectStatuses.find(s => s.statusNumber === statusNumber);
+    return status ? status.name : '-';
+  }
 
   getCurrentMilestoneName(project: Project): string {
     if (!project.currentMilestoneId) return '-';
@@ -60,15 +69,76 @@ export class ProjectsListComponent implements OnInit {
     return milestone ? milestone.name : '-';
   }
 
+  getTotalSuppliersAmount(project: Project): number {
+    let total = 0;
+    project.stages?.forEach(stage => {
+      stage.milestones?.forEach(milestone => {
+        milestone.suppliers?.forEach(supplier => {
+          total += supplier.amount || 0;
+        });
+      });
+    });
+    return total;
+  }
+
+  getTotalSuppliersPaid(project: Project): number {
+    let total = 0;
+    project.stages?.forEach(stage => {
+      stage.milestones?.forEach(milestone => {
+        milestone.suppliers?.forEach(supplier => {
+          if (supplier.isPaid) {
+            total += supplier.amount || 0;
+          }
+        });
+      });
+    });
+    return total;
+  }
+
+  getTotalSuppliersUnpaid(project: Project): number {
+    let total = 0;
+    project.stages?.forEach(stage => {
+      stage.milestones?.forEach(milestone => {
+        milestone.suppliers?.forEach(supplier => {
+          if (!supplier.isPaid) {
+            total += supplier.amount || 0;
+          }
+        });
+      });
+    });
+    return total;
+  }
+
+  getProfit(project: Project): number {
+    const paidAmount = project.paidAmount || 0;
+    const suppliersTotal = this.getTotalSuppliersAmount(project);
+    return paidAmount - suppliersTotal;
+  }
+
   constructor(
     private projectService: ProjectService,
+    private projectStatusService: ProjectStatusService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private messageDialogService: MessageDialogService
   ) {}
 
   ngOnInit(): void {
+    this.loadProjectStatuses();
     this.loadProjects();
+  }
+
+  loadProjectStatuses(): void {
+    this.projectStatusService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.projectStatuses = response.data;
+        }
+      },
+      error: (err) => {
+        console.error('Error loading project statuses:', err);
+      }
+    });
   }
 
   loadProjects(): void {

@@ -4,7 +4,7 @@ export interface Project {
   _id?: string;
   id: string;
   projectNumber: number;
-  customerId: number;
+  customerId: number | string; // Can be either number or ObjectId string
   customerName?: string; // Optional - populated from server lookup
   projectName: string;
   statusNumber: number;

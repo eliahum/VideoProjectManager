@@ -18,9 +18,11 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ProjectService } from '../../../services/project.service';
+import { CustomerService } from '../../../services/customer.service';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
 import { ProjectStatusService } from '../../../services/project-status.service';
 import { Project, Stage, Milestone } from '../../../models/project.model';
+import { Customer } from '../../../models/customer.model';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
@@ -99,8 +101,11 @@ export class ProjectDetailComponent implements OnInit {
   selectedTabIndex = 0;
   milestoneStatuses: MilestoneStatus[] = [];
   projectStatuses: ProjectStatus[] = [];
+  customers: Customer[] = [];
   isLoading: boolean = false;
   isEditingPayment: boolean = false;
+  isEditingCustomer: boolean = false;
+  selectedCustomerId: string = '';
   paymentData = {
     paidAmount: 0,
     paymentDate: null as Date | null,
@@ -111,6 +116,7 @@ export class ProjectDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
+    private customerService: CustomerService,
     private milestoneStatusService: MilestoneStatusService,
     private projectStatusService: ProjectStatusService,
     private dialog: MatDialog,
@@ -165,6 +171,18 @@ export class ProjectDetailComponent implements OnInit {
       },
       error: (err) => {
         this.messageDialogService.showError('שגיאה בטעינת סטטוסי פרויקט');
+      }
+    });
+
+    // Load customers
+    this.customerService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.customers = response.data;
+        }
+      },
+      error: (err) => {
+        this.messageDialogService.showError('שגיאה בטעינת לקוחות');
       }
     });
 
@@ -353,6 +371,57 @@ export class ProjectDetailComponent implements OnInit {
   cancelPaymentEdit(): void {
     this.isEditingPayment = false;
     this.initializePaymentData();
+  }
+
+  editCustomer(): void {
+    // Find the customer by customerId and get their ObjectId
+    if (typeof this.project?.customerId === 'string') {
+      // Already have ObjectId
+      this.selectedCustomerId = this.project.customerId;
+    } else {
+      // Have customerId number, find the ObjectId
+      const currentCustomer = this.customers.find(c => c.customerId === this.project?.customerId);
+      this.selectedCustomerId = currentCustomer?.id || '';
+    }
+    this.isEditingCustomer = true;
+  }
+
+  saveCustomer(): void {
+    if (!this.project || !this.selectedCustomerId) return;
+
+    const selectedCustomer = this.customers.find(c => c.id === this.selectedCustomerId);
+    if (!selectedCustomer) return;
+
+    this.isLoading = true;
+    this.projectService.update(this.project.id, {
+      customerId: this.selectedCustomerId, // Send ObjectId
+      customerName: selectedCustomer.name
+    }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess) {
+          this.isEditingCustomer = false;
+          this.messageDialogService.showSuccess('לקוח עודכן בהצלחה');
+          this.reloadProject();
+        } else {
+          this.messageDialogService.showError('שגיאה בעדכון לקוח: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בעדכון לקוח');
+      }
+    });
+  }
+
+  cancelCustomerEdit(): void {
+    this.isEditingCustomer = false;
+    if (typeof this.project?.customerId === 'string') {
+      this.selectedCustomerId = this.project.customerId;
+    } else {
+      const currentCustomer = this.customers.find(c => c.customerId === this.project?.customerId);
+      this.selectedCustomerId = currentCustomer?.id || '';
+    }
   }
 
   getTotalSupplierAmount(milestone: Milestone): number {

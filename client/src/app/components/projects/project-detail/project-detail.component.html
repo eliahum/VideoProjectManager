@@ -28,7 +28,26 @@
         <span class="current-stage-value">{{ project.projectName }}</span>
 
         <span class="current-stage-label">לקוח:</span>
-        <span class="current-stage-value">{{ project.customerName }}</span>
+        <span class="current-stage-value" *ngIf="!isEditingCustomer">
+          {{ project.customerName }}
+          <button mat-icon-button (click)="editCustomer()" matTooltip="ערוך לקוח" class="edit-icon-btn">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </span>
+        <mat-form-field appearance="outline" class="customer-field" *ngIf="isEditingCustomer">
+          <mat-label>בחר לקוח</mat-label>
+          <mat-select [(value)]="selectedCustomerId">
+            <mat-option *ngFor="let customer of customers" [value]="customer.id">
+              {{ customer.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-icon-button color="primary" *ngIf="isEditingCustomer" (click)="saveCustomer()" matTooltip="שמור">
+          <mat-icon>check</mat-icon>
+        </button>
+        <button mat-icon-button *ngIf="isEditingCustomer" (click)="cancelCustomerEdit()" matTooltip="בטל">
+          <mat-icon>close</mat-icon>
+        </button>
 
         <span class="current-stage-label">שלב הנוכחי:</span>
         <span class="current-stage-value">{{ project.currentStage }}</span>
