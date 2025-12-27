@@ -732,12 +732,37 @@
     .supplier-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 8px 0;
       border-bottom: 1px solid rgba(168,85,247,0.15);
       color: rgba(255,255,255,0.9);
 
       &:last-child {
         border-bottom: none;
+      }
+
+      .supplier-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .supplier-name {
+          font-weight: 500;
+        }
+
+        .supplier-date {
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          font-size: 0.85rem;
+          color: rgba(255,255,255,0.6);
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
       }
 
       .amount {

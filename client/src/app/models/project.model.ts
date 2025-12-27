@@ -50,6 +50,7 @@ export interface MilestoneSupplier {
   supplierName: string;
   amount: number;
   isPaid?: boolean;
+  date?: Date;
 }
 
 export const PRE_MILESTONES = [

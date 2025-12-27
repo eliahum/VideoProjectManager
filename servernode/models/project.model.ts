@@ -6,6 +6,7 @@ export interface IMilestoneSupplier {
   supplierName: string;
   amount: number;
   isPaid: boolean;
+  date?: Date;
 }
 
 export interface IMilestone {
@@ -58,6 +59,10 @@ const milestoneSupplierSchema = new Schema<IMilestoneSupplier>({
   isPaid: {
     type: Boolean,
     default: false
+  },
+  date: {
+    type: Date,
+    required: false
   }
 }, { _id: false });
 

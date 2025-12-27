@@ -18,14 +18,14 @@
     </mat-form-field>
 
     <div class="form-row">
-      <mat-form-field appearance="outline" class="half-width">
+      <mat-form-field appearance="outline" class="half-width compact-field">
         <mat-label>תאריך</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="date">
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="half-width">
+      <mat-form-field appearance="outline" class="half-width compact-field">
         <mat-label>סטטוס</mat-label>
         <mat-select formControlName="status" required>
           <mat-option *ngFor="let status of milestoneStatuses" [value]="status">
@@ -33,12 +33,12 @@
           </mat-option>
         </mat-select>
       </mat-form-field>
-    </div>
 
-    <div class="urgent-checkbox">
-      <mat-checkbox formControlName="isUrgent">
-        <span class="urgent-label">דחוף</span>
-      </mat-checkbox>
+      <div class="urgent-checkbox inline">
+        <mat-checkbox formControlName="isUrgent">
+          <span class="urgent-label">דחוף</span>
+        </mat-checkbox>
+      </div>
     </div>
 
     <div class="suppliers-section">
@@ -72,6 +72,13 @@
               <mat-error *ngIf="supplier.get('amount')?.hasError('min')">
                 סכום חייב להיות חיובי
               </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="date-field">
+              <mat-label>תאריך</mat-label>
+              <input matInput [matDatepicker]="supplierPicker" formControlName="date">
+              <mat-datepicker-toggle matSuffix [for]="supplierPicker"></mat-datepicker-toggle>
+              <mat-datepicker #supplierPicker></mat-datepicker>
             </mat-form-field>
 
             <button mat-raised-button 

@@ -1,9 +1,9 @@
 .milestone-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 3px;
   padding: 16px 0;
-  min-width: 500px;
+  min-width: 800px;
   max-height: 70vh;
   overflow-y: auto;
   color: #f4f0ff;
@@ -11,7 +11,7 @@
 
 .form-row {
   display: flex;
-  gap: 12px;
+  gap: 3px;
   width: 100%;
 }
 
@@ -21,6 +21,12 @@
 
 .half-width {
   flex: 1;
+}
+
+/* Compact field variant: quarter width (half of half) */
+.compact-field {
+  flex: 0.25;
+  min-width: 0; /* allow flexbox to shrink the field container */
 }
 
 ::ng-deep .milestone-form .mat-mdc-form-field {
@@ -77,9 +83,23 @@
   }
 }
 
+/* Inline variant for urgent checkbox when placed inside a form row */
+.urgent-checkbox.inline {
+  margin: 0;
+  padding: 0 8px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  height: 50px;
+  flex: 0 0 auto;
+}
+
 ::ng-deep .mat-mdc-dialog-surface {
   background: rgba(19, 16, 33, 0.98) !important;
   border-radius: 16px !important;
+  border: 1px solid #ffffff !important;
   overflow: hidden;
 }
 
@@ -87,6 +107,7 @@
   background: rgba(19, 16, 33, 0.98) !important;
   color: #f4f0ff !important;
   border-radius: 16px !important;
+  border: 1px solid #ffffff !important;
 }
 
 ::ng-deep .mat-mdc-dialog-title {
@@ -95,6 +116,34 @@
 
 ::ng-deep .mat-mdc-dialog-content {
   color: #f4f0ff !important;
+}
+
+/* Ensure calendar icon in datepicker toggle is white within the milestone form */
+::ng-deep .milestone-form .mat-datepicker-toggle .mat-icon {
+  color: #ffffff !important;
+}
+
+/* Strengthen selector to cover MDC button wrapper and icon states */
+::ng-deep .milestone-form .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button,
+::ng-deep .milestone-form .mat-datepicker-toggle {
+  color: #ffffff !important;
+}
+
+::ng-deep .milestone-form .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button .mat-icon,
+::ng-deep .milestone-form .mat-datepicker-toggle .mat-icon {
+  color: #ffffff !important;
+}
+
+/* Keep icon white on hover/focus/active */
+::ng-deep .milestone-form .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button:hover,
+::ng-deep .milestone-form .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button:focus,
+::ng-deep .milestone-form .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button:active {
+  color: #ffffff !important;
+}
+
+/* If using SVG registered icons, force white fill */
+::ng-deep .milestone-form .mat-datepicker-toggle .mat-icon svg {
+  fill: #ffffff !important;
 }
 
 ::ng-deep .milestone-form .mat-mdc-form-field {
@@ -197,7 +246,7 @@
   .suppliers-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 3px;
 
     .supplier-card {
       padding: 16px;
@@ -207,7 +256,7 @@
 
       .supplier-form-row {
         display: flex;
-        gap: 12px;
+        gap: 3px;
         align-items: center;
         height: 20px;
 
@@ -218,6 +267,11 @@
 
         .amount-field {
           flex: 1;
+          height: 50px;
+        }
+
+        .date-field {
+          flex: 1.6;
           height: 50px;
         }
 

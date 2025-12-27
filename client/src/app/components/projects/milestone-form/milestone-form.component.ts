@@ -103,7 +103,8 @@ export class MilestoneFormComponent implements OnInit {
       supplierId: [existing?.supplierId || '', Validators.required],
       supplierName: [existing?.supplierName || ''],
       amount: [existing?.amount || 0, [Validators.required, Validators.min(0)]],
-      isPaid: [existing?.isPaid || false]
+      isPaid: [existing?.isPaid || false],
+      date: [existing?.date || null]
     });
 
     // Update supplier name when supplier is selected
@@ -168,14 +169,31 @@ export class MilestoneFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.milestoneForm.valid) {
+      // Fix timezone offset for dates
+      const fixDateTimezone = (date: Date | null): Date | null => {
+        if (!date) return null;
+        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
+        return new Date(date.getTime() - userTimezoneOffset);
+      };
+
+      const suppliers = this.milestoneForm.value.suppliers.map((s: any) => ({
+        supplierId: s.supplierId,
+        supplierName: s.supplierName,
+        amount: s.amount,
+        isPaid: s.isPaid || false,
+        date: fixDateTimezone(s.date)
+      }));
+
       const milestoneData = {
         name: this.milestoneForm.value.name,
         documentReference: this.milestoneForm.value.documentReference,
-        date: this.milestoneForm.value.date,
+        date: fixDateTimezone(this.milestoneForm.value.date),
         statusNumber: this.getStatusNumber(this.milestoneForm.value.status),
         isUrgent: this.milestoneForm.value.isUrgent || false,
-        suppliers: this.milestoneForm.value.suppliers
+        suppliers: suppliers
       };
+
+      console.log('Saving milestone data:', milestoneData);
 
       if (this.isEditMode && this.data.milestone) {
         // עדכון מילסטון קיים

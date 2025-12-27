@@ -169,7 +169,8 @@ export class ProjectsService {
           supplierId: s.supplierId,
           supplierName: s.supplierName,
           amount: s.amount,
-          isPaid: s.isPaid ?? false
+          isPaid: s.isPaid ?? false,
+          date: s.date
         }));
       }
 
@@ -351,7 +352,8 @@ export class ProjectsService {
               supplierId: supplier.supplierId,
               supplierName: supplier.supplierName,
               amount: supplier.amount,
-              isPaid: supplier.isPaid
+              isPaid: supplier.isPaid,
+              date: supplier.date
             }))
           }))
       })),

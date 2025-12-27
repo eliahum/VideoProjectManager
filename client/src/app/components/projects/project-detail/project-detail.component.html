@@ -189,7 +189,13 @@
                 <div class="suppliers-section" *ngIf="milestone.suppliers.length > 0">
                   <h4><mat-icon>business</mat-icon> ספקים:</h4>
                   <div class="supplier-item" *ngFor="let supplier of milestone.suppliers">
-                    <span>{{ supplier.supplierName }}</span>
+                    <div class="supplier-info">
+                      <span class="supplier-name">{{ supplier.supplierName }}</span>
+                      <span class="supplier-date" *ngIf="supplier.date">
+                        <mat-icon>calendar_today</mat-icon>
+                        {{ supplier.date | date:'dd/MM/yyyy' }}
+                      </span>
+                    </div>
                     <span class="amount">₪{{ supplier.amount }}</span>
                   </div>
                 </div>
