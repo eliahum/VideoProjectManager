@@ -222,6 +222,7 @@ export class ProjectDetailComponent implements OnInit {
 
     const dialogRef = this.dialog.open(MilestoneFormComponent, {
       width: '740px',
+      disableClose: true,
       data: { 
         projectId: this.project.id, 
         stageName: stage.name, 
@@ -495,6 +496,7 @@ export class ProjectDetailComponent implements OnInit {
     // פותח את הטופס ללא milestone קיים (מצב יצירה)
     const dialogRef = this.dialog.open(MilestoneFormComponent, {
       width: '740px',
+      disableClose: true,
       data: { 
         projectId: this.project.id, 
         stageName: stage.name,

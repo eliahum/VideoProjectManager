@@ -112,32 +112,58 @@ export class MilestoneFormComponent implements OnInit {
       if (supplier) {
         supplierGroup.patchValue({ supplierName: supplier.name });
       }
+      this.cdr.detectChanges();
+    });
+
+    // Trigger change detection when amount changes
+    supplierGroup.get('amount')?.valueChanges.subscribe(() => {
+      this.cdr.detectChanges();
     });
 
     this.suppliers.push(supplierGroup);
+    this.cdr.detectChanges();
   }
 
   togglePaid(index: number): void {
     const supplier = this.suppliers.at(index);
     const currentValue = supplier.get('isPaid')?.value;
     const newValue = !currentValue;
-    supplier.patchValue({ isPaid: newValue });
-    supplier.markAsDirty();
-    console.log('Toggle paid:', { index, currentValue, newValue, formValue: supplier.get('isPaid')?.value });
+    
+    const statusText = newValue ? 'שולם' : 'לא שולם';
+    const supplierName = supplier.get('supplierName')?.value || 'ספק';
+    
+    this.messageDialogService.confirm(
+      `האם אתה בטוח שברצונך לשנות את הסטטוס של ${supplierName} ל${statusText}?`,
+      'אישור שינוי סטטוס'
+    ).subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        supplier.patchValue({ isPaid: newValue });
+        supplier.markAsDirty();
+        console.log('Toggle paid:', { index, currentValue, newValue, formValue: supplier.get('isPaid')?.value });
+      }
+    });
   }
 
   removeSupplier(index: number): void {
     this.suppliers.removeAt(index);
   }
 
-  get hasEmptySuppliers(): boolean {
-    return this.suppliers.controls.some(
-      supplier => !supplier.get('supplierId')?.value
-    );
-  }
-
   get isFormValid(): boolean {
-    return this.milestoneForm.valid && !this.hasEmptySuppliers;
+    // Check basic form fields
+    const nameValid = this.milestoneForm.get('name')?.valid ?? false;
+    const statusValid = this.milestoneForm.get('status')?.valid ?? false;
+    
+    // If there are suppliers, all must have a selected supplier and valid amount
+    if (this.suppliers.length > 0) {
+      const allSuppliersValid = this.suppliers.controls.every(supplier => {
+        const hasSupplier = !!supplier.get('supplierId')?.value;
+        const hasAmount = supplier.get('amount')?.valid ?? false;
+        return hasSupplier && hasAmount;
+      });
+      return nameValid && statusValid && allSuppliersValid;
+    }
+    
+    return nameValid && statusValid;
   }
 
   onSubmit(): void {
