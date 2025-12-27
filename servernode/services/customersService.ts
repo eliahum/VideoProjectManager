@@ -6,7 +6,8 @@ import { CustomerDTO, CustomerResponseDTO, CustomersListResponseDTO, ProjectSumm
 export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
     try {
         const customers = await Customer.find();
-        const allProjects = await Project.find().populate('statusNumber');
+        const allProjects = await Project.find();
+        const allStatuses = await ProjectStatus.find();
         
         const data = customers.map((customer) => {
             const { _id, customerId, name, email, phone, address, leadId } = customer;
@@ -19,13 +20,18 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
             // Map projects to summary format
             const projectsSummary: ProjectSummaryDTO[] = customerProjects.map((project: IProject) => {
                 const currentStage = project.stages?.find((s: IStage) => s.stageNumber === project.currentStageNumber);
+                const projectStatus = allStatuses.find(status => status.statusNumber === project.statusNumber);
                 return {
+                    id: project._id.toString(),
                     projectNumber: project.projectNumber,
                     projectName: project.projectName,
                     statusNumber: project.statusNumber,
-                    statusName: (project.statusNumber as any)?.name || 'לא ידוע',
+                    statusName: projectStatus?.name || 'לא ידוע',
                     currentStage: currentStage?.stageName || 'לא מוגדר',
-                    createdAt: project.createdAt
+                    createdAt: project.createdAt,
+                    paidAmount: project.paidAmount,
+                    paymentDate: project.paymentDate,
+                    paymentNote: project.paymentNote
                 };
             });
 
@@ -55,18 +61,24 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
         const { _id, customerId, name, email, phone, address, leadId } = customer;
         
         // Find all projects for this customer
-        const customerProjects = await Project.find({ customerId: customer._id }).populate('statusNumber');
+        const customerProjects = await Project.find({ customerId: customer._id });
+        const allStatuses = await ProjectStatus.find();
         
         // Map projects to summary format
         const projectsSummary: ProjectSummaryDTO[] = customerProjects.map((project: IProject) => {
             const currentStage = project.stages?.find((s: IStage) => s.stageNumber === project.currentStageNumber);
+            const projectStatus = allStatuses.find(status => status.statusNumber === project.statusNumber);
             return {
+                id: project._id.toString(),
                 projectNumber: project.projectNumber,
                 projectName: project.projectName,
                 statusNumber: project.statusNumber,
-                statusName: (project.statusNumber as any)?.name || 'לא ידוע',
+                statusName: projectStatus?.name || 'לא ידוע',
                 currentStage: currentStage?.stageName || 'לא מוגדר',
-                createdAt: project.createdAt
+                createdAt: project.createdAt,
+                paidAmount: project.paidAmount,
+                paymentDate: project.paymentDate,
+                paymentNote: project.paymentNote
             };
         });
         

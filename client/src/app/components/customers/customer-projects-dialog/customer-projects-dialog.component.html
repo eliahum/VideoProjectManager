@@ -81,14 +81,21 @@
                 <mat-icon>event</mat-icon>
                 <span>{{ project.createdAt | date:'dd/MM/yyyy' }}</span>
               </div>
+              <div class="info-row" >
+                <mat-icon>payments</mat-icon>
+                <span>שולם: ₪{{ project.paidAmount }}</span>
+              </div>
+              <div class="info-row" >
+                <mat-icon>receipt</mat-icon>
+                <span>תאריך תשלום: {{ project.paymentDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="info-row" >
+                <mat-icon>note</mat-icon>
+                <span>{{ project.paymentNote }}</span>
+              </div>
             </div>
           </mat-card-content>
-          <mat-card-actions>
-            <button mat-button color="primary">
-              <mat-icon>visibility</mat-icon>
-              פתח פרוייקט
-            </button>
-          </mat-card-actions>
+
         </mat-card>
       </div>
     </div>

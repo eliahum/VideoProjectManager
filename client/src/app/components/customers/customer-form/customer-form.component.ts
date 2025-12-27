@@ -42,6 +42,7 @@ export class CustomerFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    
     if (this.data) {
       this.isEditMode = true;
       this.customerForm.patchValue(this.data);

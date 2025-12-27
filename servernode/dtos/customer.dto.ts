@@ -1,12 +1,16 @@
 import { BaseResponseDTO, BaseDataResponseDTO } from './base-response.dto';
 
 export interface ProjectSummaryDTO {
+    id: string;
     projectNumber: number;
     projectName: string;
     statusNumber: number;
     statusName: string;
     currentStage: string;
     createdAt: Date;
+    paidAmount?: number;
+    paymentDate?: Date;
+    paymentNote?: string;
 }
 
 export interface CustomerDTO {

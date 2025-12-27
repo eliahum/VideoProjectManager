@@ -29,8 +29,9 @@ export class CustomerProjectsDialogComponent {
   ) {}
 
   openProject(project: any): void {
+    this.router.navigate(['/projects', project.id]);
     this.dialogRef.close();
-    this.router.navigate(['/projects', project.projectNumber]);
+
   }
 
   createProjectForCustomer(customer: any): void {
