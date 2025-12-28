@@ -7,6 +7,8 @@ export interface ProjectStatus {
     statusNumber: number; // מספר הסטטוס
     isFinal: boolean; // האם סטטוס סופי
     isPause: boolean; // האם סטטוס השהיה
+    isVisible: boolean; // האם הסטטוס גלוי
+    projectCount?: number; // סך פרויקטים בשימוש
 }
 
 export interface ProjectStatusResponse extends BaseDataResponse<ProjectStatus> {}

@@ -16,6 +16,10 @@ export class ProjectStatusService {
     return this.http.get<ProjectStatusListResponse>(this.apiUrl);
   }
 
+  getAllWithCounts(): Observable<ProjectStatusListResponse> {
+    return this.http.get<ProjectStatusListResponse>(`${this.apiUrl}/with-counts`);
+  }
+
   getById(id: string): Observable<ProjectStatusResponse> {
     return this.http.get<ProjectStatusResponse>(`${this.apiUrl}/${id}`);
   }

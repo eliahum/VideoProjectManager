@@ -7,7 +7,8 @@ const projectStatusSchema = new mongoose.Schema(
     status: { type: String, required: true }, // סטטוס
     statusNumber: { type: Number, required: true, unique: true }, // מספר הסטטוס
     isFinal: { type: Boolean, default: false }, // האם סטטוס סופי
-    isPause: { type: Boolean, default: false } // האם סטטוס השהיה
+    isPause: { type: Boolean, default: false }, // האם סטטוס השהיה
+    isVisible: { type: Boolean, default: true } // האם הסטטוס גלוי
   },
   { timestamps: true }
 );
@@ -18,6 +19,7 @@ export interface ProjectStatusDocument extends Document {
   statusNumber: number;
   isFinal: boolean;
   isPause: boolean;
+  isVisible: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

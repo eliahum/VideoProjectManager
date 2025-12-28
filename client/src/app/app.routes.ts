@@ -33,5 +33,9 @@ export const routes: Routes = [
   { 
     path: 'projects/:id', 
     loadComponent: () => import('./components/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent)
+  },
+  { 
+    path: 'statuses', 
+    loadComponent: () => import('./components/shared/statuses/statuses.component').then(m => m.StatusesComponent)
   }
 ];

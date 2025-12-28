@@ -1,0 +1,162 @@
+.status-form-container {
+  min-width: 500px;
+  background: linear-gradient(135deg, rgba(19,16,33,0.97) 0%, rgba(36,26,62,0.95) 100%);
+  color: #ffffff;
+
+  h2[mat-dialog-title] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(74,46,122,0.3) 0%, rgba(36,26,62,0.4) 100%);
+    border-bottom: 1px solid rgba(168,85,247,0.2);
+    font-size: 1.5rem;
+    font-weight: 700;
+
+    mat-icon {
+      color: #a855f7;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  mat-dialog-content {
+    padding: 24px;
+  }
+}
+
+.status-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  mat-form-field {
+    width: 100%;
+
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background: rgba(168,85,247,0.1);
+      }
+
+      .mdc-text-field--outlined .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(168,85,247,0.5) !important;
+        }
+      }
+
+      .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(168,85,247,0.8) !important;
+        }
+      }
+
+      .mat-mdc-form-field-label,
+      .mdc-floating-label,
+      input {
+        color: #ffffff !important;
+      }
+
+      .mat-mdc-form-field-icon-prefix mat-icon {
+        color: #a855f7;
+      }
+    }
+  }
+}
+
+.checkboxes-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 12px 0;
+
+  mat-checkbox {
+    ::ng-deep {
+      .mdc-checkbox__background {
+        border-color: rgba(168,85,247,0.5) !important;
+      }
+
+      .mdc-checkbox--selected .mdc-checkbox__background {
+        background-color: #a855f7 !important;
+        border-color: #a855f7 !important;
+      }
+
+      .mdc-label {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #a855f7;
+    }
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  background: rgba(74,46,122,0.2);
+  border-top: 1px solid rgba(168,85,247,0.2);
+  gap: 12px;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 24px;
+    height: 42px;
+    font-weight: 600;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .cancel-btn {
+    color: rgba(255,255,255,0.7);
+
+    &:hover {
+      color: #ffffff;
+      background: rgba(168,85,247,0.1);
+    }
+  }
+
+  .save-btn {
+    background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+    color: white;
+    box-shadow: 0 4px 16px rgba(168,85,247,0.4);
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+      box-shadow: 0 6px 20px rgba(168,85,247,0.5);
+    }
+
+    &:disabled {
+      background: rgba(168,85,247,0.3);
+      color: rgba(255,255,255,0.5);
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .status-form-container {
+    min-width: auto;
+    width: 100%;
+  }
+}

@@ -1,10 +1,19 @@
 import express from 'express';
-import { getAllProjectStatuses, getProjectStatusById, createProjectStatus, updateProjectStatus, deleteProjectStatus } from '../services/projectStatusService';
+import { getAllProjectStatuses, getAllProjectStatusesWithCounts, getProjectStatusById, createProjectStatus, updateProjectStatus, deleteProjectStatus } from '../services/projectStatusService';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     const response = await getAllProjectStatuses();
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(500).json(response);
+    }
+});
+
+router.get('/with-counts', async (req, res) => {
+    const response = await getAllProjectStatusesWithCounts();
     if (response.isSuccess) {
         res.json(response);
     } else {

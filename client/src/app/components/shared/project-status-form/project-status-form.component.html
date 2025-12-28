@@ -1,0 +1,51 @@
+<div class="status-form-container">
+  <h2 mat-dialog-title>
+    <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+    <span>{{ isEditMode ? 'עריכת סטטוס' : 'הוספת סטטוס חדש' }}</span>
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="statusForm" class="status-form">
+      <mat-form-field appearance="outline">
+        <mat-label>שם הסטטוס</mat-label>
+        <input matInput formControlName="name" placeholder="לדוגמה: פתוח, בעבודה, סגור">
+        <mat-icon matPrefix>label</mat-icon>
+        <mat-error *ngIf="statusForm.get('name')?.hasError('required')">
+          שם הסטטוס הוא שדה חובה
+        </mat-error>
+      </mat-form-field>
+
+      <div class="checkboxes-container">
+        <mat-checkbox formControlName="isFinal">
+          <span class="checkbox-label">
+            <mat-icon>flag</mat-icon>
+            סטטוס סופי
+          </span>
+        </mat-checkbox>
+
+        <mat-checkbox formControlName="isPause">
+          <span class="checkbox-label">
+            <mat-icon>pause_circle</mat-icon>
+            סטטוס השהיה
+          </span>
+        </mat-checkbox>
+
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" class="cancel-btn">
+      <mat-icon>close</mat-icon>
+      ביטול
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="!statusForm.valid"
+            class="save-btn">
+      <mat-icon>save</mat-icon>
+      {{ isEditMode ? 'עדכן' : 'שמור' }}
+    </button>
+  </mat-dialog-actions>
+</div>

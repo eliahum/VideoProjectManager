@@ -40,7 +40,8 @@ export class AppComponent {
     { path: '/leads', label: 'לידים', icon: 'person_search' },
     { path: '/customers', label: 'לקוחות', icon: 'people' },
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
-    { path: '/projects', label: 'פרויקטים', icon: 'video_library' }
+    { path: '/projects', label: 'פרויקטים', icon: 'video_library' },
+    { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on' }
   ];
 
   constructor(private breakpointObserver: BreakpointObserver) {
