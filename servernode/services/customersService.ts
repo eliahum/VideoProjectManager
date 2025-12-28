@@ -26,6 +26,7 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
                     projectNumber: project.projectNumber,
                     projectName: project.projectName,
                     statusNumber: project.statusNumber,
+                    projectId: project.id,
                     statusName: projectStatus?.name || 'לא ידוע',
                     currentStage: currentStage?.stageName || 'לא מוגדר',
                     createdAt: project.createdAt,

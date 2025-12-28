@@ -96,6 +96,13 @@
             </div>
           </mat-card-content>
 
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" (click)="openProject(project)">
+              <mat-icon>open_in_new</mat-icon>
+              פתח פרוייקט
+            </button>
+          </mat-card-actions>
+
         </mat-card>
       </div>
     </div>
@@ -104,6 +111,10 @@
     <div class="no-projects" *ngIf="!data.customer.projects || data.customer.projects.length === 0">
       <mat-icon>work_off</mat-icon>
       <p>אין פרוייקטים ללקוח זה</p>
+      <button mat-raised-button color="primary" (click)="createProjectForCustomer(data.customer)">
+        <mat-icon>add</mat-icon>
+        צור פרוייקט ללקוח
+      </button>
     </div>
   </div>
 </div>

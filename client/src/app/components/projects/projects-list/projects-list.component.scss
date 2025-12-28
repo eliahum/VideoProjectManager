@@ -293,6 +293,10 @@
     }
   }
 
+  .amount-value.no-bold {
+    font-weight: 100;
+  }
+
   .payment-breakdown {
     display: flex;
     flex-direction: column;
@@ -612,7 +616,7 @@
 
           .amount-value {
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 500;
             
             &.total {
               color: #60a5fa !important;
@@ -672,7 +676,7 @@
 
           .amount-value {
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 500;
             
             &.total {
               color: #60a5fa !important;
@@ -695,6 +699,14 @@
             }
           }
         }
+      }
+
+      /* Ensure no-bold overrides on mobile cards */
+      .payment-item-mobile .amount-value.no-bold {
+        font-weight: 100;
+      }
+      .info-row-compact .amount-value.no-bold {
+        font-weight: 100;
       }
 
       mat-card-actions {

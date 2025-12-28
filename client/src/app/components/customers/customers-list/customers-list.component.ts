@@ -164,6 +164,7 @@ export class CustomersListComponent implements OnInit {
       width: '900px',
       maxWidth: '95vw',
       maxHeight: '90vh',
+      disableClose: true,
       data: { customer }
     });
 

@@ -89,8 +89,7 @@
             <button 
               mat-raised-button 
               color="accent" 
-              (click)="openCustomerProjects(customer)"
-              [disabled]="!customer.projects || customer.projects.length === 0">
+              (click)="openCustomerProjects(customer)">
               <mat-icon>work</mat-icon>
               <span *ngIf="customer.projects && customer.projects.length > 0">
                 {{ customer.projects.length }} פרוייקטים
