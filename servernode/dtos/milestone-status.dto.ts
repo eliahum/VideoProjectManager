@@ -4,8 +4,6 @@ export interface MilestoneStatusDTO {
   _id?: string;
   id: number;
   name: string;
-  engName: string;
-  hebName: string;
   milestoneStatusNumber: number;
   isFinal: boolean;
   isEditable: boolean;

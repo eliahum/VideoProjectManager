@@ -99,6 +99,12 @@
     <!-- סטטוסי אבני דרך -->
     <mat-tab label="סטטוסי אבני דרך">
       <mat-card class="status-card">
+        <div class="card-header">
+          <button mat-raised-button color="primary" (click)="openMilestoneStatusForm()" class="add-status-btn">
+            <mat-icon>add</mat-icon>
+            הוסף סטטוס חדש
+          </button>
+        </div>
         <mat-card-content>
           <table mat-table [dataSource]="milestoneStatuses" class="status-table">
             <!-- מספר סטטוס -->
@@ -107,16 +113,41 @@
               <td mat-cell *matCellDef="let status">{{ status.milestoneStatusNumber }}</td>
             </ng-container>
 
-            <!-- שם עברית -->
-            <ng-container matColumnDef="hebName">
-              <th mat-header-cell *matHeaderCellDef>שם בעברית</th>
-              <td mat-cell *matCellDef="let status">{{ status.hebName }}</td>
+            <!-- שם -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>שם</th>
+              <td mat-cell *matCellDef="let status">{{ status.name }}</td>
             </ng-container>
 
-            <!-- שם אנגלית -->
-            <ng-container matColumnDef="engName">
-              <th mat-header-cell *matHeaderCellDef>שם באנגלית</th>
-              <td mat-cell *matCellDef="let status">{{ status.engName }}</td>
+            <!-- סטטוס סופי -->
+            <ng-container matColumnDef="isFinal">
+              <th mat-header-cell *matHeaderCellDef>סטטוס סופי</th>
+              <td mat-cell *matCellDef="let status">
+                <mat-checkbox [checked]="status.isFinal" disabled></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- ניתן לעריכה -->
+            <ng-container matColumnDef="isEditable">
+              <th mat-header-cell *matHeaderCellDef>ניתן לעריכה</th>
+              <td mat-cell *matCellDef="let status">
+                <mat-checkbox [checked]="status.isEditable" disabled></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- פעולות -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>פעולות</th>
+              <td mat-cell *matCellDef="let status">
+                <button mat-icon-button color="primary" (click)="editMilestoneStatus(status)" 
+                        *ngIf="status.isEditable" matTooltip="עריכה">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteMilestoneStatus(status)" 
+                        *ngIf="status.isEditable" matTooltip="מחק">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
             </ng-container>
 
             <tr mat-header-row *matHeaderRowDef="milestoneColumns"></tr>

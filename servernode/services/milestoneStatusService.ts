@@ -32,7 +32,17 @@ export class MilestoneStatusService {
   async createMilestoneStatus(milestoneStatusData: Partial<MilestoneStatusDTO>): Promise<MilestoneStatusResponseDTO> {
     try {
       await connectToDatabase();
-      const newMilestoneStatus = new MilestoneStatus(milestoneStatusData);
+      
+      // Find the highest id and milestoneStatusNumber and add 1
+      const lastStatus = await MilestoneStatus.findOne().sort({ id: -1 });
+      const nextId = lastStatus ? lastStatus.id + 1 : 1;
+      const nextStatusNumber = lastStatus ? lastStatus.milestoneStatusNumber + 1 : 1;
+      
+      const newMilestoneStatus = new MilestoneStatus({
+        ...milestoneStatusData,
+        id: nextId,
+        milestoneStatusNumber: nextStatusNumber
+      });
       const savedMilestoneStatus = await newMilestoneStatus.save();
       const data = this.mapToDTO(savedMilestoneStatus);
       return { isSuccess: true, data };
@@ -78,8 +88,6 @@ export class MilestoneStatusService {
       _id: milestoneStatus._id?.toString(),
       id: milestoneStatus.id,
       name: milestoneStatus.name,
-      engName: milestoneStatus.engName,
-      hebName: milestoneStatus.hebName,
       milestoneStatusNumber: milestoneStatus.milestoneStatusNumber,
       isFinal: milestoneStatus.isFinal,
       isEditable: milestoneStatus.isEditable

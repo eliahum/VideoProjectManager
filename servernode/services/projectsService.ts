@@ -47,7 +47,7 @@ export class ProjectsService {
         if (templatesResponse.isSuccess && templatesResponse.data) {
           const stages = templatesResponse.data.map(template => ({
             stageNumber: template.stageNumber,
-            stageName: template.hebName,
+            stageName: template.name,
             milestones: template.milestones.map((m, index) => ({
               id: `${savedProject.id}-${template.stageNumber}-${m.id}`,
               milestoneId: m.id,
@@ -70,7 +70,7 @@ export class ProjectsService {
         if (templatesResponse.isSuccess && templatesResponse.data) {
           const stages = templatesResponse.data.map(template => ({
             stageNumber: template.stageNumber,
-            stageName: template.hebName,
+            stageName: template.name,
             milestones: [] as any[]
           }));
           savedProject.stages = stages as any;
@@ -320,7 +320,7 @@ export class ProjectsService {
     // Get all milestone statuses for mapping
     const statusesResponse = await milestoneStatusService.getAllMilestoneStatuses();
     const statuses = statusesResponse.isSuccess ? statusesResponse.data : [];
-    const statusMap = new Map(statuses.map(s => [s.milestoneStatusNumber, s.hebName]));
+    const statusMap = new Map(statuses.map(s => [s.milestoneStatusNumber, s.name]));
     
     return {
       _id: project._id?.toString(),
@@ -414,7 +414,7 @@ export class ProjectsService {
           enrichedStages.push({
             stageNumber: existingStage.stageNumber,
             stageName: existingStage.stageName,
-            name: template.hebName,
+            name: template.name,
             milestones: enrichedMilestones.sort((a, b) => (a.sort || 0) - (b.sort || 0))
           });
         } else {
@@ -432,8 +432,8 @@ export class ProjectsService {
 
           enrichedStages.push({
             stageNumber: template.stageNumber,
-            stageName: template.hebName,
-            name: template.hebName,
+            stageName: template.name,
+            name: template.name,
             milestones: newMilestones.sort((a, b) => (a.sort || 0) - (b.sort || 0))
           });
         }

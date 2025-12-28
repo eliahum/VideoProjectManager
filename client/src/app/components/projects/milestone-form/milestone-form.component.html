@@ -24,12 +24,11 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
-
       <mat-form-field appearance="outline" class="half-width compact-field">
         <mat-label>סטטוס</mat-label>
-        <mat-select formControlName="status" required>
-          <mat-option *ngFor="let status of milestoneStatuses" [value]="status">
-            {{ status }}
+        <mat-select formControlName="statusNumber" required>
+          <mat-option *ngFor="let status of milestoneStatuses" [value]="status.milestoneStatusNumber">
+            {{ status.name }}
           </mat-option>
         </mat-select>
       </mat-form-field>

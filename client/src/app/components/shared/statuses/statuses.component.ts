@@ -15,6 +15,7 @@ import { MessageDialogService } from '../../../services/message-dialog.service';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
 import { ProjectStatusFormComponent } from '../project-status-form/project-status-form.component';
+import { MilestoneStatusFormComponent } from '../milestone-status-form/milestone-status-form.component';
 
 @Component({
   selector: 'app-statuses',
@@ -38,7 +39,7 @@ export class StatusesComponent implements OnInit {
   projectStatuses: ProjectStatus[] = [];
   isLoading = false;
   
-  milestoneColumns: string[] = ['milestoneStatusNumber', 'hebName', 'engName'];
+  milestoneColumns: string[] = ['milestoneStatusNumber', 'name', 'isFinal', 'isEditable', 'actions'];
   projectColumns: string[] = ['statusNumber', 'name', 'isFinal', 'isPause', 'projectCount', 'actions'];
 
   constructor(
@@ -167,6 +168,87 @@ export class StatusesComponent implements OnInit {
             if (response.isSuccess) {
               this.messageDialogService.showSuccess('סטטוס נמחק בהצלחה');
               this.loadProjectStatuses();
+            } else {
+              this.messageDialogService.showError('שגיאה במחיקת הסטטוס: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.messageDialogService.showError('שגיאה במחיקת הסטטוס');
+          }
+        });
+      }
+    });
+  }
+
+  openMilestoneStatusForm(status?: MilestoneStatus): void {
+    const dialogRef = this.dialog.open(MilestoneStatusFormComponent, {
+      width: '600px',
+      disableClose: true,
+      data: status || null
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.saveMilestoneStatus(result, status?.id);
+      }
+    });
+  }
+
+  saveMilestoneStatus(statusData: Partial<MilestoneStatus>, id?: number): void {
+    const confirmMessage = id ? 'האם אתה בטוח שברצונך לעדכן את הסטטוס?' : null;
+    
+    const performSave = () => {
+      this.isLoading = true;
+      
+      const operation = id 
+        ? this.milestoneStatusService.updateMilestoneStatus(id, statusData)
+        : this.milestoneStatusService.createMilestoneStatus(statusData);
+
+      operation.subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.isSuccess) {
+            this.messageDialogService.showSuccess(
+              id ? 'סטטוס עודכן בהצלחה' : 'סטטוס נוסף בהצלחה'
+            );
+            this.loadMilestoneStatuses();
+          } else {
+            this.messageDialogService.showError('שגיאה בשמירת הסטטוס: ' + (response.errorText || 'Unknown error'));
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.messageDialogService.showError('שגיאה בשמירת הסטטוס');
+        }
+      });
+    };
+
+    if (confirmMessage) {
+      this.messageDialogService.confirm(confirmMessage).subscribe(result => {
+        if (result === 'yes') {
+          performSave();
+        }
+      });
+    } else {
+      performSave();
+    }
+  }
+
+  editMilestoneStatus(status: MilestoneStatus): void {
+    this.openMilestoneStatusForm(status);
+  }
+
+  deleteMilestoneStatus(status: MilestoneStatus): void {
+    this.messageDialogService.confirm('האם אתה בטוח שברצונך למחוק את הסטטוס?').subscribe(result => {
+      if (result === 'yes') {
+        this.isLoading = true;
+        this.milestoneStatusService.deleteMilestoneStatus(status.id).subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('סטטוס נמחק בהצלחה');
+              this.loadMilestoneStatuses();
             } else {
               this.messageDialogService.showError('שגיאה במחיקת הסטטוס: ' + (response.errorText || 'Unknown error'));
             }

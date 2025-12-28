@@ -17,9 +17,11 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ProjectService } from '../../../services/project.service';
 import { SupplierService } from '../../../services/supplier.service';
+import { MilestoneStatusService } from '../../../services/milestone-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Milestone, MilestoneSupplier } from '../../../models/project.model';
 import { Supplier } from '../../../models/supplier.model';
+import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { convertDateToUTC } from '../../../utils/date.utils';
 
 @Component({
@@ -47,7 +49,7 @@ import { convertDateToUTC } from '../../../utils/date.utils';
 export class MilestoneFormComponent implements OnInit {
   milestoneForm: FormGroup;
   availableSuppliers: Supplier[] = [];
-  milestoneStatuses = ['לפני התחלה', 'בעבודה', 'אצל הלקוח', 'הושלם'];
+  milestoneStatuses: MilestoneStatus[] = [];
   isEditMode: boolean = false;
   supplierInputCtrls: FormControl<Supplier | string | null>[] = [];
   filteredSuppliers: Observable<Supplier[]>[] = [];
@@ -59,6 +61,7 @@ export class MilestoneFormComponent implements OnInit {
     private fb: FormBuilder,
     private projectService: ProjectService,
     private supplierService: SupplierService,
+    private milestoneStatusService: MilestoneStatusService,
     private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<MilestoneFormComponent>,
     private cdr: ChangeDetectorRef,
@@ -74,13 +77,20 @@ export class MilestoneFormComponent implements OnInit {
       name: ['', Validators.required],
       documentReference: [''],
       date: [null],
-      status: ['לפני התחלה', Validators.required],
+      statusNumber: [1, Validators.required],
       isUrgent: [false],
       suppliers: this.fb.array([])
     });
   }
 
   ngOnInit(): void {
+    this.milestoneStatusService.getAllMilestoneStatuses().subscribe(response => {
+      if (response.isSuccess && response.data) {
+        this.milestoneStatuses = response.data;
+        this.cdr.detectChanges();
+      }
+    });
+
     this.supplierService.getAll().subscribe(response => {
       if (response.isSuccess && response.data) {
         this.availableSuppliers = response.data;
@@ -93,7 +103,7 @@ export class MilestoneFormComponent implements OnInit {
         name: this.data.milestone.name,
         documentReference: this.data.milestone.documentReference,
         date: this.data.milestone.date,
-        status: this.data.milestone.status,
+        statusNumber: this.data.milestone.statusNumber,
         isUrgent: this.data.milestone.isUrgent || false
       });
 
@@ -218,7 +228,7 @@ export class MilestoneFormComponent implements OnInit {
   get isFormValid(): boolean {
     // Check basic form fields
     const nameValid = this.milestoneForm.get('name')?.valid ?? false;
-    const statusValid = this.milestoneForm.get('status')?.valid ?? false;
+    const statusValid = this.milestoneForm.get('statusNumber')?.valid ?? false;
     
     // If there are suppliers, all must have a selected supplier and valid amount
     if (this.suppliers.length > 0) {
@@ -250,7 +260,7 @@ export class MilestoneFormComponent implements OnInit {
         name: this.milestoneForm.value.name,
         documentReference: this.milestoneForm.value.documentReference,
         date: convertDateToUTC(this.milestoneForm.value.date),
-        statusNumber: this.getStatusNumber(this.milestoneForm.value.status),
+        statusNumber: this.milestoneForm.value.statusNumber,
         isUrgent: this.milestoneForm.value.isUrgent || false,
         suppliers: suppliers
       };
@@ -292,16 +302,6 @@ export class MilestoneFormComponent implements OnInit {
         });
       }
     }
-  }
-
-  private getStatusNumber(statusText: string): number {
-    const statusMap: { [key: string]: number } = {
-      'לפני התחלה': 1,
-      'בעבודה': 2,
-      'אצל הלקוח': 3,
-      'הושלם': 4
-    };
-    return statusMap[statusText] || 1;
   }
 
   close(): void {

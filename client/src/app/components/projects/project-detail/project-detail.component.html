@@ -179,7 +179,7 @@
                     <mat-select [value]="milestone.statusNumber"
                       (selectionChange)="updateMilestoneStatus($event.value, stage, milestone)">
                       <mat-option *ngFor="let status of milestoneStatuses" [value]="status.milestoneStatusNumber">
-                        {{ status.hebName }}
+                        {{ status.name }}
                       </mat-option>
                     </mat-select>
                   </mat-form-field>

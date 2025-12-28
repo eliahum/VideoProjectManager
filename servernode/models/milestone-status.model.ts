@@ -4,8 +4,6 @@ import { Counter } from './counter.model';
 export interface IMilestoneStatus extends Document {
   id: number;
   name: string;
-  engName: string;
-  hebName: string;
   milestoneStatusNumber: number;
   isFinal: boolean;
   isEditable: boolean;
@@ -18,14 +16,6 @@ const milestoneStatusSchema = new Schema<IMilestoneStatus>({
     unique: true
   },
   name: {
-    type: String,
-    required: true
-  },
-  engName: {
-    type: String,
-    required: true
-  },
-  hebName: {
     type: String,
     required: true
   },
