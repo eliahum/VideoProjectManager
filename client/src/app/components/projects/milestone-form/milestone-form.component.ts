@@ -13,6 +13,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { ProjectService } from '../../../services/project.service';
@@ -41,7 +42,8 @@ import { convertDateToUTC } from '../../../utils/date.utils';
     MatListModule,
     MatCheckboxModule,
     MatCardModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatTooltipModule
   ],
   templateUrl: './milestone-form.component.html',
   styleUrl: './milestone-form.component.scss'
@@ -301,6 +303,17 @@ export class MilestoneFormComponent implements OnInit {
           }
         });
       }
+    }
+  }
+
+  openDocumentLink(): void {
+    const link = this.milestoneForm.get('documentReference')?.value;
+    if (link) {
+      // Ensure the link starts with http:// or https://
+      const url = link.startsWith('http://') || link.startsWith('https://') 
+        ? link 
+        : 'https://' + link;
+      window.open(url, '_blank');
     }
   }
 

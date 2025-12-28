@@ -11,11 +11,21 @@
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>הפנייה למסמך</mat-label>
-      <input matInput formControlName="documentReference">
-      <mat-icon matPrefix>description</mat-icon>
-    </mat-form-field>
+    <div class="document-reference-field">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>קישור למסמך ב-Google Drive</mat-label>
+        <input matInput formControlName="documentReference" placeholder="לדוגמה: https://drive.google.com/file/d/1ABC123xyz/view">
+        <mat-icon matPrefix class="drive-icon">folder</mat-icon>
+      </mat-form-field>
+      <button mat-icon-button 
+              type="button"
+              class="open-link-btn"
+              *ngIf="milestoneForm.get('documentReference')?.value"
+              (click)="openDocumentLink()"
+              matTooltip="פתח מסמך בטאב חדש">
+        <mat-icon>open_in_new</mat-icon>
+      </button>
+    </div>
 
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width compact-field">
