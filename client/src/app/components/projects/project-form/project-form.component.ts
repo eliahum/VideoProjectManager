@@ -13,6 +13,7 @@ import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material
 import { MatNativeDateModule } from '@angular/material/core';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Project } from '../../../models/project.model';
 import { Customer } from '../../../models/customer.model';
 import { convertDateToUTC } from '../../../utils/date.utils';
@@ -59,6 +60,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private fb: FormBuilder,
     private projectService: ProjectService,
     private customerService: CustomerService,
+    private messageDialogService: MessageDialogService,
     private dialogRef: MatDialogRef<ProjectFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Project
   ) {
@@ -111,7 +113,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         this.subs.push(sub);
       } else {
         console.error('Failed to load customers:', response.errorText);
-        alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
+        this.messageDialogService.showError('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
       }
     });
     if (this.data) {
@@ -143,7 +145,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     const customer = this.customers.find(c => c.id === projectData.customerId);
 
     if (!customer) {
-      alert('לקוח לא נמצא');
+      this.messageDialogService.showError('לקוח לא נמצא');
       return;
     }
 
@@ -160,7 +162,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         if (response.isSuccess) {
           this.dialogRef.close(true);
         } else {
-          alert('שגיאה בעדכון פרוייקט: ' + (response.errorText || 'Unknown error'));
+          this.messageDialogService.showError('שגיאה בעדכון פרוייקט: ' + (response.errorText || 'Unknown error'));
         }
       });
     } else {
@@ -168,7 +170,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
         if (response.isSuccess) {
           this.dialogRef.close(true);
         } else {
-          alert('שגיאה ביצירת פרוייקט: ' + (response.errorText || 'Unknown error'));
+          this.messageDialogService.showError('שגיאה ביצירת פרוייקט: ' + (response.errorText || 'Unknown error'));
         }
       });
     }

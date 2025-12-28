@@ -233,7 +233,8 @@ export class ProjectsListComponent implements OnInit {
       width: isMobile ? '95vw' : '600px',
       maxWidth: isMobile ? '95vw' : '600px',
       data: project,
-      autoFocus: false
+      autoFocus: false,
+      disableClose: true  
     });
 
     dialogRef.afterClosed().subscribe(result => {

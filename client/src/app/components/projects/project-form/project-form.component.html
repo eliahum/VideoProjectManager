@@ -6,7 +6,7 @@
       <mat-label>לקוח</mat-label>
       <mat-icon matPrefix>person</mat-icon>
       <input matInput [formControl]="customerInputCtrl" [matAutocomplete]="customerAuto" autocomplete="off"
-        placeholder="בחר לקוח..." required />
+         required />
 
       <mat-autocomplete #customerAuto="matAutocomplete" [displayWith]="displayCustomer"
         (optionSelected)="onCustomerSelected($event.option.value)">

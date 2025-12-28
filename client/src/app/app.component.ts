@@ -37,7 +37,7 @@ export class AppComponent {
       { path: '/dashboard/charts', label: 'גרפים', icon: 'bar_chart' },
       { path: '/dashboard/misc', label: 'שונות', icon: 'settings' }
     ]},
-    { path: '/leads', label: 'Leads', icon: 'person_search' },
+    { path: '/leads', label: 'לידים', icon: 'person_search' },
     { path: '/customers', label: 'לקוחות', icon: 'people' },
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
     { path: '/projects', label: 'פרויקטים', icon: 'video_library' }

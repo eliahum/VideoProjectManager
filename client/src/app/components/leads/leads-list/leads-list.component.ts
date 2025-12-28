@@ -182,6 +182,7 @@ export class LeadsListComponent implements OnInit {
     const dialogRef = this.dialog.open(LeadFormComponent, {
       width: isMobile ? '95vw' : '600px',
       maxWidth: isMobile ? '95vw' : '600px',
+      disableClose: true,
       data: lead
     });
 

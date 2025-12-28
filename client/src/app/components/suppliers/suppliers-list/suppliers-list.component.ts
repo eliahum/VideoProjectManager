@@ -128,6 +128,7 @@ export class SuppliersListComponent implements OnInit {
     const dialogRef = this.dialog.open(SupplierFormComponent, {
       width: isMobile ? '95vw' : '600px',
       maxWidth: isMobile ? '95vw' : '600px',
+      disableClose: true,
       data: supplier
     });
 
