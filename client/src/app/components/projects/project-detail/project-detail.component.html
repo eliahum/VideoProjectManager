@@ -36,11 +36,20 @@
         </span>
         <mat-form-field appearance="outline" class="customer-field" *ngIf="isEditingCustomer">
           <mat-label>בחר לקוח</mat-label>
-          <mat-select [(value)]="selectedCustomerId">
-            <mat-option *ngFor="let customer of customers" [value]="customer.id">
+          <input matInput
+                 [formControl]="customerInputCtrl"
+                 [matAutocomplete]="customerAuto"
+                 (focus)="onCustomerFocus()"
+                 autocomplete="off"
+                 placeholder="בחר לקוח...">
+          <mat-autocomplete #customerAuto="matAutocomplete"
+                            [displayWith]="displayCustomer"
+                            [autoActiveFirstOption]="false"
+                            (optionSelected)="onCustomerSelected($event.option.value)">
+            <mat-option *ngFor="let customer of filteredCustomers | async" [value]="customer">
               {{ customer.name }}
             </mat-option>
-          </mat-select>
+          </mat-autocomplete>
         </mat-form-field>
         <button mat-icon-button color="primary" *ngIf="isEditingCustomer" (click)="saveCustomer()" matTooltip="שמור">
           <mat-icon>check</mat-icon>

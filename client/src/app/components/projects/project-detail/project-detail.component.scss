@@ -1196,6 +1196,41 @@
   label {
     color: #ffffff !important;
   }
+
+  // Autocomplete input styling
+  input.mat-mdc-input-element {
+    color: #ffffff !important;
+    caret-color: #ffffff !important;
+  }
+
+  .mat-mdc-input-element::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+}
+
+// Autocomplete panel styling
+::ng-deep .mat-mdc-autocomplete-panel {
+  background: rgba(36,26,62,0.98) !important;
+  border: 1px solid rgba(168,85,247,0.3);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+
+  .mat-mdc-option {
+    color: #ffffff !important;
+
+    &:hover,
+    &.mat-mdc-option-active {
+      background: rgba(168,85,247,0.2) !important;
+    }
+
+    &.mat-mdc-option-selected {
+      background: rgba(168,85,247,0.3) !important;
+    }
+
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+    }
+  }
 }
 
 // Drag & Drop Styles

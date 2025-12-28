@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,7 +16,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Observable, Subscription } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
@@ -73,6 +76,7 @@ const MY_DATE_FORMATS = {
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MatTabsModule,
     MatCardModule,
     MatButtonModule,
@@ -87,12 +91,13 @@ const MY_DATE_FORMATS = {
     MatDialogModule,
     MatExpansionModule,
     MatProgressSpinnerModule,
+    MatAutocompleteModule,
     DragDropModule
   ],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss'
 })
-export class ProjectDetailComponent implements OnInit {
+export class ProjectDetailComponent implements OnInit, OnDestroy {
   project: Project | undefined;
   selectedTabIndex = 0;
   milestoneStatuses: MilestoneStatus[] = [];
@@ -102,6 +107,11 @@ export class ProjectDetailComponent implements OnInit {
   isEditingPayment: boolean = false;
   isEditingCustomer: boolean = false;
   selectedCustomerId: string = '';
+  customerInputCtrl = new FormControl<Customer | string | null>(null);
+  filteredCustomers!: Observable<Customer[]>;
+  private hasTyped = false;
+  private subs: Subscription[] = [];
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
   paymentData = {
     paidAmount: 0,
     paymentDate: null as Date | null,
@@ -175,6 +185,30 @@ export class ProjectDetailComponent implements OnInit {
       next: (response) => {
         if (response.isSuccess && response.data) {
           this.customers = response.data;
+          
+          // Setup filtered customers stream for autocomplete
+          this.filteredCustomers = this.customerInputCtrl.valueChanges.pipe(
+            startWith(''),
+            map(value => typeof value === 'string' ? value : (value?.name ?? '')),
+            map(name => {
+              const v = (name ?? '').trim().toLowerCase();
+              if (v.length < 1) return [];
+              return this.customers.filter(c => c.name.toLowerCase().includes(v));
+            })
+          );
+
+          // Open panel after first typed character
+          const sub = this.customerInputCtrl.valueChanges.subscribe(value => {
+            const str = typeof value === 'string' ? value : '';
+            if (str && str.length >= 1) {
+              this.hasTyped = true;
+              this.autocompleteTrigger?.openPanel();
+            } else {
+              this.hasTyped = false;
+              this.autocompleteTrigger?.closePanel();
+            }
+          });
+          this.subs.push(sub);
         }
       },
       error: (err) => {
@@ -359,15 +393,40 @@ export class ProjectDetailComponent implements OnInit {
 
   editCustomer(): void {
     // Find the customer by customerId and get their ObjectId
+    let currentCustomer: Customer | undefined;
     if (typeof this.project?.customerId === 'string') {
       // Already have ObjectId
       this.selectedCustomerId = this.project.customerId;
+      currentCustomer = this.customers.find(c => c.id === this.selectedCustomerId);
     } else {
       // Have customerId number, find the ObjectId
-      const currentCustomer = this.customers.find(c => c.customerId === this.project?.customerId);
+      currentCustomer = this.customers.find(c => c.customerId === this.project?.customerId);
       this.selectedCustomerId = currentCustomer?.id || '';
     }
+    
+    // Set the autocomplete value to the current customer
+    if (currentCustomer) {
+      this.customerInputCtrl.setValue(currentCustomer, { emitEvent: false });
+    }
+    
     this.isEditingCustomer = true;
+  }
+
+  displayCustomer = (customer?: Customer | string | null): string => {
+    return typeof customer === 'string' ? customer : (customer?.name || '');
+  };
+
+  onCustomerSelected(customer: Customer): void {
+    this.selectedCustomerId = customer.id;
+    this.customerInputCtrl.markAsTouched();
+  }
+
+  onCustomerFocus(): void {
+    if (!this.hasTyped) {
+      setTimeout(() => {
+        this.autocompleteTrigger?.closePanel();
+      }, 0);
+    }
   }
 
   saveCustomer(): void {
@@ -400,11 +459,17 @@ export class ProjectDetailComponent implements OnInit {
 
   cancelCustomerEdit(): void {
     this.isEditingCustomer = false;
+    let currentCustomer: Customer | undefined;
     if (typeof this.project?.customerId === 'string') {
       this.selectedCustomerId = this.project.customerId;
+      currentCustomer = this.customers.find(c => c.id === this.selectedCustomerId);
     } else {
-      const currentCustomer = this.customers.find(c => c.customerId === this.project?.customerId);
+      currentCustomer = this.customers.find(c => c.customerId === this.project?.customerId);
       this.selectedCustomerId = currentCustomer?.id || '';
+    }
+    // Reset the autocomplete to the original customer
+    if (currentCustomer) {
+      this.customerInputCtrl.setValue(currentCustomer, { emitEvent: false });
     }
   }
 
@@ -635,5 +700,9 @@ export class ProjectDetailComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
   }
 }
