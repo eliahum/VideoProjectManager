@@ -126,7 +126,6 @@ export class DashboardComponent implements OnInit {
       const status = this.projectStatuses.find(s => s.statusNumber === project.statusNumber);
       return status && status.isFinal === false;
     });
-    debugger;
     const tasks: UrgentTask[] = openProjects.flatMap(project =>
       project.stages
         .filter(stage => stage.milestones && stage.milestones.length > 0)
@@ -156,6 +155,7 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         if (response.isSuccess && response.data) {
           this.projectStatuses = response.data;
+          this.cdr.detectChanges();
         }
       },
       error: (error) => {
@@ -245,17 +245,5 @@ export class DashboardComponent implements OnInit {
       case 'הושלם': return 'status-completed';
       default: return '';
     }
-  }
-
-  getTotalSuppliersAmount(project: Project): number {
-    let total = 0;
-    project.stages.forEach(stage => {
-      stage.milestones.forEach(milestone => {
-        milestone.suppliers.forEach(supplier => {
-          total += supplier.amount || 0;
-        });
-      });
-    });
-    return total;
   }
 }

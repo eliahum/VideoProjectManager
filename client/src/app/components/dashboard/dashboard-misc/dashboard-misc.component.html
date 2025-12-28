@@ -1,13 +1,53 @@
 <div class="dashboard-misc-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>
-        <mat-icon>settings</mat-icon>
-        שונות
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <p>דף שונות - בהמשך ניתן להוסיף כאן תכנים נוספים</p>
-    </mat-card-content>
-  </mat-card>
+  <!-- Loading spinner -->
+  <div class="loading-spinner" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <p>טוען נתונים...</p>
+  </div>
+
+  <div *ngIf="!isLoading">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>bar_chart</mat-icon>
+          גרף רווח מול תשלומים לספקים
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container">
+          <div class="horizontal-chart">
+            <div class="chart-row" *ngFor="let data of financialChartData">
+              <div class="row-label">{{ data.projectName }}</div>
+              <div class="row-bars">
+                <div class="bar-row">
+                  <span class="bar-title">רווח:</span>
+                  <div class="horizontal-bar profit-bar" 
+                       [matTooltip]="'רווח: ₪' + data.profit.toLocaleString('he-IL')">
+                  </div>
+                  <span class="bar-value">₪{{ data.profit.toLocaleString('he-IL') }}</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-title">סכום ששולם:</span>
+                  <div class="horizontal-bar paid-bar" 
+                       [matTooltip]="'סכום ששולם: ₪' + data.paidAmount.toLocaleString('he-IL')">
+                  </div>
+                  <span class="bar-value">₪{{ data.paidAmount.toLocaleString('he-IL') }}</span>
+                </div>
+                <div class="bar-row">
+                  <span class="bar-title">ספקים:</span>
+                  <div class="horizontal-bar suppliers-bar" 
+                       [matTooltip]="'תשלום לספקים: ₪' + data.suppliersCost.toLocaleString('he-IL')">
+                  </div>
+                  <span class="bar-value">₪{{ data.suppliersCost.toLocaleString('he-IL') }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="financialChartData.length === 0" class="no-data">
+            אין נתונים פיננסיים להצגה
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </div>
