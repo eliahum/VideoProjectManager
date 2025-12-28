@@ -30,7 +30,8 @@
   }
 
   .open-link-btn {
-    margin-top: -8px;
+    margin-top: 0; /* Align with the center of the textarea */
+    align-self: center;
     color: #a855f7;
     transition: all 0.3s ease;
 
@@ -71,8 +72,9 @@
   }
 
   .mdc-text-field {
-    padding: 0 12px;
-    height: 48px;
+    padding: 12px;
+    height: auto;
+    min-height: 48px;
   }
 
   input.mat-mdc-input-element {
@@ -201,6 +203,11 @@
   textarea.mat-mdc-input-element {
     color: #ffffff !important;
     caret-color: #ffffff;
+  }
+
+  input.mat-mdc-input-element::placeholder,
+  textarea.mat-mdc-input-element::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
   }
 
   .mat-mdc-floating-label,
