@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
 import { CustomerFormComponent } from '../customer-form/customer-form.component';
+import { MessageDialogService } from '../../../services/message-dialog.service';
 import { finalize } from 'rxjs/operators';
 
 interface CustomerWithProjects extends Customer {
@@ -56,7 +57,8 @@ export class CustomersListEnhancedComponent implements OnInit {
     private customerService: CustomerService,
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
-    private router: Router
+    private router: Router,
+    private messageDialogService: MessageDialogService
   ) {}
 
   ngOnInit(): void {
@@ -79,12 +81,12 @@ export class CustomersListEnhancedComponent implements OnInit {
             this.cdr.detectChanges();
           } else {
             console.error('Failed to load customers:', response.errorText);
-            alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
+            this.messageDialogService.showError('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
           }
         },
         error: (error) => {
           console.error('Error loading customers:', error);
-          alert('שגיאה בטעינת לקוחות');
+          this.messageDialogService.showError('שגיאה בטעינת לקוחות');
         }
       });
   }
@@ -138,21 +140,24 @@ export class CustomersListEnhancedComponent implements OnInit {
   }
 
   deleteCustomer(id: string): void {
-    if (confirm('האם אתה בטוח שברצונך למחוק לקוח זה?')) {
-      this.customerService.delete(id).subscribe({
-        next: (response) => {
-          if (response.isSuccess) {
-            this.loadCustomers();
-          } else {
-            alert('שגיאה במחיקת לקוח: ' + (response.errorText || 'Unknown error'));
+    this.messageDialogService.confirm('האם אתה בטוח שברצונך למחוק לקוח זה?').subscribe((result: 'yes' | 'no') => {
+      if (result === 'yes') {
+        this.customerService.delete(id).subscribe({
+          next: (response) => {
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('לקוח נמחק בהצלחה');
+              this.loadCustomers();
+            } else {
+              this.messageDialogService.showError('שגיאה במחיקת לקוח: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (error) => {
+            console.error('Error deleting customer:', error);
+            this.messageDialogService.showError('שגיאה במחיקת לקוח');
           }
-        },
-        error: (error) => {
-          console.error('Error deleting customer:', error);
-          alert('שגיאה במחיקת לקוח');
-        }
-      });
-    }
+        });
+      }
+    });
   }
 
   createProjectForCustomer(customer: CustomerWithProjects): void {
