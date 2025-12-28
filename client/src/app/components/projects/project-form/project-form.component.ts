@@ -8,10 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
 import { Project } from '../../../models/project.model';
 import { Customer } from '../../../models/customer.model';
+import { convertDateToUTC } from '../../../utils/date.utils';
 
 @Component({
   selector: 'app-project-form',
@@ -25,7 +28,10 @@ import { Customer } from '../../../models/customer.model';
     MatButtonModule,
     MatSelectModule,
     MatIconModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    
   ],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss'
@@ -46,7 +52,7 @@ export class ProjectFormComponent implements OnInit {
       customerId: ['', Validators.required],
       projectName: ['', Validators.required],
       paidAmount: [0],
-      paymentDate: [''],
+      paymentDate: [null],
       paymentNote: [''],
       initializeAllStages: [false]
     });
@@ -61,10 +67,17 @@ export class ProjectFormComponent implements OnInit {
         alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
       }
     });
-    
     if (this.data) {
       this.isEditMode = true;
-      this.projectForm.patchValue(this.data);
+      this.projectForm.patchValue({
+        ...this.data,
+        paymentDate: this.data.paymentDate ? new Date(this.data.paymentDate) : null
+      });
+    }
+    else{
+      this.projectForm.patchValue({
+        paymentDate: new Date()
+      });
     }
   }
 
@@ -80,6 +93,7 @@ export class ProjectFormComponent implements OnInit {
 
       const fullProjectData = {
         ...projectData,
+        paymentDate: convertDateToUTC(projectData.paymentDate),
         customerName: customer.name,
         stages: [],
         initializeAllStages: projectData.initializeAllStages

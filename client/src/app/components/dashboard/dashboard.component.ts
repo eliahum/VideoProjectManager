@@ -136,7 +136,7 @@ export class DashboardComponent implements OnInit {
             .map(milestone => {
               const date = milestone.date ? new Date(milestone.date) : null;
               const timeLabel = date 
-                ? `${date.toLocaleDateString('he-IL')} ${date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}`
+                ? `${date.toLocaleDateString('he-IL')}`
                 : '';
               const stageLabel = stage.stageName || `שלב ${stage.stageNumber}`;
               

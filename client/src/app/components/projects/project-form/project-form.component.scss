@@ -93,6 +93,28 @@
   .mat-mdc-select-arrow {
     color: #ffffff !important;
   }
+
+  // Make datepicker toggle icon white for dark background
+  .date-toggle {
+    // Ensure the icon button inherits white color
+    ::ng-deep .mat-mdc-icon-button {
+      color: #ffffff !important;
+      --mdc-icon-button-icon-color: #ffffff !important;
+    }
+
+    // Default SVG icon used by MatDatepickerToggle
+    ::ng-deep .mat-datepicker-toggle-default-icon {
+      color: #ffffff !important;
+      fill: #ffffff !important;
+    }
+
+    // Fallback for any inline SVG paths
+    ::ng-deep svg,
+    ::ng-deep svg path {
+      fill: #ffffff !important;
+      stroke: #ffffff !important;
+    }
+  }
 }
 
 .initialize-checkbox {

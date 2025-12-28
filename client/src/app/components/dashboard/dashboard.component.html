@@ -28,15 +28,6 @@
       </div>
       <div class="stat-card">
         <div class="stat-info">
-          <div class="stat-label">משימות מחכות</div>
-          <div class="stat-value">{{ pendingTasks }}</div>
-        </div>
-        <div class="stat-badge" [ngClass]="getStatBadgeClass(pendingTasks, 29, true)">
-          {{ getStatDifference(pendingTasks, 29, true) }}
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-info">
           <div class="stat-label">פגישות השבוע</div>
           <div class="stat-value">{{ weeklyMeetings }}</div>
         </div>
@@ -110,18 +101,11 @@
           <div class="project-card" *ngFor="let stat of projectStats">
             <div class="project-header">
               <div class="project-info-header">
-                <h3 class="project-title">{{ stat.project.customerName }}</h3>
-                <p class="project-subtitle">{{ stat.project.projectName }}</p>
+                <h3 class="project-title">{{ stat.project.projectName }}</h3>
+                <p class="project-subtitle">{{ stat.project.customerName }}</p>
               </div>
             </div>
             <div class="progress-section">
-              <div class="progress-label">
-                <span>התקדמות</span>
-                <span>{{ getProjectProgress(stat.project) }}%</span>
-              </div>
-              <div class="progress-bar">
-                <div class="progress-fill" [style.width.%]="getProjectProgress(stat.project)"></div>
-              </div>
               <button class="view-button" [routerLink]="['/projects', stat.project.id]">
                 <mat-icon>visibility</mat-icon>
                 צפה בפרויקט

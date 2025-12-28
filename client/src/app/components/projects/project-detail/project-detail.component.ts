@@ -70,11 +70,6 @@ const MY_DATE_FORMATS = {
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  providers: [
-    { provide: DateAdapter, useClass: CustomDateAdapter },
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
-    { provide: MAT_DATE_LOCALE, useValue: 'he-IL' }
-  ],
   imports: [
     CommonModule,
     FormsModule,

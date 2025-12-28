@@ -32,8 +32,12 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>תאריך תשלום</mat-label>
-      <mat-icon matPrefix>calendar_today</mat-icon>
-      <input matInput type="date" formControlName="paymentDate">
+      <input matInput [matDatepicker]="paymentPicker" formControlName="paymentDate">
+
+      <mat-datepicker-toggle class="date-toggle" matIconSuffix [for]="paymentPicker">
+      </mat-datepicker-toggle>
+
+      <mat-datepicker #paymentPicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
