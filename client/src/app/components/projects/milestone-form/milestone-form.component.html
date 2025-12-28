@@ -55,11 +55,22 @@
           <div class="supplier-form-row">
             <mat-form-field appearance="outline" class="supplier-select">
               <mat-label>בחר ספק</mat-label>
-              <mat-select formControlName="supplierId" required>
-                <mat-option *ngFor="let availableSupplier of availableSuppliers" [value]="availableSupplier.id">
+              <input matInput
+                     [formControl]="supplierInputCtrls[i]"
+                     [matAutocomplete]="supplierAuto"
+                     (focus)="onSupplierFocus(i)"
+                     (input)="onSupplierInput(i)"
+                     autocomplete="off"
+                     placeholder="בחר ספק..."
+                     required>
+              <mat-autocomplete #supplierAuto="matAutocomplete"
+                                [displayWith]="displaySupplier"
+                                [autoActiveFirstOption]="false"
+                                (optionSelected)="onSupplierSelected($event.option.value, i)">
+                <mat-option *ngFor="let availableSupplier of filteredSuppliers[i] | async" [value]="availableSupplier">
                   {{ availableSupplier.name }}
                 </mat-option>
-              </mat-select>
+              </mat-autocomplete>
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="amount-field">

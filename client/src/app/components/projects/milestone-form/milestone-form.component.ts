@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef, ViewChild, QueryList, ViewChildren } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { ProjectService } from '../../../services/project.service';
 import { SupplierService } from '../../../services/supplier.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
@@ -35,7 +38,8 @@ import { convertDateToUTC } from '../../../utils/date.utils';
     MatIconModule,
     MatListModule,
     MatCheckboxModule,
-    MatCardModule
+    MatCardModule,
+    MatAutocompleteModule
   ],
   templateUrl: './milestone-form.component.html',
   styleUrl: './milestone-form.component.scss'
@@ -45,6 +49,11 @@ export class MilestoneFormComponent implements OnInit {
   availableSuppliers: Supplier[] = [];
   milestoneStatuses = ['לפני התחלה', 'בעבודה', 'אצל הלקוח', 'הושלם'];
   isEditMode: boolean = false;
+  supplierInputCtrls: FormControl<Supplier | string | null>[] = [];
+  filteredSuppliers: Observable<Supplier[]>[] = [];
+  hasTypedSupplier: boolean[] = [];
+
+  @ViewChildren(MatAutocompleteTrigger) autocompleteTriggers!: QueryList<MatAutocompleteTrigger>;
 
   constructor(
     private fb: FormBuilder,
@@ -100,6 +109,24 @@ export class MilestoneFormComponent implements OnInit {
   }
 
   addSupplier(existing?: MilestoneSupplier): void {
+    const index = this.suppliers.length;
+    
+    // Create autocomplete form control
+    const supplierInputCtrl = new FormControl<Supplier | string | null>(null, Validators.required);
+    this.supplierInputCtrls[index] = supplierInputCtrl;
+    this.hasTypedSupplier[index] = false;
+    
+    // Setup filtered suppliers for this autocomplete
+    this.filteredSuppliers[index] = supplierInputCtrl.valueChanges.pipe(
+      startWith(''),
+      map(value => typeof value === 'string' ? value : (value?.name ?? '')),
+      map(name => {
+        const v = (name ?? '').trim().toLowerCase();
+        if (v.length < 1) return [];
+        return this.availableSuppliers.filter(s => s.name.toLowerCase().includes(v));
+      })
+    );
+    
     const supplierGroup = this.fb.group({
       supplierId: [existing?.supplierId || '', Validators.required],
       supplierName: [existing?.supplierName || ''],
@@ -108,14 +135,13 @@ export class MilestoneFormComponent implements OnInit {
       date: [existing?.date || null]
     });
 
-    // Update supplier name when supplier is selected
-    supplierGroup.get('supplierId')?.valueChanges.subscribe(supplierId => {
-      const supplier = this.availableSuppliers.find(s => s.id === supplierId);
+    // If existing supplier, set it in the autocomplete
+    if (existing?.supplierId) {
+      const supplier = this.availableSuppliers.find(s => s.id === existing.supplierId);
       if (supplier) {
-        supplierGroup.patchValue({ supplierName: supplier.name });
+        supplierInputCtrl.setValue(supplier, { emitEvent: false });
       }
-      this.cdr.detectChanges();
-    });
+    }
 
     // Trigger change detection when amount changes
     supplierGroup.get('amount')?.valueChanges.subscribe(() => {
@@ -148,6 +174,45 @@ export class MilestoneFormComponent implements OnInit {
 
   removeSupplier(index: number): void {
     this.suppliers.removeAt(index);
+    this.supplierInputCtrls.splice(index, 1);
+    this.filteredSuppliers.splice(index, 1);
+    this.hasTypedSupplier.splice(index, 1);
+  }
+
+  displaySupplier = (supplier?: Supplier | string | null): string => {
+    return typeof supplier === 'string' ? supplier : (supplier?.name || '');
+  };
+
+  onSupplierSelected(supplier: Supplier, index: number): void {
+    const supplierGroup = this.suppliers.at(index);
+    supplierGroup.patchValue({
+      supplierId: supplier.id,
+      supplierName: supplier.name
+    });
+    this.supplierInputCtrls[index].markAsTouched();
+  }
+
+  onSupplierFocus(index: number): void {
+    if (!this.hasTypedSupplier[index]) {
+      setTimeout(() => {
+        const triggers = this.autocompleteTriggers.toArray();
+        triggers[index]?.closePanel();
+      }, 0);
+    }
+  }
+
+  onSupplierInput(index: number): void {
+    const value = this.supplierInputCtrls[index].value;
+    const str = typeof value === 'string' ? value : '';
+    if (str && str.length >= 1) {
+      this.hasTypedSupplier[index] = true;
+      const triggers = this.autocompleteTriggers.toArray();
+      triggers[index]?.openPanel();
+    } else {
+      this.hasTypedSupplier[index] = false;
+      const triggers = this.autocompleteTriggers.toArray();
+      triggers[index]?.closePanel();
+    }
   }
 
   get isFormValid(): boolean {
@@ -157,8 +222,11 @@ export class MilestoneFormComponent implements OnInit {
     
     // If there are suppliers, all must have a selected supplier and valid amount
     if (this.suppliers.length > 0) {
-      const allSuppliersValid = this.suppliers.controls.every(supplier => {
-        const hasSupplier = !!supplier.get('supplierId')?.value;
+      const allSuppliersValid = this.suppliers.controls.every((supplier, index) => {
+        // Check if supplier is actually selected (not just typed text)
+        const supplierValue = this.supplierInputCtrls[index]?.value;
+        const isSupplierObject = typeof supplierValue === 'object' && supplierValue !== null;
+        const hasSupplier = !!supplier.get('supplierId')?.value && isSupplierObject;
         const hasAmount = supplier.get('amount')?.valid ?? false;
         return hasSupplier && hasAmount;
       });

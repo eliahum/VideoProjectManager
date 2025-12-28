@@ -164,6 +164,13 @@
                  
                 </mat-panel-title>
                 <mat-panel-description>
+                  <button mat-icon-button 
+                          class="set-current-milestone-btn"
+                          (click)="setCurrentMilestone(milestone, stage); $event.stopPropagation()"
+                          [class.is-current]="stage.stageNumber === project.currentStageNumber && project.currentMilestoneId === milestone.milestoneId"
+                          matTooltip="קבע כאבן דרך נוכחית">
+                    <mat-icon>star</mat-icon>
+                  </button>
                   <mat-form-field 
                     class="status-select-inline" 
                     [ngClass]="'status-' + milestone.statusNumber"
@@ -213,10 +220,6 @@
                   <button mat-raised-button color="primary" (click)="openMilestoneForm(stage, milestone)">
                     <mat-icon>edit</mat-icon>
                     ערוך אבן דרך
-                  </button>
-                  <button mat-stroked-button color="accent" (click)="setCurrentMilestone(milestone, stage)">
-                    <mat-icon>star</mat-icon>
-                    קבע כאבן דרך נוכחית
                   </button>
                 </div>
               </div>
