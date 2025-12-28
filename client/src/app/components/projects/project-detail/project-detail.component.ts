@@ -140,11 +140,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       currentMilestoneId: milestone.milestoneId
     }).subscribe({
       next: (response) => {
-        this.isLoading = false;
         if (response.isSuccess) {
           this.messageDialogService.showSuccess('אבן דרך נבחרה בהצלחה');
           this.reloadProject();
         } else {
+          this.isLoading = false;
           this.messageDialogService.showError('שגיאה בעדכון milestone: ' + (response.errorText || 'Unknown error'));
         }
       },
