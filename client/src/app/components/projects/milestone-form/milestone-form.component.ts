@@ -17,6 +17,7 @@ import { SupplierService } from '../../../services/supplier.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { Milestone, MilestoneSupplier } from '../../../models/project.model';
 import { Supplier } from '../../../models/supplier.model';
+import { convertDateToUTC } from '../../../utils/date.utils';
 
 @Component({
   selector: 'app-milestone-form',
@@ -169,25 +170,18 @@ export class MilestoneFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.milestoneForm.valid) {
-      // Fix timezone offset for dates
-      const fixDateTimezone = (date: Date | null): Date | null => {
-        if (!date) return null;
-        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-        return new Date(date.getTime() - userTimezoneOffset);
-      };
-
       const suppliers = this.milestoneForm.value.suppliers.map((s: any) => ({
         supplierId: s.supplierId,
         supplierName: s.supplierName,
         amount: s.amount,
         isPaid: s.isPaid || false,
-        date: fixDateTimezone(s.date)
+        date: convertDateToUTC(s.date)
       }));
 
       const milestoneData = {
         name: this.milestoneForm.value.name,
         documentReference: this.milestoneForm.value.documentReference,
-        date: fixDateTimezone(this.milestoneForm.value.date),
+        date: convertDateToUTC(this.milestoneForm.value.date),
         statusNumber: this.getStatusNumber(this.milestoneForm.value.status),
         isUrgent: this.milestoneForm.value.isUrgent || false,
         suppliers: suppliers

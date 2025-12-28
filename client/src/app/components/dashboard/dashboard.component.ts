@@ -9,7 +9,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { finalize } from 'rxjs/operators';
 import { ProjectService } from '../../services/project.service';
 import { LeadService } from '../../services/lead.service';
+import { ProjectStatusService } from '../../services/project-status.service';
 import { Project, Milestone } from '../../models/project.model';
+import { ProjectStatus } from '../../models/project-status.model';
 
 interface UrgentTask {
   title: string;
@@ -34,6 +36,7 @@ interface UrgentTask {
 export class DashboardComponent implements OnInit {
   activeProjects: Project[] = [];
   projectStats: { project: Project, currentMilestone: Milestone | null }[] = [];
+  projectStatuses: ProjectStatus[] = [];
   isLoading = false;
   
   // Dashboard statistics
@@ -47,13 +50,14 @@ export class DashboardComponent implements OnInit {
   constructor(
     private projectService: ProjectService,
     private leadService: LeadService,
+    private projectStatusService: ProjectStatusService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.loadProjectStatuses();
     this.loadData();
     this.loadLeadsData();
-    this.loadUrgentTasks();
   }
 
   loadData(): void {
@@ -78,6 +82,8 @@ export class DashboardComponent implements OnInit {
           
           // Calculate pending tasks from milestones
           this.calculatePendingTasks();
+          // Refresh urgent tasks from projects
+          this.loadUrgentTasks();
           
           console.log('Project stats:', this.projectStats);
           this.cdr.detectChanges();
@@ -115,14 +121,47 @@ export class DashboardComponent implements OnInit {
   }
 
   loadUrgentTasks(): void {
-    // Mock urgent tasks - in real app, this would come from a service
-    this.urgentTasks = [
-      { title: 'פגישה עם לקוח ABC', time: 'מחר 10:00' },
-      { title: 'הגשת הצעת מחיר', time: 'מחר 14:00' }
-    ];
+    // סנן רק פרויקטים פתוחים (isFinal === false)
+    const openProjects = this.activeProjects.filter(project => {
+      const status = this.projectStatuses.find(s => s.statusNumber === project.statusNumber);
+      return status && status.isFinal === false;
+    });
+    debugger;
+    const tasks: UrgentTask[] = openProjects.flatMap(project =>
+      project.stages
+        .filter(stage => stage.milestones && stage.milestones.length > 0)
+        .flatMap(stage =>
+          stage.milestones
+            .filter(milestone => milestone.isUrgent)
+            .map(milestone => {
+              const date = milestone.date ? new Date(milestone.date) : null;
+              const timeLabel = date 
+                ? `${date.toLocaleDateString('he-IL')} ${date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })}`
+                : '';
+              const stageLabel = stage.stageName || `שלב ${stage.stageNumber}`;
+              
+              return {
+                title: `${project.projectName} • ${stageLabel} • ${milestone.name}`,
+                time: timeLabel
+              };
+            })
+        )
+    );
     
-    // Calculate weekly meetings
-    this.weeklyMeetings = 8; // Mock data
+    this.urgentTasks = tasks;
+  }
+
+  loadProjectStatuses(): void {
+    this.projectStatusService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.projectStatuses = response.data;
+        }
+      },
+      error: (error) => {
+        console.error('Error loading project statuses:', error);
+      }
+    });
   }
 
   calculatePendingTasks(): void {

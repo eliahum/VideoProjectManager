@@ -27,6 +27,7 @@ import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
 import { MessageDialogService } from '../../../services/message-dialog.service';
+import { convertDateToUTC } from '../../../utils/date.utils';
 
 export class CustomDateAdapter extends NativeDateAdapter {
   override parse(value: any): Date | null {
@@ -333,22 +334,10 @@ export class ProjectDetailComponent implements OnInit {
   savePaymentInfo(): void {
     if (!this.project) return;
 
-    // Fix timezone issue - set time to noon UTC to avoid date shifting
-    let paymentDate: Date | undefined = undefined;
-    if (this.paymentData.paymentDate) {
-      const localDate = new Date(this.paymentData.paymentDate);
-      paymentDate = new Date(Date.UTC(
-        localDate.getFullYear(),
-        localDate.getMonth(),
-        localDate.getDate(),
-        12, 0, 0, 0
-      ));
-    }
-
     this.isLoading = true;
     this.projectService.update(this.project.id, {
       paidAmount: this.paymentData.paidAmount,
-      paymentDate: paymentDate,
+      paymentDate: convertDateToUTC(this.paymentData.paymentDate),
       paymentNote: this.paymentData.paymentNote
     }).subscribe({
       next: (response) => {
