@@ -4,13 +4,17 @@
   <form [formGroup]="projectForm" class="project-form">
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>לקוח</mat-label>
-      <mat-select formControlName="customerId" required>
-        <mat-option *ngFor="let customer of customers" [value]="customer.id">
+      <mat-icon matPrefix>person</mat-icon>
+      <input matInput [formControl]="customerInputCtrl" [matAutocomplete]="customerAuto" autocomplete="off"
+        placeholder="בחר לקוח..." required />
+
+      <mat-autocomplete #customerAuto="matAutocomplete" [displayWith]="displayCustomer"
+        (optionSelected)="onCustomerSelected($event.option.value)">
+        <mat-option *ngFor="let customer of (filteredCustomers | async)" [value]="customer">
           {{ customer.name }}
         </mat-option>
-      </mat-select>
-      <mat-icon matPrefix>person</mat-icon>
-      <mat-error *ngIf="projectForm.get('customerId')?.hasError('required')">
+      </mat-autocomplete>
+      <mat-error *ngIf="customerInputCtrl.hasError('required') || projectForm.get('customerId')?.hasError('required')">
         שדה חובה
       </mat-error>
     </mat-form-field>
@@ -56,7 +60,7 @@
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="close()">ביטול</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!projectForm.valid">
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!isFormValid()">
     <mat-icon>save</mat-icon>
     שמור
   </button>

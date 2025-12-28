@@ -1,6 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,12 +9,15 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatNativeDateModule } from '@angular/material/core';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
 import { Project } from '../../../models/project.model';
 import { Customer } from '../../../models/customer.model';
 import { convertDateToUTC } from '../../../utils/date.utils';
+import { Observable, Subscription } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-project-form',
@@ -31,15 +34,26 @@ import { convertDateToUTC } from '../../../utils/date.utils';
     MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    
+    MatAutocompleteModule,
+
   ],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss'
 })
-export class ProjectFormComponent implements OnInit {
+export class ProjectFormComponent implements OnInit, OnDestroy {
   projectForm: FormGroup;
   isEditMode = false;
   customers: Customer[] = [];
+  customerInputCtrl = new FormControl<Customer | string | null>(null, Validators.required);
+  filteredCustomers!: Observable<Customer[]>;
+  private subs: Subscription[] = [];
+  private hasTyped = false;
+
+  @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
+
+  displayCustomer = (customer?: Customer | string | null): string => {
+    return typeof customer === 'string' ? customer : (customer?.name || '');
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +76,39 @@ export class ProjectFormComponent implements OnInit {
     this.customerService.getAll().subscribe(response => {
       if (response.isSuccess && response.data) {
         this.customers = response.data;
+        // Setup filtered customers stream for autocomplete
+
+        this.filteredCustomers = this.customerInputCtrl.valueChanges.pipe(
+          startWith(''),
+          map(value => typeof value === 'string' ? value : (value?.name ?? '')),
+          map(name => {
+            const v = (name ?? '').trim().toLowerCase();
+            // 👇 key line: if no typing -> return EMPTY LIST (so panel won't open)
+            if (v.length < 1) return [];
+            return this.customers.filter(c => c.name.toLowerCase().includes(v));
+          })
+        );
+
+        // If editing, initialize the autocomplete display to the current customer
+        if (this.isEditMode && this.data) {
+          const currentCustomer = this.customers.find(c => c.id === this.data.customerId);
+          if (currentCustomer) {
+            this.customerInputCtrl.setValue(currentCustomer, { emitEvent: false });
+          }
+        }
+
+        // Open panel after first typed character; close when cleared
+        const sub = this.customerInputCtrl.valueChanges.subscribe(value => {
+          const str = typeof value === 'string' ? value : '';
+          if (str && str.length >= 1) {
+            this.hasTyped = true;
+            this.autocompleteTrigger?.openPanel();
+          } else {
+            this.hasTyped = false;
+            this.autocompleteTrigger?.closePanel();
+          }
+        });
+        this.subs.push(sub);
       } else {
         console.error('Failed to load customers:', response.errorText);
         alert('שגיאה בטעינת לקוחות: ' + (response.errorText || 'Unknown error'));
@@ -74,52 +121,81 @@ export class ProjectFormComponent implements OnInit {
         paymentDate: this.data.paymentDate ? new Date(this.data.paymentDate) : null
       });
     }
-    else{
+    else {
       this.projectForm.patchValue({
         paymentDate: new Date()
       });
     }
   }
 
-  onSubmit(): void {
-    if (this.projectForm.valid) {
-      const projectData = this.projectForm.value;
-      const customer = this.customers.find(c => c.id === projectData.customerId);
-      
-      if (!customer) {
-        alert('לקוח לא נמצא');
-        return;
-      }
+  isFormValid(): boolean {
+    return this.projectForm.valid && this.customerInputCtrl.valid && !!this.projectForm.get('customerId')?.value;
+  }
 
-      const fullProjectData = {
-        ...projectData,
-        paymentDate: convertDateToUTC(projectData.paymentDate),
-        customerName: customer.name,
-        stages: [],
-        initializeAllStages: projectData.initializeAllStages
-      };
-      
-      if (this.isEditMode) {
-        this.projectService.update(this.data.id, fullProjectData).subscribe(response => {
-          if (response.isSuccess) {
-            this.dialogRef.close(true);
-          } else {
-            alert('שגיאה בעדכון פרוייקט: ' + (response.errorText || 'Unknown error'));
-          }
-        });
-      } else {
-        this.projectService.create(fullProjectData).subscribe(response => {
-          if (response.isSuccess) {
-            this.dialogRef.close(true);
-          } else {
-            alert('שגיאה ביצירת פרוייקט: ' + (response.errorText || 'Unknown error'));
-          }
-        });
-      }
+  onSubmit(): void {
+    if (!this.isFormValid()) {
+      this.projectForm.markAllAsTouched();
+      this.customerInputCtrl.markAsTouched();
+      return;
+    }
+
+    const projectData = this.projectForm.value;
+    const customer = this.customers.find(c => c.id === projectData.customerId);
+
+    if (!customer) {
+      alert('לקוח לא נמצא');
+      return;
+    }
+
+    const fullProjectData = {
+      ...projectData,
+      paymentDate: convertDateToUTC(projectData.paymentDate),
+      customerName: customer.name,
+      stages: [],
+      initializeAllStages: projectData.initializeAllStages
+    };
+
+    if (this.isEditMode) {
+      this.projectService.update(this.data.id, fullProjectData).subscribe(response => {
+        if (response.isSuccess) {
+          this.dialogRef.close(true);
+        } else {
+          alert('שגיאה בעדכון פרוייקט: ' + (response.errorText || 'Unknown error'));
+        }
+      });
+    } else {
+      this.projectService.create(fullProjectData).subscribe(response => {
+        if (response.isSuccess) {
+          this.dialogRef.close(true);
+        } else {
+          alert('שגיאה ביצירת פרוייקט: ' + (response.errorText || 'Unknown error'));
+        }
+      });
+    }
+  }
+
+  onCustomerSelected(selected: Customer): void {
+    if (selected && selected.id) {
+      this.projectForm.get('customerId')?.setValue(selected.id);
+      this.customerInputCtrl.setValue(selected);
+      this.customerInputCtrl.markAsTouched();
     }
   }
 
   close(): void {
     this.dialogRef.close();
+  }
+
+  onCustomerFocus(): void {
+    // Ensure panel doesn't open just on focus, only after typing
+    if (!this.hasTyped) {
+      setTimeout(() => {
+        this.autocompleteTrigger?.closePanel();
+      }, 0);
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
   }
 }

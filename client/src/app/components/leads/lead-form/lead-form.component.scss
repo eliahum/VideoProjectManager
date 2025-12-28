@@ -113,8 +113,15 @@ mat-dialog-actions {
     background-color: #a855f7 !important;
     color: #ffffff !important;
     
-    &:hover {
+    &:hover:not([disabled]) {
       background-color: #9333ea !important;
+    }
+
+    &[disabled] {
+      background-color: rgba(168, 85, 247, 0.3) !important;
+      color: rgba(255, 255, 255, 0.4) !important;
+      cursor: not-allowed;
+      opacity: 0.5;
     }
   }
 

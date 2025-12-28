@@ -232,7 +232,8 @@ export class ProjectsListComponent implements OnInit {
     const dialogRef = this.dialog.open(ProjectFormComponent, {
       width: isMobile ? '95vw' : '600px',
       maxWidth: isMobile ? '95vw' : '600px',
-      data: project
+      data: project,
+      autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
