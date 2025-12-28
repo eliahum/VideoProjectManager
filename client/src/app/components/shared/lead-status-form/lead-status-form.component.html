@@ -1,0 +1,37 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>{{ isEditMode ? 'edit' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'עריכת סטטוס ליד' : 'הוספת סטטוס ליד' }}
+    </h2>
+  </div>
+
+  <mat-dialog-content>
+    <form [formGroup]="statusForm" class="status-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>שם</mat-label>
+        <input matInput formControlName="name" placeholder="הזן שם">
+        <mat-error *ngIf="statusForm.get('name')?.hasError('required')">
+          שדה חובה
+        </mat-error>
+      </mat-form-field>
+
+      <div class="checkbox-group">
+        <mat-checkbox formControlName="isFinal">
+          סטטוס סופי
+        </mat-checkbox>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" type="button">
+      <mat-icon>close</mat-icon>
+      ביטול
+    </button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!statusForm.valid">
+      <mat-icon>{{ isEditMode ? 'save' : 'add' }}</mat-icon>
+      {{ isEditMode ? 'שמור' : 'הוסף' }}
+    </button>
+  </mat-dialog-actions>
+</div>

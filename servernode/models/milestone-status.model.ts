@@ -6,7 +6,6 @@ export interface IMilestoneStatus extends Document {
   name: string;
   milestoneStatusNumber: number;
   isFinal: boolean;
-  isEditable: boolean;
 }
 
 const milestoneStatusSchema = new Schema<IMilestoneStatus>({
@@ -28,11 +27,6 @@ const milestoneStatusSchema = new Schema<IMilestoneStatus>({
     type: Boolean,
     required: true,
     default: false
-  },
-  isEditable: {
-    type: Boolean,
-    required: true,
-    default: true
   }
 }, {
   timestamps: true

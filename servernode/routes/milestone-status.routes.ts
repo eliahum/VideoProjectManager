@@ -8,6 +8,11 @@ router.get('/', async (req, res) => {
   res.json(result);
 });
 
+router.get('/with-counts', async (req, res) => {
+  const result = await milestoneStatusService.getAllMilestoneStatusesWithCounts();
+  res.json(result);
+});
+
 router.get('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const result = await milestoneStatusService.getMilestoneStatusById(id);

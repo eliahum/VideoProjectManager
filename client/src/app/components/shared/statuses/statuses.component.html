@@ -127,11 +127,11 @@
               </td>
             </ng-container>
 
-            <!-- ניתן לעריכה -->
-            <ng-container matColumnDef="isEditable">
-              <th mat-header-cell *matHeaderCellDef>ניתן לעריכה</th>
+            <!-- סך אבני דרך -->
+            <ng-container matColumnDef="milestoneCount">
+              <th mat-header-cell *matHeaderCellDef>סה"כ אבני דרך</th>
               <td mat-cell *matCellDef="let status">
-                <mat-checkbox [checked]="status.isEditable" disabled></mat-checkbox>
+                <span class="milestone-count">{{ status.milestoneCount || 0 }}</span>
               </td>
             </ng-container>
 
@@ -139,12 +139,11 @@
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>פעולות</th>
               <td mat-cell *matCellDef="let status">
-                <button mat-icon-button color="primary" (click)="editMilestoneStatus(status)" 
-                        *ngIf="status.isEditable" matTooltip="עריכה">
+                <button mat-icon-button color="primary" (click)="editMilestoneStatus(status)" matTooltip="עריכה">
                   <mat-icon>edit</mat-icon>
                 </button>
                 <button mat-icon-button color="warn" (click)="deleteMilestoneStatus(status)" 
-                        *ngIf="status.isEditable" matTooltip="מחק">
+                        *ngIf="status.milestoneCount === 0" matTooltip="מחק">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -157,6 +156,71 @@
           <div class="no-data" *ngIf="milestoneStatuses.length === 0">
             <mat-icon>info</mat-icon>
             <p>אין סטטוסי אבני דרך</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
+
+    <!-- סטטוסי לידים -->
+    <mat-tab label="סטטוסי לידים">
+      <mat-card class="status-card">
+        <div class="card-header">
+          <button mat-raised-button color="primary" (click)="openLeadStatusForm()" class="add-status-btn">
+            <mat-icon>add</mat-icon>
+            הוסף סטטוס חדש
+          </button>
+        </div>
+        <mat-card-content>
+          <table mat-table [dataSource]="leadStatuses" class="status-table">
+            <!-- מספר סטטוס -->
+            <ng-container matColumnDef="statusNumber">
+              <th mat-header-cell *matHeaderCellDef>מספר</th>
+              <td mat-cell *matCellDef="let status">{{ status.statusNumber }}</td>
+            </ng-container>
+
+            <!-- שם -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>שם</th>
+              <td mat-cell *matCellDef="let status">{{ status.name }}</td>
+            </ng-container>
+
+            <!-- סטטוס סופי -->
+            <ng-container matColumnDef="isFinal">
+              <th mat-header-cell *matHeaderCellDef>סטטוס סופי</th>
+              <td mat-cell *matCellDef="let status">
+                <mat-checkbox [checked]="status.isFinal" disabled></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- סך לידים -->
+            <ng-container matColumnDef="leadCount">
+              <th mat-header-cell *matHeaderCellDef>סה"כ לידים</th>
+              <td mat-cell *matCellDef="let status">
+                <span class="lead-count">{{ status.leadCount || 0 }}</span>
+              </td>
+            </ng-container>
+
+            <!-- פעולות -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>פעולות</th>
+              <td mat-cell *matCellDef="let status">
+                <button mat-icon-button color="primary" (click)="editLeadStatus(status)" matTooltip="עריכה">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteLeadStatus(status)" 
+                        *ngIf="status.leadCount === 0" matTooltip="מחק">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="leadColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: leadColumns;"></tr>
+          </table>
+
+          <div class="no-data" *ngIf="leadStatuses.length === 0">
+            <mat-icon>info</mat-icon>
+            <p>אין סטטוסי לידים</p>
           </div>
         </mat-card-content>
       </mat-card>

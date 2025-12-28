@@ -11,11 +11,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
 import { ProjectStatusService } from '../../../services/project-status.service';
+import { LeadStatusService } from '../../../services/lead-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
+import { LeadStatus } from '../../../models/lead.model';
 import { ProjectStatusFormComponent } from '../project-status-form/project-status-form.component';
 import { MilestoneStatusFormComponent } from '../milestone-status-form/milestone-status-form.component';
+import { LeadStatusFormComponent } from '../lead-status-form/lead-status-form.component';
 
 @Component({
   selector: 'app-statuses',
@@ -37,14 +40,17 @@ import { MilestoneStatusFormComponent } from '../milestone-status-form/milestone
 export class StatusesComponent implements OnInit {
   milestoneStatuses: MilestoneStatus[] = [];
   projectStatuses: ProjectStatus[] = [];
+  leadStatuses: LeadStatus[] = [];
   isLoading = false;
   
-  milestoneColumns: string[] = ['milestoneStatusNumber', 'name', 'isFinal', 'isEditable', 'actions'];
+  milestoneColumns: string[] = ['milestoneStatusNumber', 'name', 'isFinal', 'milestoneCount', 'actions'];
   projectColumns: string[] = ['statusNumber', 'name', 'isFinal', 'isPause', 'projectCount', 'actions'];
+  leadColumns: string[] = ['statusNumber', 'name', 'isFinal', 'leadCount', 'actions'];
 
   constructor(
     private milestoneStatusService: MilestoneStatusService,
     private projectStatusService: ProjectStatusService,
+    private leadStatusService: LeadStatusService,
     private messageDialogService: MessageDialogService,
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog
@@ -57,12 +63,13 @@ export class StatusesComponent implements OnInit {
   loadData(): void {
     this.loadMilestoneStatuses();
     this.loadProjectStatuses();
+    this.loadLeadStatuses();
   }
 
   loadMilestoneStatuses(): void {
     this.isLoading = true;
     
-    this.milestoneStatusService.getAllMilestoneStatuses().subscribe({
+    this.milestoneStatusService.getAllWithCounts().subscribe({
       next: (response) => {
         this.isLoading = false;
         if (response.isSuccess && response.data) {
@@ -249,6 +256,107 @@ export class StatusesComponent implements OnInit {
             if (response.isSuccess) {
               this.messageDialogService.showSuccess('סטטוס נמחק בהצלחה');
               this.loadMilestoneStatuses();
+            } else {
+              this.messageDialogService.showError('שגיאה במחיקת הסטטוס: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.messageDialogService.showError('שגיאה במחיקת הסטטוס');
+          }
+        });
+      }
+    });
+  }
+
+  loadLeadStatuses(): void {
+    this.isLoading = true;
+    
+    this.leadStatusService.getAllWithCounts().subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess && response.data) {
+          this.leadStatuses = response.data;
+          this.cdr.detectChanges();
+        } else {
+          this.messageDialogService.showError('שגיאה בטעינת סטטוסי לידים');
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בטעינת סטטוסי לידים');
+      }
+    });
+  }
+
+  openLeadStatusForm(status?: LeadStatus): void {
+    const dialogRef = this.dialog.open(LeadStatusFormComponent, {
+      width: '600px',
+      disableClose: true,
+      data: status || null
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.saveLeadStatus(result, status?.id);
+      }
+    });
+  }
+
+  saveLeadStatus(statusData: Partial<LeadStatus>, id?: string): void {
+    const confirmMessage = id ? 'האם אתה בטוח שברצונך לעדכן את הסטטוס?' : null;
+    
+    const performSave = () => {
+      this.isLoading = true;
+      
+      const operation = id 
+        ? this.leadStatusService.update(id, statusData)
+        : this.leadStatusService.create(statusData);
+
+      operation.subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.isSuccess) {
+            this.messageDialogService.showSuccess(
+              id ? 'סטטוס עודכן בהצלחה' : 'סטטוס נוסף בהצלחה'
+            );
+            this.loadLeadStatuses();
+          } else {
+            this.messageDialogService.showError('שגיאה בשמירת הסטטוס: ' + (response.errorText || 'Unknown error'));
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.messageDialogService.showError('שגיאה בשמירת הסטטוס');
+        }
+      });
+    };
+
+    if (confirmMessage) {
+      this.messageDialogService.confirm(confirmMessage).subscribe(result => {
+        if (result === 'yes') {
+          performSave();
+        }
+      });
+    } else {
+      performSave();
+    }
+  }
+
+  editLeadStatus(status: LeadStatus): void {
+    this.openLeadStatusForm(status);
+  }
+
+  deleteLeadStatus(status: LeadStatus): void {
+    this.messageDialogService.confirm('האם אתה בטוח שברצונך למחוק את הסטטוס?').subscribe(result => {
+      if (result === 'yes') {
+        this.isLoading = true;
+        this.leadStatusService.delete(status.id).subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('סטטוס נמחק בהצלחה');
+              this.loadLeadStatuses();
             } else {
               this.messageDialogService.showError('שגיאה במחיקת הסטטוס: ' + (response.errorText || 'Unknown error'));
             }

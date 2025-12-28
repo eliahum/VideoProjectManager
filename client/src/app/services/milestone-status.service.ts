@@ -16,6 +16,10 @@ export class MilestoneStatusService {
     return this.http.get<MilestoneStatusListResponse>(this.apiUrl);
   }
 
+  getAllWithCounts(): Observable<MilestoneStatusListResponse> {
+    return this.http.get<MilestoneStatusListResponse>(`${this.apiUrl}/with-counts`);
+  }
+
   getMilestoneStatusById(id: number): Observable<MilestoneStatusResponse> {
     return this.http.get<MilestoneStatusResponse>(`${this.apiUrl}/${id}`);
   }

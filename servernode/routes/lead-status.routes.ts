@@ -1,10 +1,19 @@
 import express from 'express';
-import { getAllLeadStatuses, getLeadStatusById, createLeadStatus, updateLeadStatus, deleteLeadStatus } from '../services/leadStatusService';
+import { getAllLeadStatuses, getAllLeadStatusesWithCounts, getLeadStatusById, createLeadStatus, updateLeadStatus, deleteLeadStatus } from '../services/leadStatusService';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     const response = await getAllLeadStatuses();
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(500).json(response);
+    }
+});
+
+router.get('/with-counts', async (req, res) => {
+    const response = await getAllLeadStatusesWithCounts();
     if (response.isSuccess) {
         res.json(response);
     } else {

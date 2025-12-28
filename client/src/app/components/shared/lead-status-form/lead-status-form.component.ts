@@ -7,10 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
-import { MilestoneStatus } from '../../../models/milestone-status.model';
+import { LeadStatus } from '../../../models/lead.model';
 
 @Component({
-  selector: 'app-milestone-status-form',
+  selector: 'app-lead-status-form',
   standalone: true,
   imports: [
     CommonModule,
@@ -22,17 +22,17 @@ import { MilestoneStatus } from '../../../models/milestone-status.model';
     MatCheckboxModule,
     MatIconModule
   ],
-  templateUrl: './milestone-status-form.component.html',
-  styleUrl: './milestone-status-form.component.scss'
+  templateUrl: './lead-status-form.component.html',
+  styleUrl: './lead-status-form.component.scss'
 })
-export class MilestoneStatusFormComponent implements OnInit {
+export class LeadStatusFormComponent implements OnInit {
   statusForm!: FormGroup;
   isEditMode: boolean = false;
 
   constructor(
     private fb: FormBuilder,
-    private dialogRef: MatDialogRef<MilestoneStatusFormComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: MilestoneStatus | null
+    private dialogRef: MatDialogRef<LeadStatusFormComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: LeadStatus | null
   ) {}
 
   ngOnInit(): void {

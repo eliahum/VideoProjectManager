@@ -6,7 +6,7 @@ export interface MilestoneStatusDTO {
   name: string;
   milestoneStatusNumber: number;
   isFinal: boolean;
-  isEditable: boolean;
+  milestoneCount?: number;
 }
 
 export interface MilestoneStatusResponseDTO extends BaseDataResponseDTO<MilestoneStatusDTO> {}

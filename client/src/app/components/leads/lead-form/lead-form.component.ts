@@ -117,7 +117,7 @@ export class LeadFormComponent implements OnInit {
 
   convertToCustomer(): void {
     const leadData = this.data || this.leadForm.value;
-    const closedStatus = this.leadStatuses.find(s => s.isFinal && !s.isEditable);
+    const closedStatus = this.leadStatuses.find(s => s.isFinal);
     
     if (closedStatus && leadData.statusNumber === closedStatus.statusNumber) {
       this.messageDialogService.showError('Lead זה כבר הומר ללקוח.');

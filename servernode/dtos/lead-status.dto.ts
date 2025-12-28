@@ -5,7 +5,7 @@ export interface LeadStatusDTO {
     name: string; // שם הסטטוס
     statusNumber: number; // מספר הסטטוס
     isFinal: boolean; // האם סטטוס סופי
-    isEditable: boolean; // האם ניתן לעדכן
+    leadCount?: number; // מספר הלידים המשתמשים בסטטוס
 }
 
 export interface LeadStatusResponseDTO extends BaseDataResponseDTO<LeadStatusDTO> {}

@@ -1,6 +1,7 @@
 import { MilestoneStatus, IMilestoneStatus } from '../models/milestone-status.model';
 import { MilestoneStatusDTO, MilestoneStatusResponseDTO, MilestoneStatusListResponseDTO } from '../dtos/milestone-status.dto';
 import { connectToDatabase } from '../utils/db';
+import { Project } from '../models/project.model';
 
 export class MilestoneStatusService {
 
@@ -12,6 +13,39 @@ export class MilestoneStatusService {
       return { isSuccess: true, data };
     } catch (error: any) {
       return { isSuccess: false, errorText: `Error retrieving milestone statuses: ${error.message}` };
+    }
+  }
+
+  async getAllMilestoneStatusesWithCounts(): Promise<MilestoneStatusListResponseDTO> {
+    try {
+      await connectToDatabase();
+      const milestoneStatuses = await MilestoneStatus.find().sort({ milestoneStatusNumber: 1 });
+      
+      // Count milestones for each status across all projects
+      const data = await Promise.all(milestoneStatuses.map(async (status) => {
+        // Count all milestones in all projects that have this statusNumber
+        const projects = await Project.find({});
+        let milestoneCount = 0;
+        
+        projects.forEach(project => {
+          project.stages.forEach(stage => {
+            stage.milestones.forEach(milestone => {
+              if (milestone.statusNumber === status.milestoneStatusNumber) {
+                milestoneCount++;
+              }
+            });
+          });
+        });
+        
+        return {
+          ...this.mapToDTO(status),
+          milestoneCount
+        };
+      }));
+      
+      return { isSuccess: true, data };
+    } catch (error: any) {
+      return { isSuccess: false, errorText: `Error retrieving milestone statuses with counts: ${error.message}` };
     }
   }
 
@@ -89,8 +123,7 @@ export class MilestoneStatusService {
       id: milestoneStatus.id,
       name: milestoneStatus.name,
       milestoneStatusNumber: milestoneStatus.milestoneStatusNumber,
-      isFinal: milestoneStatus.isFinal,
-      isEditable: milestoneStatus.isEditable
+      isFinal: milestoneStatus.isFinal
     };
   }
 }
