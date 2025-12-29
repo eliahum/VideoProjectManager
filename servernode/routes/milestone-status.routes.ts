@@ -1,7 +1,11 @@
 import express from 'express';
 import { milestoneStatusService } from '../services/milestoneStatusService';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = express.Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
 
 router.get('/', async (req, res) => {
   const result = await milestoneStatusService.getAllMilestoneStatuses();

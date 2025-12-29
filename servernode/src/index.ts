@@ -12,6 +12,7 @@ import milestoneStatusRoutes from '../routes/milestone-status.routes';
 import stageTemplateRoutes from '../routes/stage-template.routes';
 import projectRoutes from '../routes/projects.routes';
 import projectStatusRoutes from '../routes/project-status.routes';
+import authRoutes from '../routes/auth.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
@@ -24,9 +25,15 @@ const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/vide
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({ origin: '*' }));
+app.use(cors({ 
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/lead-statuses', leadStatusRoutes);

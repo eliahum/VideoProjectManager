@@ -6,6 +6,16 @@
     <span class="toolbar-title">{{ title }}</span>
   </div>
   <span class="toolbar-spacer"></span>
+  
+  @if (authService.currentUser$ | async; as user) {
+    <div class="user-section">
+      <span class="username">שלום {{ user.username }}</span>
+      <button mat-icon-button (click)="logout()" matTooltip="יציאה">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  }
+  
   <button mat-icon-button (click)="toggleMenu()" class="menu-button">
     <mat-icon>menu</mat-icon>
   </button>
@@ -14,7 +24,7 @@
 <mat-sidenav-container class="sidenav-container">
   <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile" position="start" class="sidenav">
     <mat-nav-list>
-      <ng-container *ngFor="let item of menuItems">
+      <ng-container *ngFor="let item of filteredMenuItems">
         <!-- Menu item with children -->
         <mat-expansion-panel *ngIf="item.children && item.children.length > 0" class="menu-expansion" [togglePosition]="'after'">
           <mat-expansion-panel-header>

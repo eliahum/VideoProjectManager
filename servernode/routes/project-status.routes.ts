@@ -1,7 +1,11 @@
 import express from 'express';
 import { getAllProjectStatuses, getAllProjectStatusesWithCounts, getProjectStatusById, createProjectStatus, updateProjectStatus, deleteProjectStatus } from '../services/projectStatusService';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = express.Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
 
 router.get('/', async (req, res) => {
     const response = await getAllProjectStatuses();

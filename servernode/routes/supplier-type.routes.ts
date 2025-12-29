@@ -1,7 +1,11 @@
 import { Router, Request, Response } from 'express';
 import supplierTypeService from '../services/supplierTypeService';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
 
 // GET /api/supplier-types - Get all supplier types
 router.get('/', async (req: Request, res: Response) => {
