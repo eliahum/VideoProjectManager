@@ -1,0 +1,25 @@
+# .github/workflows/backup.yml
+name: MongoDB Backup
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # כל יום ב-2 בלילה
+  workflow_dispatch:  # אפשרות להרצה ידנית
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - name: Install dependencies
+        run: cd servernode && npm install
+      - name: Run backup
+        env:
+          DATABASE_URL: ${{ secrets.MONGODB_URL }}
+        run: cd servernode && npx ts-node scripts/backup-db.ts
+      - name: Upload to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: mongodb-backup
+          path: servernode/backups/*.json
