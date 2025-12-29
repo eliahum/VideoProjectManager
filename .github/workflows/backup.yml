@@ -19,7 +19,7 @@ jobs:
           DATABASE_URL: ${{ secrets.MONGODB_URL }}
         run: cd servernode && npx ts-node scripts/backup-db.ts
       - name: Upload to GitHub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mongodb-backup
           path: servernode/backups/*.json
