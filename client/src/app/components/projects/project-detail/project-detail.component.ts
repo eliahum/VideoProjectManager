@@ -193,7 +193,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
             map(name => {
               const v = (name ?? '').trim().toLowerCase();
               if (v.length < 1) return [];
-              return this.customers.filter(c => c.name.toLowerCase().includes(v));
+              return this.customers.filter(c => c.name?.toLowerCase().includes(v));
             })
           );
 

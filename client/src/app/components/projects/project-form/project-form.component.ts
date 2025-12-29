@@ -87,7 +87,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
             const v = (name ?? '').trim().toLowerCase();
             // 👇 key line: if no typing -> return EMPTY LIST (so panel won't open)
             if (v.length < 1) return [];
-            return this.customers.filter(c => c.name.toLowerCase().includes(v));
+            return this.customers.filter(c => c.name?.toLowerCase().includes(v));
           })
         );
 

@@ -12,7 +12,8 @@ export interface ProjectSummary {
 export interface Customer {
   id: string;
   customerId: number;
-  name: string;
+  name?: string;
+  companyName: string;
   email?: string;
   phone: string;
   createdAt: Date;

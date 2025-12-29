@@ -50,7 +50,7 @@ export class CustomersListComponent implements OnInit {
   filteredCustomers: any[] = [];
   paginatedCustomers: any[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['customerid','name', 'phone', 'email', 'leadId', 'projects', 'actions'];
+  displayedColumns: string[] = ['customerid','companyName','name', 'phone', 'email', 'leadId', 'projects', 'actions'];
   pageSize: number = 10;
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
