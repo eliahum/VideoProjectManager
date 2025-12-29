@@ -48,6 +48,16 @@ jobs:
           path: servernode/backups/${{ steps.backup-file.outputs.filename }}
           retention-days: 90  # Keep backups for 90 days
 
+      - name: Upload to Google Drive
+        uses: satackey/action-google-drive@v1
+        with:
+          skicka-tokencache-json: ${{ secrets.GOOGLE_DRIVE_CREDENTIALS }}
+          upload-from: servernode/backups/${{ steps.backup-file.outputs.filename }}
+          upload-to: /VideoProjectManager-Backups/${{ steps.backup-file.outputs.filename }}
+          google-drive-folder-id: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          remove-outdated: true
+          outdated-days: 90
+
       - name: Create backup summary
         run: |
           cd servernode/backups
@@ -58,4 +68,5 @@ jobs:
           echo "- **File:** $BACKUP_FILE" >> $GITHUB_STEP_SUMMARY
           echo "- **Size:** $FILE_SIZE" >> $GITHUB_STEP_SUMMARY
           echo "- **Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Saved to:** GitHub Artifacts + Google Drive" >> $GITHUB_STEP_SUMMARY
           echo "- **Retention:** 90 days" >> $GITHUB_STEP_SUMMARY
