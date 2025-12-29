@@ -1,0 +1,61 @@
+name: MongoDB Backup
+
+on:
+  schedule:
+    # Runs every day at 2:00 AM UTC (4:00 AM Israel time)
+    - cron: '0 2 * * *'
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: servernode/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd servernode
+          npm ci
+
+      - name: Run MongoDB backup
+        env:
+          DATABASE_URL: ${{ secrets.MONGODB_URL }}
+        run: |
+          cd servernode
+          npx ts-node scripts/backup-db.ts
+
+      - name: Get backup filename
+        id: backup-file
+        run: |
+          cd servernode/backups
+          BACKUP_FILE=$(ls -t backup-*.json | head -n 1)
+          echo "filename=$BACKUP_FILE" >> $GITHUB_OUTPUT
+          echo "Backup file: $BACKUP_FILE"
+
+      - name: Upload backup as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mongodb-backup-${{ github.run_number }}
+          path: servernode/backups/${{ steps.backup-file.outputs.filename }}
+          retention-days: 90  # Keep backups for 90 days
+
+      - name: Create backup summary
+        run: |
+          cd servernode/backups
+          BACKUP_FILE="${{ steps.backup-file.outputs.filename }}"
+          FILE_SIZE=$(du -h "$BACKUP_FILE" | cut -f1)
+          echo "### ✅ Backup Completed Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **File:** $BACKUP_FILE" >> $GITHUB_STEP_SUMMARY
+          echo "- **Size:** $FILE_SIZE" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Retention:** 90 days" >> $GITHUB_STEP_SUMMARY
