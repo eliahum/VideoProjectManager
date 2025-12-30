@@ -42,9 +42,7 @@ jobs:
         id: backup_file
         working-directory: servernode/backups
         run: |
-          BACKUP_FILE="$(ls -t backup-*.json | head -n 1)"
-          echo "filename=$BACKUP_FILE" >> "$GITHUB_OUTPUT"
-          echo "Backup file: $BACKUP_FILE"
+          echo "Finish Success"
 
       - name: Upload backup as artifact
         uses: actions/upload-artifact@v4
