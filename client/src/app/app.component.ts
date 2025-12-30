@@ -45,13 +45,20 @@ export class AppComponent {
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
     { path: '/projects', label: 'פרויקטים', icon: 'video_library' },
     { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on', adminOnly: true },
-    { path: '/backup', label: 'גיבויים', icon: 'backup', adminOnly: true }
+    { path: '/backup', label: 'גיבויים', icon: 'backup', superadminOnly: true }
   ];
 
   get filteredMenuItems() {
-    return this.menuItems.filter(item => 
-      !item.adminOnly || this.authService.isAdmin()
-    );
+    return this.menuItems.filter(item => {
+      if (item.superadminOnly) {
+        const user = this.authService.getCurrentUser();
+        return user?.role === 'superadmin';
+      }
+      if (item.adminOnly) {
+        return this.authService.isAdmin();
+      }
+      return true;
+    });
   }
 
   constructor(

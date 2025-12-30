@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
+import { superadminGuard } from './guards/superadmin.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
@@ -55,6 +56,6 @@ export const routes: Routes = [
   { 
     path: 'backup', 
     loadComponent: () => import('./components/backup/backup.component').then(m => m.BackupComponent),
-    canActivate: [authGuard]
+    canActivate: [authGuard, superadminGuard]
   }
 ];

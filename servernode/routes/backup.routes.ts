@@ -9,8 +9,8 @@ import { authenticate, authorize } from '../middleware/auth.middleware';
 const router = Router();
 const backupService = new BackupService();
 
-// Apply authentication and admin authorization to all routes
-router.use(authenticate, authorize('admin'));
+// Apply authentication and superadmin authorization to all routes
+router.use(authenticate, authorize('superadmin'));
 
 /**
  * POST /api/backups/create
