@@ -9,3 +9,9 @@ coverage/
 *.log
 .idea/
 .vscode/
+
+# Google Credentials (NEVER COMMIT)
+google-credentials.json
+*-credentials.json
+
+

@@ -8,25 +8,17 @@ dotenv.config();
 import mongoose from 'mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
+import { GoogleDriveServiceAuth } from '../services/googleDriveServiceAuth';
 
 const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/videoprojectmanager';
-const BACKUP_DIR = path.join(__dirname, '../backups');
 
 async function createBackup() {
     try {
-        // Create backups directory if it doesn't exist
-        if (!fs.existsSync(BACKUP_DIR)) {
-            fs.mkdirSync(BACKUP_DIR, { recursive: true });
-            console.log('📁 Created backups directory');
-        }
-
         // Generate timestamp for backup file name
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-        const backupFile = path.join(BACKUP_DIR, `backup-${timestamp}.json`);
 
         console.log('🔄 Starting MongoDB backup...');
         console.log(`📍 Database: ${DATABASE_URL}`);
-        console.log(`💾 Backup location: ${backupFile}`);
 
         // Connect to MongoDB
         await mongoose.connect(DATABASE_URL);
@@ -57,39 +49,45 @@ async function createBackup() {
             console.log(`     ✓ ${documents.length} documents exported`);
         }
 
-        // Save to file
-        fs.writeFileSync(backupFile, JSON.stringify(backup, null, 2));
-        
-        const stats = fs.statSync(backupFile);
-        const fileSizeKB = (stats.size / 1024).toFixed(2);
+        // Prepare backup data for cloud upload
+        const backupJson = JSON.stringify(backup, null, 2);
+        const fileName = `backup-${timestamp}.json`;
+        const fileSizeKB = (Buffer.byteLength(backupJson, 'utf8') / 1024).toFixed(2);
         
         console.log('\n✅ Backup completed successfully!');
-        console.log(`📦 Backup saved to: ${backupFile}`);
+        console.log(`📦 Backup name: ${fileName}`);
         console.log(`💾 File size: ${fileSizeKB} KB`);
+ 
+        // Upload to Google Drive with OAuth2 if enabled
+        if (process.env.ENABLE_GOOGLE_DRIVE_OAUTH_BACKUP === 'true') {
+            try {
+                console.log('\n☁️  Uploading backup to Google Drive (OAuth2)...');
+                const driveServiceAuth = new GoogleDriveServiceAuth(
+                    process.env.GOOGLE_OAUTH_CLIENT_ID!,
+                    process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
+                    process.env.GOOGLE_OAUTH_REFRESH_TOKEN!
+                );
+                
+                // Check quota before upload
+                const quota = await driveServiceAuth.getStorageQuota();
+                const usedGB = (parseInt(quota.usage) / 1024 / 1024 / 1024).toFixed(2);
+                const limitGB = quota.limit === 'unlimited' 
+                    ? 'Unlimited' 
+                    : (parseInt(quota.limit) / 1024 / 1024 / 1024).toFixed(2);
+                console.log(`   Storage: ${usedGB} GB / ${limitGB} GB`);
+                
+                const folderId = process.env.GOOGLE_OAUTH_FOLDER_ID;
+                await driveServiceAuth.uploadFromMemory(backupJson, fileName, folderId);
+            } catch (error: any) {
+                console.error('⚠️  Google Drive OAuth2 upload failed:', error.message);
+                console.log('   Backup is still saved locally.');
+            }
+        }
 
-        // List all backups
-        const backups = fs.readdirSync(BACKUP_DIR)
-            .filter(f => f.startsWith('backup-') && f.endsWith('.json'))
-            .sort()
-            .reverse();
-
-        console.log(`\n📋 Total backups: ${backups.length}`);
-        console.log('Latest 5 backups:');
-        backups.slice(0, 5).forEach((backup, index) => {
-            const stats = fs.statSync(path.join(BACKUP_DIR, backup));
-            const size = (stats.size / 1024).toFixed(2);
-            console.log(`  ${index + 1}. ${backup} (${size} KB)`);
-        });
-
-        // Auto-cleanup: keep only last 10 backups
-        if (backups.length > 10) {
-            const toDelete = backups.slice(10);
-            console.log(`\n🧹 Cleaning up ${toDelete.length} old backups...`);
-            toDelete.forEach(backup => {
-                const backupPath = path.join(BACKUP_DIR, backup);
-                fs.unlinkSync(backupPath);
-                console.log(`  Deleted: ${backup}`);
-            });
+        // Show tip if no upload method is enabled
+        if (process.env.ENABLE_GOOGLE_DRIVE_OAUTH_BACKUP !== 'true') {
+            console.log('\n💡 Tip: Enable Google Drive backup by setting:');
+            console.log('   - ENABLE_GOOGLE_DRIVE_OAUTH_BACKUP=true (OAuth2)');
         }
 
         await mongoose.disconnect();
