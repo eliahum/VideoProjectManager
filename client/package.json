@@ -5,7 +5,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "vercel-build": "ng build --configuration production",
+    "vercel-build": "if [ \"$VERCEL_ENV\" = \"preview\" ]; then npm run vercel-build-preprod; else npm run vercel-build-prod; fi",
+    "vercel-build-prod": "ng build --configuration production",
     "vercel-build-preprod": "ng build --configuration preprod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
