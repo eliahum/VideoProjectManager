@@ -72,25 +72,27 @@ router.get('/last', async (req: Request, res: Response) => {
 
 /**
  * GET /api/backups/download/:filename
- * Download a specific backup file
+ * Download a specific backup file from Google Drive or local storage
  */
 router.get('/download/:filename', async (req: Request, res: Response) => {
   try {
     const { filename } = req.params;
     
-    const filePath = backupService.getBackupFile(filename);
+    console.log(`📥 Download request for: ${filename}`);
     
-    res.download(filePath, filename, (err) => {
-      if (err) {
-        console.error('Error downloading backup:', err);
-        res.status(500).json({
-          success: false,
-          message: 'שגיאה בהורדת הגיבוי'
-        });
-      }
-    });
+    // Download file from cloud or local storage
+    const fileBuffer = await backupService.downloadBackupFile(filename);
+    
+    // Set headers for download
+    res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', fileBuffer.length);
+    
+    // Send the file
+    res.send(fileBuffer);
+    console.log(`✅ File sent: ${filename}`);
   } catch (error: any) {
-    console.error('Error getting backup file:', error);
+    console.error('Error downloading backup:', error);
     res.status(404).json({
       success: false,
       message: error.message || 'קובץ הגיבוי לא נמצא'

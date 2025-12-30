@@ -195,4 +195,43 @@ export class GoogleDriveServiceAuth {
             throw error;
         }
     }
+
+    /**
+     * Download a file from Google Drive by filename
+     * @param filename - Name of the file to download
+     * @param folderId - Optional folder ID to search in
+     * @returns File content as Buffer
+     */
+    async downloadFile(filename: string, folderId?: string): Promise<Buffer> {
+        try {
+            // First, find the file
+            let query = `name='${filename}' and trashed=false`;
+            if (folderId) {
+                query += ` and '${folderId}' in parents`;
+            }
+
+            const response = await this.drive.files.list({
+                q: query,
+                fields: 'files(id, name)',
+            });
+
+            const files = response.data.files || [];
+            if (files.length === 0) {
+                throw new Error(`File not found: ${filename}`);
+            }
+
+            const fileId = files[0].id!;
+
+            // Download the file
+            const fileResponse = await this.drive.files.get(
+                { fileId, alt: 'media' },
+                { responseType: 'arraybuffer' }
+            );
+
+            return Buffer.from(fileResponse.data as ArrayBuffer);
+        } catch (error: any) {
+            console.error('❌ Error downloading file:', error.message);
+            throw error;
+        }
+    }
 }

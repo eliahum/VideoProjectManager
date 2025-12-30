@@ -240,7 +240,54 @@ export class BackupService {
   }
 
   /**
-   * קבלת קובץ גיבוי
+   * קבלת קובץ גיבוי מהענן או מקומי
+   */
+  async downloadBackupFile(filename: string): Promise<Buffer> {
+    // Security check - ensure filename is safe
+    if (!filename.startsWith('backup-') || !filename.endsWith('.json')) {
+      throw new Error('Invalid backup filename');
+    }
+
+    // אם Google Drive מופעל, הורד מהענן
+    if (process.env.ENABLE_GOOGLE_DRIVE_OAUTH_BACKUP === 'true') {
+      try {
+        console.log(`📥 Downloading ${filename} from Google Drive...`);
+        const driveServiceAuth = new GoogleDriveServiceAuth(
+          process.env.GOOGLE_OAUTH_CLIENT_ID!,
+          process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
+          process.env.GOOGLE_OAUTH_REFRESH_TOKEN!
+        );
+
+        const folderId = process.env.GOOGLE_OAUTH_FOLDER_ID;
+        const fileBuffer = await driveServiceAuth.downloadFile(filename, folderId);
+        console.log(`✅ Downloaded ${filename} from Google Drive`);
+        return fileBuffer;
+      } catch (error: any) {
+        console.error('Error downloading from Google Drive:', error);
+        // אם נכשל, נסה מהתיקייה המקומית
+        return this.downloadBackupFileFromLocal(filename);
+      }
+    }
+
+    // אחרת, הורד מהתיקייה המקומית
+    return this.downloadBackupFileFromLocal(filename);
+  }
+
+  /**
+   * קבלת קובץ גיבוי מהתיקייה המקומית
+   */
+  private downloadBackupFileFromLocal(filename: string): Buffer {
+    const filePath = path.join(this.backupsDir, filename);
+    
+    if (!fs.existsSync(filePath)) {
+      throw new Error('Backup file not found locally');
+    }
+
+    return fs.readFileSync(filePath);
+  }
+
+  /**
+   * קבלת קובץ גיבוי (מיושן - להתאמה לאחור)
    */
   getBackupFile(filename: string): string {
     const filePath = path.join(this.backupsDir, filename);
