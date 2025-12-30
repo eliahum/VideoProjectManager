@@ -51,5 +51,10 @@ export const routes: Routes = [
     path: 'statuses', 
     loadComponent: () => import('./components/shared/statuses/statuses.component').then(m => m.StatusesComponent),
     canActivate: [authGuard]
+  },
+  { 
+    path: 'backup', 
+    loadComponent: () => import('./components/backup/backup.component').then(m => m.BackupComponent),
+    canActivate: [authGuard]
   }
 ];

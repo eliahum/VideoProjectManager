@@ -44,7 +44,8 @@ export class AppComponent {
     { path: '/customers', label: 'לקוחות', icon: 'people' },
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
     { path: '/projects', label: 'פרויקטים', icon: 'video_library' },
-    { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on', adminOnly: true }
+    { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on', adminOnly: true },
+    { path: '/backup', label: 'גיבויים', icon: 'backup', adminOnly: true }
   ];
 
   get filteredMenuItems() {

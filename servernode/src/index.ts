@@ -13,6 +13,7 @@ import stageTemplateRoutes from '../routes/stage-template.routes';
 import projectRoutes from '../routes/projects.routes';
 import projectStatusRoutes from '../routes/project-status.routes';
 import authRoutes from '../routes/auth.routes';
+import backupRoutes from '../routes/backup.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
@@ -48,6 +49,7 @@ app.use('/api/milestone-statuses', milestoneStatusRoutes);
 app.use('/api/stage-templates', stageTemplateRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/project-statuses', projectStatusRoutes);
+app.use('/api/backups', backupRoutes);
 
 
 // Swagger setup
