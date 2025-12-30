@@ -3,7 +3,7 @@ name: MongoDB Backup And Upload To Google Drive
 on:
   schedule:
     # Runs every day at 2:00 AM UTC (4:00 AM Israel time, usually)
-    - cron: "16 17 * * *"
+    - cron: "0 2 * * *"
   workflow_dispatch:
 
 jobs:
