@@ -175,15 +175,18 @@
   display: flex;
   align-items: center;
   padding: 0 16px;
+  min-height: 64px;
 
   .menu-button {
     margin-left: 8px;
+    flex-shrink: 0;
   }
 
   .toolbar-right {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex-shrink: 0;
   }
 
   .toolbar-logo {
@@ -191,6 +194,7 @@
     align-items: center;
     justify-content: center;
     max-height: 48px;
+    flex-shrink: 0;
 
     img {
       height: 36px;
@@ -202,10 +206,14 @@
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .toolbar-spacer {
     flex: 1;
+    min-width: 8px;
   }
 }
 
@@ -217,11 +225,13 @@
   padding: 4px 12px;
   background: rgba(255, 255, 255, 0.1);
   border-radius: 20px;
+  flex-shrink: 0;
   
   .username {
     color: #4ade80;
     font-size: 14px;
     font-weight: 500;
+    white-space: nowrap;
   }
   
   button {
@@ -245,8 +255,33 @@
   }
 
   .top-toolbar {
+    padding: 0 8px;
+    min-height: 56px;
+
+    .toolbar-title {
+      font-size: 0.95rem;
+      max-width: 120px;
+    }
+
+    .toolbar-logo img {
+      height: 30px;
+    }
+
     .menu-button {
       display: block;
+    }
+
+    .user-section {
+      margin-left: 8px;
+      padding: 4px 8px;
+      gap: 4px;
+
+      .username {
+        font-size: 12px;
+        max-width: 80px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
     }
   }
 }

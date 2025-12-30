@@ -31,7 +31,7 @@ import { AuthService } from './services/auth.service';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'מנהל פרויקטי וידאו';
+  title = 'מנהל וידאו';
   @ViewChild('sidenav') sidenav!: MatSidenav;
   isMobile = false;
   
