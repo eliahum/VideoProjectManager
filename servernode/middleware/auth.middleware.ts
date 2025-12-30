@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../services/authService';
-import { UserRole } from '../models/user.model';
+import { type UserRole } from '../models/user.model';
 
 export interface AuthRequest extends Request {
     user?: {
@@ -47,13 +47,18 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
     }
 };
 
-export const authorize = (...allowedRoles: UserRole[]) => {
+export const authorize = (...allowedRoles: string[]) => {
     return (req: AuthRequest, res: Response, next: NextFunction) => {
         if (!req.user) {
             return res.status(401).json({ 
                 isSuccess: false, 
                 errorText: 'Unauthorized' 
             });
+        }
+
+        // superadmin has all permissions
+        if (req.user.role === 'superadmin') {
+            return next();
         }
 
         if (!allowedRoles.includes(req.user.role)) {

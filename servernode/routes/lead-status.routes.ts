@@ -1,6 +1,6 @@
 import express from 'express';
 import { getAllLeadStatuses, getAllLeadStatusesWithCounts, getLeadStatusById, createLeadStatus, updateLeadStatus, deleteLeadStatus } from '../services/leadStatusService';
-import { authenticate } from '../middleware/auth.middleware';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
@@ -34,7 +34,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+// Admin only routes
+router.post('/', authorize('admin'), async (req, res) => {
     const response = await createLeadStatus(req.body);
     if (response.isSuccess) {
         res.status(201).json(response);
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authorize('admin'), async (req, res) => {
     const response = await updateLeadStatus(req.params.id, req.body);
     if (response.isSuccess) {
         res.json(response);
@@ -52,7 +53,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authorize('admin'), async (req, res) => {
     const response = await deleteLeadStatus(req.params.id);
     if (response.isSuccess) {
         res.json(response);

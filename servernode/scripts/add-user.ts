@@ -30,6 +30,12 @@ const usersToAdd: UserData[] = [
         email: 'admin@videoprojectmanager.com',
         password: 'admin',
         role: 'admin'
+    },
+    {
+        username: 'superadmin',
+        email: 'superadmin@videoprojectmanager.com',
+        password: 'superadmin',
+        role: 'superadmin'
     }
 ];
 

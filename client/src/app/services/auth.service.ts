@@ -4,7 +4,7 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { API_BASE_URL } from '../../environments/api.config';
 
-export type UserRole = 'user' | 'admin';
+export type UserRole = 'user' | 'admin' | 'superadmin';
 
 export interface User {
   id: string;
@@ -88,7 +88,7 @@ export class AuthService {
 
   isAdmin(): boolean {
     const user = this.getCurrentUser();
-    return user?.role === 'admin';
+    return user?.role === 'admin' || user?.role === 'superadmin';
   }
 
   fetchCurrentUser(): Observable<UserResponse> {

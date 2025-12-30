@@ -35,15 +35,24 @@ export const login = async (loginData: LoginDTO): Promise<LoginResponseDTO> => {
     try {
         const { username, password } = loginData;
 
+        console.log('[login] Attempting login for username:', username);
+        console.log('[login] Password provided:', password ? 'YES' : 'NO');
+
         // Find user
         const user = await User.findOne({ username });
+        console.log('[login] User found:', user ? 'YES' : 'NO');
         if (!user) {
+            console.log('[login] User not found in database');
             return { isSuccess: false, errorText: 'Invalid username or password' };
         }
 
+        console.log('[login] User role:', user.role);
+        
         // Verify password
         const isValidPassword = await comparePassword(password, user.password);
+        console.log('[login] Password valid:', isValidPassword);
         if (!isValidPassword) {
+            console.log('[login] Password mismatch');
             return { isSuccess: false, errorText: 'Invalid username or password' };
         }
 
