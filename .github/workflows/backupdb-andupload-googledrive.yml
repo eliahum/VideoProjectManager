@@ -40,7 +40,7 @@ jobs:
 
       - name: Get newest backup filename
         id: backup_file
-        working-directory: servernode/backups
+        working-directory: servernode
         run: |
           echo "Finish Success"
 
