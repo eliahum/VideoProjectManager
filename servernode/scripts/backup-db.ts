@@ -62,6 +62,8 @@ async function createBackup() {
         if (process.env.ENABLE_GOOGLE_DRIVE_OAUTH_BACKUP === 'true') {
             try {
                 console.log('\n☁️  Uploading backup to Google Drive (OAuth2)...');
+                console.log('GOOGLE_OAUTH_CLIENT_ID:', process.env.GOOGLE_OAUTH_CLIENT_ID);
+                
                 const driveServiceAuth = new GoogleDriveServiceAuth(
                     process.env.GOOGLE_OAUTH_CLIENT_ID!,
                     process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
