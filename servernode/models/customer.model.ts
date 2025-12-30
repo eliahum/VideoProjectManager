@@ -5,7 +5,8 @@ import { Counter } from './counter.model';
 const customerSchema = new mongoose.Schema(
     {
         customerId: { type: Number, unique: true },
-        name: { type: String, required: true },
+        name: { type: String },
+        companyName: { type: String, required: true },
         email: { type: String},
         phone: { type: String, required: true },
         address: { type: String },
@@ -30,7 +31,8 @@ customerSchema.pre('save', async function() {
 
 export interface CustomerDocument extends Document {
     customerId: number;
-    name: string;
+    name?: string;
+    companyName: string;
     email: string;
     phone: string;
     address?: string;

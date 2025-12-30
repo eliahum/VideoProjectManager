@@ -1,0 +1,44 @@
+name: MongoDB Backup And Upload To Google Drive
+
+on:
+  schedule:
+    # Runs every day at 2:00 AM UTC (4:00 AM Israel time, usually)
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: servernode/package-lock.json
+
+      - name: Install dependencies
+        working-directory: servernode
+        run: npm ci
+
+      - name: Run MongoDB backup and upload to Google Drive (ts-node)
+        working-directory: servernode
+        env:
+          DATABASE_URL: ${{ secrets.MONGODB_URL }}
+
+          ENABLE_GOOGLE_DRIVE_OAUTH_BACKUP: "true"
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          GOOGLE_OAUTH_REFRESH_TOKEN: ${{ secrets.GOOGLE_OAUTH_REFRESH_TOKEN }}
+          GOOGLE_OAUTH_FOLDER_ID: ${{ secrets.GOOGLE_OAUTH_FOLDER_ID }}
+        run: npx ts-node scripts/backup-db.ts
+
+      - name: Workflow summary
+        run: |
+          echo "### ✅ Backup workflow finished" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time (UTC):** $(date -u)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Action:** MongoDB backup script executed + Google Drive upload (handled by script)" >> $GITHUB_STEP_SUMMARY

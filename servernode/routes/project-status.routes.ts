@@ -1,7 +1,11 @@
 import express from 'express';
 import { getAllProjectStatuses, getAllProjectStatusesWithCounts, getProjectStatusById, createProjectStatus, updateProjectStatus, deleteProjectStatus } from '../services/projectStatusService';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 
 const router = express.Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
 
 router.get('/', async (req, res) => {
     const response = await getAllProjectStatuses();
@@ -30,7 +34,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+// Admin only routes - create, update, delete
+router.post('/', authorize('admin'), async (req, res) => {
     const response = await createProjectStatus(req.body);
     if (response.isSuccess) {
         res.status(201).json(response);
@@ -39,7 +44,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authorize('admin'), async (req, res) => {
     const response = await updateProjectStatus(req.params.id, req.body);
     if (response.isSuccess) {
         res.json(response);
@@ -48,7 +53,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authorize('admin'), async (req, res) => {
     const response = await deleteProjectStatus(req.params.id);
     if (response.isSuccess) {
         res.json(response);

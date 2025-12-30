@@ -4,7 +4,7 @@
   <form [formGroup]="leadForm" class="lead-form">
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>שם</mat-label>
+        <mat-label>איש קשר</mat-label>
         <input matInput formControlName="name" required>
         <mat-icon matPrefix>person</mat-icon>
         <mat-error *ngIf="leadForm.get('name')?.hasError('required')">

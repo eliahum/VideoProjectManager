@@ -1,7 +1,11 @@
 import express from 'express';
 import { getAllSuppliers, getSupplierById, createSupplier, updateSupplier, deleteSupplier } from '../services/suppliersService';
+import { authenticate } from '../middleware/auth.middleware';
 
 const router = express.Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
 
 router.get('/', async (req, res) => {
     const response = await getAllSuppliers();

@@ -1,0 +1,163 @@
+<div class="backup-page" dir="rtl">
+  <div class="page-header">
+    <h1>🗄️ ניהול גיבויים</h1>
+    <p class="subtitle">ניהול וביצוע גיבויים למסד הנתונים</p>
+  </div>
+
+  <!-- הודעות -->
+  <div class="messages">
+    <div class="alert alert-success" *ngIf="successMessage">
+      ✅ {{ successMessage }}
+    </div>
+    <div class="alert alert-error" *ngIf="errorMessage">
+      ❌ {{ errorMessage }}
+    </div>
+  </div>
+
+  <!-- יצירת גיבוי ידני -->
+  <div class="card manual-backup">
+    <h2>גיבוי ידני</h2>
+    <p class="description">צור גיבוי מלא של מסד הנתונים כעת</p>
+    
+    <button 
+      class="btn btn-primary btn-large"
+      (click)="createBackup()"
+      [disabled]="isCreatingBackup">
+      <span *ngIf="!isCreatingBackup">🔄 צור גיבוי עכשיו</span>
+      <span *ngIf="isCreatingBackup" class="loading">
+        <span class="spinner"></span> יוצר גיבוי...
+      </span>
+    </button>
+    
+    <div class="status-info">
+      <span class="status-label">📊 סטטוס:</span>
+      <span class="status-value" [class.status-loading]="isCreatingBackup">
+        {{ currentStatus }}
+      </span>
+    </div>
+  </div>
+
+  <!-- מידע על הגיבוי האחרון -->
+  <div class="card last-backup" *ngIf="lastBackup">
+    <h2>מידע על הגיבוי האחרון</h2>
+    <div class="backup-details">
+      <div class="detail-row">
+        <span class="label">📅 תאריך:</span>
+        <span class="value">{{ formatDate(lastBackup.timestamp) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">💾 גודל:</span>
+        <span class="value">{{ formatSize(lastBackup.size) }}</span>
+      </div>
+      <div class="detail-row">
+        <span class="label">☁️ הועלה לענן:</span>
+        <span class="value">
+          <span *ngIf="lastBackup.uploadedToCloud" class="badge badge-success">✅ כן</span>
+          <span *ngIf="!lastBackup.uploadedToCloud" class="badge badge-warning">⚠️ לא</span>
+        </span>
+      </div>
+      <div class="detail-row">
+        <span class="label">✅ סטטוס:</span>
+        <span class="value">
+          {{ getStatusIcon(lastBackup.status) }} {{ getStatusText(lastBackup.status) }}
+        </span>
+      </div>
+    </div>
+    
+    <button 
+      class="btn btn-secondary btn-small"
+      (click)="downloadBackup(lastBackup)">
+      ⬇️ הורד גיבוי
+    </button>
+  </div>
+
+  <!-- הודעה אם אין גיבוי אחרון -->
+  <div class="card empty-state" *ngIf="!lastBackup && !isCreatingBackup">
+    <div class="empty-icon">📭</div>
+    <h3>אין גיבויים זמינים</h3>
+    <p>לחץ על "צור גיבוי עכשיו" כדי ליצור את הגיבוי הראשון</p>
+  </div>
+
+  <!-- היסטוריית גיבויים -->
+  <div class="card backup-history" *ngIf="backupHistory.length > 0">
+    <h2>היסטוריית גיבויים</h2>
+    <p class="description">5 הגיבויים האחרונים</p>
+    
+    <div class="history-table">
+      <div class="table-header">
+        <div class="col-date">תאריך</div>
+        <div class="col-size">גודל</div>
+        <div class="col-cloud">ענן</div>
+        <div class="col-status">סטטוס</div>
+        <div class="col-actions">פעולות</div>
+      </div>
+      
+      <div class="table-row" *ngFor="let backup of backupHistory">
+        <div class="col-date">
+          {{ formatDate(backup.timestamp) }}
+        </div>
+        <div class="col-size">
+          {{ formatSize(backup.size) }}
+        </div>
+        <div class="col-cloud">
+          <span *ngIf="backup.uploadedToCloud" class="badge badge-success">✅</span>
+          <span *ngIf="!backup.uploadedToCloud" class="badge badge-gray">➖</span>
+        </div>
+        <div class="col-status">
+          <span class="status-badge" [ngClass]="'status-' + backup.status">
+            {{ getStatusIcon(backup.status) }} {{ getStatusText(backup.status) }}
+          </span>
+        </div>
+        <div class="col-actions">
+          <button 
+            class="btn-icon"
+            (click)="downloadBackup(backup)"
+            title="הורד">
+            ⬇️
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- לוח זמני גיבויים אוטומטיים -->
+  <div class="card schedule-info">
+    <h2>לוח זמני גיבויים אוטומטיים</h2>
+    
+    <div *ngIf="scheduleInfo" class="schedule-details">
+      <div class="schedule-item">
+        <span class="icon">🕐</span>
+        <div class="schedule-text">
+          <strong>תדירות:</strong> {{ scheduleInfo.description }}
+        </div>
+      </div>
+      <div class="schedule-item">
+        <span class="icon">🤖</span>
+        <div class="schedule-text">
+          <strong>מנגנון:</strong> GitHub Actions
+        </div>
+      </div>
+      <div class="schedule-item">
+        <span class="icon">☁️</span>
+        <div class="schedule-text">
+          <strong>יעד:</strong> Google Drive (אוטומטי)
+        </div>
+      </div>
+      <div class="schedule-item" *ngIf="scheduleInfo.cronExpression">
+        <span class="icon">⏰</span>
+        <div class="schedule-text">
+          <strong>Cron:</strong> {{ scheduleInfo.cronExpression }} ({{ scheduleInfo.timezone }})
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!scheduleInfo" class="schedule-loading">
+      <span class="spinner"></span> טוען מידע על לוח הזמנים...
+    </div>
+    
+    <div class="info-box">
+      <span class="info-icon">💡</span>
+      <span>הגיבויים האוטומטיים מתבצעים באופן אוטומטי בכל יום ונשמרים ל-90 יום</span>
+    </div>
+  </div>
+</div>

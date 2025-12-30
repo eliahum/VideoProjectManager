@@ -16,7 +16,8 @@ export interface ProjectSummaryDTO {
 export interface CustomerDTO {
     id: string; // MongoDB ObjectId as string
     customerId: number; // Auto-increment ID
-    name: string;
+    name?: string;
+    companyName: string;
     email?: string;
     phone: string;
     address?: string;

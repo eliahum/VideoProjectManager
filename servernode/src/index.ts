@@ -12,6 +12,8 @@ import milestoneStatusRoutes from '../routes/milestone-status.routes';
 import stageTemplateRoutes from '../routes/stage-template.routes';
 import projectRoutes from '../routes/projects.routes';
 import projectStatusRoutes from '../routes/project-status.routes';
+import authRoutes from '../routes/auth.routes';
+import backupRoutes from '../routes/backup.routes';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
@@ -24,9 +26,20 @@ const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/vide
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors({ origin: '*' }));
+
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+    ? ['https://video-project-manager.vercel.app'] 
+    : ['http://localhost:4200', 'http://localhost:3000'];
+
+app.use(cors({ 
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/lead-statuses', leadStatusRoutes);
@@ -36,6 +49,7 @@ app.use('/api/milestone-statuses', milestoneStatusRoutes);
 app.use('/api/stage-templates', stageTemplateRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/project-statuses', projectStatusRoutes);
+app.use('/api/backups', backupRoutes);
 
 
 // Swagger setup

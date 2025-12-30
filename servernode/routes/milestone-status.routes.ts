@@ -1,7 +1,11 @@
 import express from 'express';
 import { milestoneStatusService } from '../services/milestoneStatusService';
+import { authenticate, authorize } from '../middleware/auth.middleware';
 
 const router = express.Router();
+
+// Apply authentication to all routes
+router.use(authenticate);
 
 router.get('/', async (req, res) => {
   const result = await milestoneStatusService.getAllMilestoneStatuses();
@@ -19,18 +23,19 @@ router.get('/:id', async (req, res) => {
   res.json(result);
 });
 
-router.post('/', async (req, res) => {
+// Admin only routes
+router.post('/', authorize('admin'), async (req, res) => {
   const result = await milestoneStatusService.createMilestoneStatus(req.body);
   res.json(result);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', authorize('admin'), async (req, res) => {
   const id = parseInt(req.params.id);
   const result = await milestoneStatusService.updateMilestoneStatus(id, req.body);
   res.json(result);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authorize('admin'), async (req, res) => {
   const id = parseInt(req.params.id);
   const result = await milestoneStatusService.deleteMilestoneStatus(id);
   res.json(result);

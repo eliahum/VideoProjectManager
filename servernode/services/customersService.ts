@@ -10,7 +10,7 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
         const allStatuses = await ProjectStatus.find();
         
         const data = customers.map((customer) => {
-            const { _id, customerId, name, email, phone, address, leadId } = customer;
+            const { _id, customerId, name, companyName, email, phone, address, leadId } = customer;
             
             // Find all projects for this customer
             const customerProjects = allProjects.filter((project: IProject) => 
@@ -40,6 +40,7 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
                 id: _id.toString(),
                 customerId,
                 name,
+                companyName,
                 email,
                 phone,
                 address,
@@ -59,7 +60,7 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
         const customer = await Customer.findById(id);
         if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
         
-        const { _id, customerId, name, email, phone, address, leadId } = customer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId } = customer;
         
         // Find all projects for this customer
         const customerProjects = await Project.find({ customerId: customer._id });
@@ -87,6 +88,7 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
             id: _id.toString(),
             customerId,
             name,
+            companyName,
             email,
             phone,
             address,
@@ -104,11 +106,12 @@ export const createCustomer = async (customerData: CustomerDTO): Promise<Custome
     try {
         const customer = new Customer(customerData);
         const savedCustomer = await customer.save();
-        const { _id, customerId, name, email, phone, address, leadId } = savedCustomer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId } = savedCustomer;
         const data = {
             id: _id.toString(),
             customerId,
             name,
+            companyName,
             email,
             phone,
             address,
@@ -125,11 +128,12 @@ export const updateCustomer = async (id: string, updateData: Partial<CustomerDTO
     try {
         const updatedCustomer = await Customer.findByIdAndUpdate(id, updateData, { new: true });
         if (!updatedCustomer) return { isSuccess: false, errorText: 'Customer not found' };
-        const { _id, customerId, name, email, phone, address, leadId } = updatedCustomer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId } = updatedCustomer;
         const data = {
             id: _id.toString(),
             customerId,
             name,
+            companyName,
             email,
             phone,
             address,
@@ -146,11 +150,12 @@ export const deleteCustomer = async (id: string): Promise<CustomerResponseDTO> =
     try {
         const deletedCustomer = await Customer.findByIdAndDelete(id);
         if (!deletedCustomer) return { isSuccess: false, errorText: 'Customer not found' };
-        const { _id, customerId, name, email, phone, address, leadId } = deletedCustomer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId } = deletedCustomer;
         const data = {
             id: _id.toString(),
             customerId,
             name,
+            companyName,
             email,
             phone,
             address,

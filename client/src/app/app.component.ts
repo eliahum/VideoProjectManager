@@ -1,13 +1,15 @@
 import { Component, ViewChild } from '@angular/core';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { MatSidenav, MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -22,13 +24,14 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
     MatIconModule,
     MatToolbarModule,
     MatButtonModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTooltipModule
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  title = 'מנהל פרויקטי וידאו';
+  title = 'מנהל וידאו';
   @ViewChild('sidenav') sidenav!: MatSidenav;
   isMobile = false;
   
@@ -41,10 +44,28 @@ export class AppComponent {
     { path: '/customers', label: 'לקוחות', icon: 'people' },
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
     { path: '/projects', label: 'פרויקטים', icon: 'video_library' },
-    { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on' }
+    { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on', adminOnly: true },
+    { path: '/backup', label: 'גיבויים', icon: 'backup', superadminOnly: true }
   ];
 
-  constructor(private breakpointObserver: BreakpointObserver) {
+  get filteredMenuItems() {
+    return this.menuItems.filter(item => {
+      if (item.superadminOnly) {
+        const user = this.authService.getCurrentUser();
+        return user?.role === 'superadmin';
+      }
+      if (item.adminOnly) {
+        return this.authService.isAdmin();
+      }
+      return true;
+    });
+  }
+
+  constructor(
+    private breakpointObserver: BreakpointObserver,
+    public authService: AuthService,
+    private router: Router
+  ) {
     this.breakpointObserver.observe([Breakpoints.Handset])
       .subscribe(result => {
         this.isMobile = result.matches;
@@ -59,5 +80,10 @@ export class AppComponent {
     if (this.isMobile) {
       this.sidenav.close();
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

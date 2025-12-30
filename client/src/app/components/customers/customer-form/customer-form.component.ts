@@ -35,8 +35,9 @@ export class CustomerFormComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: Customer
   ) {
     this.customerForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.email]],
+      name: [''],
+      companyName: ['', Validators.required],
+      email: [''],
       phone: ['', Validators.required]
     });
   }
