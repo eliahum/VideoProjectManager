@@ -27,9 +27,29 @@ const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/vide
 // Middleware
 app.use(bodyParser.json());
 
+//app.options('*', cors());
+
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://video-project-manager.vercel.app', 'https://video-project-manager-ppr.vercel.app'] 
+    ? [ 'https://video-project-manager-ppr.vercel.app'] 
     : ['http://localhost:4200', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
+
+
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    const origin = req.headers.origin;
+    if (origin && allowedOrigins.indexOf(origin) !== -1) {
+      res.header('Access-Control-Allow-Origin', origin);
+      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.header('Access-Control-Allow-Credentials', 'true');
+      return res.status(200).json({});
+    } else {
+      console.log('OPTIONS blocked origin:', origin);
+      return res.status(403).json({ error: 'Not allowed by CORS' });
+    }
+  }
+  next();
+});
 
 app.use(cors({ 
     origin: function (origin, callback) {
