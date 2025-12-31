@@ -366,7 +366,7 @@ export class BackupService {
   }
 
   /**
-   * המרת biטוי cron לתיאור קריא
+   * המרת ביטוי cron לתיאור קריא
    */
   private describeCron(parts: string[]): string {
     if (parts.length < 5) return 'לוח זמנים לא תקין';
@@ -379,5 +379,69 @@ export class BackupService {
     }
 
     return `מתוזמן לפי: ${parts.join(' ')}`;
+  }
+
+  /**
+   * ניקוי גיבויים ישנים מ-Google Drive
+   * @param retentionDays - מספר הימים לשמירת גיבויים (ברירת מחדל: 90)
+   * @returns מספר הקבצים שנמחקו
+   */
+  async cleanupOldBackups(retentionDays: number = 90): Promise<number> {
+    try {
+      console.log(`🧹 Starting cleanup of backups older than ${retentionDays} days...`);
+
+      // חישוב תאריך חתך
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - retentionDays);
+      console.log(`📅 Cutoff date: ${cutoffDate.toISOString()}`);
+
+      // קבלת כל הגיבויים
+      const backups = await this.getBackupHistory();
+      
+      // סינון גיבויים ישנים
+      const oldBackups = backups.filter(backup => {
+        const backupDate = new Date(backup.timestamp);
+        return backupDate < cutoffDate;
+      });
+
+      if (oldBackups.length === 0) {
+        console.log('✅ No old backups to delete');
+        return 0;
+      }
+
+      console.log(`🗑️  Found ${oldBackups.length} old backups to delete`);
+
+      // מחיקת גיבויים ישנים מ-Google Drive
+      const driveServiceAuth = new GoogleDriveServiceAuth(
+        process.env.GOOGLE_OAUTH_CLIENT_ID!,
+        process.env.GOOGLE_OAUTH_CLIENT_SECRET!,
+        process.env.GOOGLE_OAUTH_REFRESH_TOKEN!
+      );
+
+      const folderId = process.env.GOOGLE_OAUTH_FOLDER_ID;
+      let deletedCount = 0;
+
+      for (const backup of oldBackups) {
+        try {
+          // מציאת ה-file ID ב-Google Drive
+          const files = await driveServiceAuth.listFiles(folderId);
+          const fileToDelete = files.find(f => f.name === backup.filename);
+
+          if (fileToDelete && fileToDelete.id) {
+            await driveServiceAuth.deleteFile(fileToDelete.id);
+            console.log(`   ✓ Deleted: ${backup.filename} (${new Date(backup.timestamp).toLocaleDateString()})`);
+            deletedCount++;
+          }
+        } catch (error: any) {
+          console.error(`   ✗ Failed to delete ${backup.filename}:`, error.message);
+        }
+      }
+
+      console.log(`✅ Cleanup completed. Deleted ${deletedCount}/${oldBackups.length} old backups`);
+      return deletedCount;
+    } catch (error: any) {
+      console.error('❌ Error during cleanup:', error);
+      return 0;
+    }
   }
 }
