@@ -35,10 +35,18 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
 
 
 app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
     const origin = req.headers.origin;
-    if (origin && allowedOrigins.indexOf(origin) !== -1) {
-      res.header('Access-Control-Allow-Origin', origin);
+  console.log('Incoming request:', {
+    method: req.method,
+    path: req.path,
+    origin: origin,
+    allowedOrigins: allowedOrigins
+  });
+  if (req.method === 'OPTIONS') {
+    
+    //if (origin && allowedOrigins.indexOf(origin) !== -1) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      res.header('Access-Control-Allow-Origin',  origin || '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.header('Access-Control-Allow-Credentials', 'true');
@@ -53,7 +61,7 @@ app.use((req, res, next) => {
 
 app.use(cors({ 
     origin: function (origin, callback) {
-        console.log('test CORS  origin:', origin);
+        console.log('CORS middleware - origin:', origin);
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         
