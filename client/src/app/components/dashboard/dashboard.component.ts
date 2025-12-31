@@ -12,6 +12,7 @@ import { LeadService } from '../../services/lead.service';
 import { ProjectStatusService } from '../../services/project-status.service';
 import { Project, Milestone } from '../../models/project.model';
 import { ProjectStatus } from '../../models/project-status.model';
+import { HttpClient } from '@angular/common/http';
 
 interface UrgentTask {
   title: string;
@@ -52,12 +53,15 @@ export class DashboardComponent implements OnInit {
     private leadService: LeadService,
     private projectStatusService: ProjectStatusService,
     private cdr: ChangeDetectorRef
+    
   ) {}
 
   ngOnInit(): void {
     this.loadProjectStatuses();
     this.loadData();
     this.loadLeadsData();
+
+
   }
 
   loadData(): void {

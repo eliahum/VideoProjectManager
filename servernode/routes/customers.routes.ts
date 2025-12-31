@@ -4,7 +4,7 @@ import { authenticate } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
-// Apply authentication to all routes
+
 router.use(authenticate);
 
 router.get('/', async (req, res) => {
