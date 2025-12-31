@@ -30,7 +30,7 @@ app.use(bodyParser.json());
 //app.options('*', cors());
 
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://video-project-manager.vercel.app', 'https://video-project-manager-ppr.vercel.app', 'https://video-project-manager-gstb.vercel.app'] 
+    ? ['https://video-project-manager.vercel.app'] 
     : ['http://localhost:4200', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
 
 const allowedSet = new Set(allowedOrigins);
@@ -44,11 +44,10 @@ app.use((req, res, next) => {
     origin: origin,
     allowedOrigins: allowedOrigins
   });
+  console.log('Allowed origins set:', allowedSet);
   if (req.method === 'OPTIONS') {
-    
-    //if (origin && allowedOrigins.indexOf(origin) !== -1) {
-    if (!origin || undefined|| allowedOrigins.indexOf(origin) !== -1) {
-      res.header('Access-Control-Allow-Origin',  origin || '*');
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      res.header('Access-Control-Allow-Origin', origin || '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       res.header('Access-Control-Allow-Credentials', 'true');
@@ -63,6 +62,7 @@ app.use((req, res, next) => {
 
 app.use(cors({ 
     origin: function (origin, callback) {
+        console.log('Allowed origins set3:', allowedSet);
         console.log('CORS middleware - origin:', origin);
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
