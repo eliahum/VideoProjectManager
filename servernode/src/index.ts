@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
 import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
 import customerRoutes from '../routes/customers.routes';
 import leadRoutes from '../routes/leads.routes';
 import leadStatusRoutes from '../routes/lead-status.routes';
@@ -18,14 +17,24 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import cors from 'cors';
 import supplierTypeService from '../services/supplierTypeService';
+import { connectToDatabase } from '../utils/db';
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
-const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/videoprojectmanager';
 
 
 // Middleware
 app.use(bodyParser.json());
+
+// Ensure DB connection before processing requests (for serverless)
+app.use(async (req, res, next) => {
+    try {
+        await connectToDatabase();
+        next();
+    } catch (error) {
+        res.status(503).json({ error: 'Database connection failed' });
+    }
+});
 
 //app.options('*', cors());
 
@@ -36,29 +45,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
 const allowedSet = new Set(allowedOrigins);
 
 
-/*app.use((req, res, next) => {
-    const origin = req.headers.origin;
-  console.log('Incoming request:', {
-    method: req.method,
-    path: req.path,
-    origin: origin,
-    allowedOrigins: allowedOrigins
-  });
-  console.log('Allowed origins set:', allowedSet);
-  if (req.method === 'OPTIONS') {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      res.header('Access-Control-Allow-Origin', origin || '*');
-      res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-      res.header('Access-Control-Allow-Credentials', 'true');
-      return res.status(200).json({});
-    } else {
-      console.log('OPTIONS blocked origin:', origin);
-      return res.status(403).json({ error: 'Not allowed by CORS' });
-    }
-  }
-  next();
-});*/
+
 
 app.use(cors({ 
     origin: allowedOrigins,
@@ -99,24 +86,23 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Connect to MongoDB
-mongoose.connect(DATABASE_URL, {
-    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
-    socketTimeoutMS: 45000,
-})
-    .then(async () => {
+// Initialize DB connection and defaults
+const initializeApp = async () => {
+    try {
+        await connectToDatabase();
         console.log('Connected to MongoDB');
-        // Initialize default supplier types
         await supplierTypeService.initializeDefaults();
-    })
-    .catch(err => {
-        console.error('Failed to connect to MongoDB', err);
-    });
+    } catch (err) {
+        console.error('Failed to initialize app', err);
+    }
+};
 
 // For local development
 if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running on http://localhost:${PORT}`);
+    initializeApp().then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
     });
 }
 
