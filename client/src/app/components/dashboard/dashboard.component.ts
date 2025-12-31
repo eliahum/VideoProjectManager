@@ -12,6 +12,7 @@ import { LeadService } from '../../services/lead.service';
 import { ProjectStatusService } from '../../services/project-status.service';
 import { Project, Milestone } from '../../models/project.model';
 import { ProjectStatus } from '../../models/project-status.model';
+import { HttpClient } from '@angular/common/http';
 
 interface UrgentTask {
   title: string;
@@ -51,13 +52,25 @@ export class DashboardComponent implements OnInit {
     private projectService: ProjectService,
     private leadService: LeadService,
     private projectStatusService: ProjectStatusService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient
   ) {}
 
   ngOnInit(): void {
     this.loadProjectStatuses();
     this.loadData();
     this.loadLeadsData();
+/*
+    this.http.get('https://video-project-manager-ppr-server.vercel.app/api/customers')
+  .subscribe({
+    next: (data) => {
+      debugger;
+      console.log('API Success:', data)},
+    error: (err) => {
+      debugger;
+      console.error('API Error:', err)}
+  });*/
+
   }
 
   loadData(): void {
