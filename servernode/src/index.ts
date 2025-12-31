@@ -30,16 +30,18 @@ app.use(bodyParser.json());
 const allowedOrigins = process.env.NODE_ENV === 'production' 
     ? ['https://video-project-manager.vercel.app'] 
     : ['http://localhost:4200', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
-
+/*
 app.use(cors({ 
-  //  origin: allowedOrigins,
+   origin: allowedOrigins,
     origin:'*',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+}));*/
 
-app.options('*', cors());
+app.use(cors({ origin: '*', credentials: false }));
+
+//app.options('*', cors());
 
 
 // Routes
