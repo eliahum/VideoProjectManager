@@ -62,6 +62,7 @@ app.use((req, res, next) => {
 
 app.use(cors({ 
     origin: function (origin, callback) {
+        console.log('Allowed origins set3:', allowedSet);
         console.log('CORS middleware - origin:', origin);
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
