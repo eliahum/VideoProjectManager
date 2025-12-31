@@ -28,6 +28,11 @@ async function createBackup() {
         console.log(`💾 File size: ${(result.size / 1024).toFixed(2)} KB`);
         console.log(`☁️  Uploaded to cloud: ${result.uploadedToCloud ? 'Yes' : 'No'}`);
 
+        // Cleanup old backups (keep last 90 days)
+        console.log('\n🧹 Cleaning up old backups...');
+        const deletedCount = await backupService.cleanupOldBackups(90);
+        console.log(`🗑️  Deleted ${deletedCount} old backup(s)`);
+
         await mongoose.disconnect();
         process.exit(0);
     } catch (error) {
