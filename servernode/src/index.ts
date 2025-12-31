@@ -36,7 +36,7 @@ const allowedOrigins = process.env.NODE_ENV === 'production'
 const allowedSet = new Set(allowedOrigins);
 
 
-app.use((req, res, next) => {
+/*app.use((req, res, next) => {
     const origin = req.headers.origin;
   console.log('Incoming request:', {
     method: req.method,
@@ -58,22 +58,10 @@ app.use((req, res, next) => {
     }
   }
   next();
-});
+});*/
 
 app.use(cors({ 
-    origin: function (origin, callback) {
-        console.log('Allowed origins set3:', allowedSet);
-        console.log('CORS middleware - origin:', origin);
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log('CORS blocked origin:', origin);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
