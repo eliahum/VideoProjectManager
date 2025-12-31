@@ -52,24 +52,15 @@ export class DashboardComponent implements OnInit {
     private projectService: ProjectService,
     private leadService: LeadService,
     private projectStatusService: ProjectStatusService,
-    private cdr: ChangeDetectorRef,
-    private http: HttpClient
+    private cdr: ChangeDetectorRef
+    
   ) {}
 
   ngOnInit(): void {
     this.loadProjectStatuses();
     this.loadData();
     this.loadLeadsData();
-/*
-    this.http.get('https://video-project-manager-ppr-server.vercel.app/api/customers')
-  .subscribe({
-    next: (data) => {
-      debugger;
-      console.log('API Success:', data)},
-    error: (err) => {
-      debugger;
-      console.error('API Error:', err)}
-  });*/
+
 
   }
 

@@ -30,10 +30,12 @@ app.use(bodyParser.json());
 //app.options('*', cors());
 
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? [ 'https://video-project-manager-ppr.vercel.app'] 
+    ? [ 'https://video-project-manager.vercel.app'] 
     : ['http://localhost:4200', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
 
+const allowedSet = new Set(allowedOrigins);
 
+/*
 app.use((req, res, next) => {
     const origin = req.headers.origin;
   console.log('Incoming request:', {
@@ -75,7 +77,30 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+}));*/
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    console.log('CORS check:', { origin });
+
+    // ✅ Allow requests with no Origin (SSR, server-to-server, curl, health checks)
+    if (!origin) return callback(null, true);
+
+    // ✅ Allow known frontends
+    if (allowedSet.has(origin)) return callback(null, true);
+
+    console.log('CORS blocked origin:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+// ✅ Apply CORS to all routes
+app.use(cors(corsOptions));
+
+// ✅ Ensure preflight works everywhere
+app.options(/.*/, cors(corsOptions));
 
 
 // Routes
