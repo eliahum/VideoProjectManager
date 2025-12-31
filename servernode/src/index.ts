@@ -28,20 +28,15 @@ const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/vide
 app.use(bodyParser.json());
 
 const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://video-project-manager.vercel.app'] 
+    ? ['https://video-project-manager.vercel.app', 'https://video-project-manager-ppr.vercel.app'] 
     : ['http://localhost:4200', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
-/*
+
 app.use(cors({ 
-   origin: allowedOrigins,
-    origin:'*',
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));*/
-
-app.use(cors({ origin: '*', credentials: false }));
-
-//app.options('*', cors());
+}));
 
 
 // Routes
