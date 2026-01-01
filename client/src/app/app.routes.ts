@@ -57,5 +57,10 @@ export const routes: Routes = [
     path: 'backup', 
     loadComponent: () => import('./components/backup/backup.component').then(m => m.BackupComponent),
     canActivate: [authGuard, superadminGuard]
+  },
+  { 
+    path: 'backup/restore', 
+    loadComponent: () => import('./components/backup/restore-backup.component').then(m => m.RestoreBackupComponent),
+    canActivate: [authGuard, superadminGuard]
   }
 ];

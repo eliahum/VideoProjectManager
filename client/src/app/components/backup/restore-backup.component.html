@@ -1,0 +1,92 @@
+<div class="restore-backup-container">
+  <div class="header">
+    <button class="back-button" (click)="goBack()">
+      <i class="fas fa-arrow-right"></i>
+      חזור
+    </button>
+    <h1>שחזור גיבוי</h1>
+  </div>
+
+  <div class="content">
+    <!-- Warning Alert -->
+    <div class="alert alert-warning">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div>
+        <strong>אזהרה!</strong>
+        <p>שחזור גיבוי ימחק את כל המידע הנוכחי במערכת ויחליף אותו בנתוני הגיבוי.</p>
+        <p>פעולה זו היא בלתי הפיכה!</p>
+      </div>
+    </div>
+
+    <!-- File Upload Section -->
+    <div class="upload-section">
+      <h2>בחירת קובץ גיבוי</h2>
+      
+      <div class="file-input-wrapper">
+        <input 
+          type="file" 
+          id="backupFile" 
+          accept=".json"
+          (change)="onFileSelected($event)"
+          [disabled]="isRestoring"
+        />
+        <label for="backupFile" class="file-label">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <span>בחר קובץ גיבוי</span>
+        </label>
+      </div>
+
+      <!-- File Info -->
+      <div class="file-info" *ngIf="fileInfo">
+        <div class="info-row">
+          <strong>שם הקובץ:</strong>
+          <span>{{ fileInfo.name }}</span>
+        </div>
+        <div class="info-row">
+          <strong>גודל:</strong>
+          <span>{{ fileInfo.size }}</span>
+        </div>
+        <div class="info-row" *ngIf="fileInfo.timestamp">
+          <strong>תאריך הגיבוי:</strong>
+          <span>{{ fileInfo.timestamp }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="alert alert-success" *ngIf="successMessage">
+      <i class="fas fa-check-circle"></i>
+      {{ successMessage }}
+    </div>
+
+    <!-- Error Message -->
+    <div class="alert alert-error" *ngIf="errorMessage">
+      <i class="fas fa-exclamation-circle"></i>
+      {{ errorMessage }}
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+      <button 
+        type="button"
+        class="btn btn-primary"
+        (click)="showConfirmation()"
+        [disabled]="!selectedFile || isRestoring"
+      >
+        <i class="fas fa-database"></i>
+        <span *ngIf="!isRestoring">שחזר גיבוי</span>
+        <span *ngIf="isRestoring">משחזר...</span>
+      </button>
+
+      <button 
+        type="button"
+        class="btn btn-secondary"
+        (click)="clearForm()"
+        [disabled]="isRestoring || !selectedFile"
+      >
+        <i class="fas fa-times"></i>
+        נקה
+      </button>
+    </div>
+  </div>
+</div>

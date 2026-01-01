@@ -444,4 +444,54 @@ export class BackupService {
       return 0;
     }
   }
+
+  /**
+   * שחזור גיבוי מקובץ
+   * @param backupData - נתוני הגיבוי בפורמט JSON
+   */
+  async restoreBackup(backupData: any): Promise<void> {
+    try {
+      console.log('🔄 Starting MongoDB restore...');
+
+      const db = mongoose.connection.db;
+      if (!db) {
+        throw new Error('Database connection not available');
+      }
+
+      console.log(`📊 Backup from: ${backupData.timestamp}`);
+      console.log(`📚 Database: ${backupData.database}`);
+
+      // Restore each collection
+      const collectionNames = Object.keys(backupData.collections);
+      console.log(`📦 Restoring ${collectionNames.length} collections...`);
+
+      for (const collectionName of collectionNames) {
+        const documents = backupData.collections[collectionName];
+        
+        console.log(`  📦 Restoring: ${collectionName}...`);
+        
+        // Drop existing collection
+        try {
+          await db.collection(collectionName).drop();
+          console.log(`     🗑️  Dropped existing collection`);
+        } catch (err) {
+          // Collection might not exist, that's okay
+          console.log(`     ℹ️  Collection didn't exist`);
+        }
+
+        // Insert documents
+        if (documents && documents.length > 0) {
+          await db.collection(collectionName).insertMany(documents);
+          console.log(`     ✓ Restored ${documents.length} documents`);
+        } else {
+          console.log(`     ℹ️  No documents to restore`);
+        }
+      }
+
+      console.log('✅ Restore completed successfully!');
+    } catch (error: any) {
+      console.error('❌ Restore failed:', error);
+      throw new Error(`Restore failed: ${error.message}`);
+    }
+  }
 }

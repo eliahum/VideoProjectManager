@@ -75,4 +75,20 @@ export class BackupService {
   getScheduleInfo(): Observable<BackupScheduleInfo> {
     return this.http.get<BackupScheduleInfo>(`${this.apiUrl}/schedule`);
   }
+
+  /**
+   * שחזור גיבוי מקובץ
+   */
+  restoreBackup(file: File): Observable<BackupResponse> {
+    console.log('BackupService.restoreBackup called with file:', file);
+    console.log('File name:', file.name);
+    console.log('File size:', file.size);
+    console.log('API URL:', `${this.apiUrl}/restore`);
+    
+    const formData = new FormData();
+    formData.append('backupFile', file);
+    
+    console.log('FormData created, sending request...');
+    return this.http.post<BackupResponse>(`${this.apiUrl}/restore`, formData);
+  }
 }
