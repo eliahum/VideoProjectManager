@@ -5,9 +5,9 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "vercel-build": "if [ \"$VERCEL_ENV\" = \"preview\" ]; then npm run vercel-build-preprod; else npm run vercel-build-prod; fi",
-    "vercel-build-prod": "ng build --configuration production",
-    "vercel-build-preprod": "ng build --configuration preprod",
+    "vercel-build": "echo \"VERCEL_ENV=$VERCEL_ENV, GIT_BRANCH=$VERCEL_GIT_COMMIT_REF\" && if [ \"$VERCEL_ENV\" = \"production\" ] && [ \"$VERCEL_GIT_COMMIT_REF\" = \"main\" ]; then npm run vercel-build-prod; else npm run vercel-build-preprod; fi",
+    "vercel-build-prod": "echo \"Building for PRODUCTION\" && ng build --configuration production",
+    "vercel-build-preprod": "echo \"Building for PREPROD (dev indicator will show)\" && ng build --configuration preprod",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
