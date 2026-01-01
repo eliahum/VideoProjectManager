@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AuthService } from './services/auth.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -34,6 +35,7 @@ export class AppComponent {
   title = 'מנהל וידאו';
   @ViewChild('sidenav') sidenav!: MatSidenav;
   isMobile = false;
+  isProduction = environment.production;
   
   menuItems = [
     { path: '/dashboard', label: 'דשבורד', icon: 'dashboard', children: [
