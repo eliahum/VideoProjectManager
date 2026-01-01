@@ -40,7 +40,7 @@ app.use(async (req, res, next) => {
 
 const allowedOrigins = process.env.NODE_ENV === 'production' 
     ? ['https://video-project-manager.vercel.app'] 
-    : ['http://localhost:4200', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
+    : ['http://localhost:4200','http://localhost:5173', 'http://localhost:3000', 'https://video-project-manager-ppr.vercel.app'];
 
 const allowedSet = new Set(allowedOrigins);
 
