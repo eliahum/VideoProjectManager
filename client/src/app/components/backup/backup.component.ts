@@ -1,11 +1,12 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { BackupService, BackupInfo, BackupScheduleInfo } from '../../services/backup.service';
 
 @Component({
   selector: 'app-backup',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './backup.component.html',
   styleUrls: ['./backup.component.scss']
 })
