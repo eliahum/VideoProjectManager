@@ -446,6 +446,50 @@ export class BackupService {
   }
 
   /**
+   * המרת מחרוזות ID ל-ObjectId באופן רקורסיבי
+   */
+  private convertStringIdsToObjectIds(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return obj;
+    }
+
+    // If it's an array, process each element
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.convertStringIdsToObjectIds(item));
+    }
+
+    // If it's not an object, return as-is
+    if (typeof obj !== 'object') {
+      return obj;
+    }
+
+    // Process object properties
+    const result: any = {};
+    for (const [key, value] of Object.entries(obj)) {
+      // Check if this looks like an ObjectId field (ends with _id or Id, or is exactly "_id")
+      const isIdField = key === '_id' || key.endsWith('_id') || key.endsWith('Id');
+      
+      if (isIdField && typeof value === 'string' && this.isValidObjectId(value)) {
+        result[key] = new mongoose.Types.ObjectId(value);
+      } else if (typeof value === 'object' && value !== null) {
+        result[key] = this.convertStringIdsToObjectIds(value);
+      } else {
+        result[key] = value;
+      }
+    }
+    
+    return result;
+  }
+
+  /**
+   * בדיקה אם מחרוזת היא ObjectId תקין
+   */
+  private isValidObjectId(str: string): boolean {
+    // ObjectId must be exactly 24 hex characters
+    return /^[0-9a-fA-F]{24}$/.test(str);
+  }
+
+  /**
    * שחזור גיבוי מקובץ
    * @param backupData - נתוני הגיבוי בפורמט JSON
    */
@@ -481,7 +525,13 @@ export class BackupService {
 
         // Insert documents
         if (documents && documents.length > 0) {
-          await db.collection(collectionName).insertMany(documents);
+          // Convert _id strings and nested ObjectIds back to ObjectId
+          const documentsWithObjectId = documents.map((doc: any) => {
+            return this.convertStringIdsToObjectIds(doc);
+          });
+          
+          await db.collection(collectionName).insertMany(documentsWithObjectId);
+
           console.log(`     ✓ Restored ${documents.length} documents`);
         } else {
           console.log(`     ℹ️  No documents to restore`);
