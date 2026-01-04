@@ -2,22 +2,29 @@
 
 <mat-dialog-content>
   <form [formGroup]="projectForm" class="project-form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>לקוח</mat-label>
-      <mat-icon matPrefix>person</mat-icon>
-      <input matInput [formControl]="customerInputCtrl" [matAutocomplete]="customerAuto" autocomplete="off"
-         required />
+    <div style="display: flex; gap: 8px; align-items: flex-start;">
+      <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>שם חברה</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input matInput [formControl]="customerInputCtrl" [matAutocomplete]="customerAuto" autocomplete="off"
+           required />
 
-      <mat-autocomplete #customerAuto="matAutocomplete" [displayWith]="displayCustomer"
-        (optionSelected)="onCustomerSelected($event.option.value)">
-        <mat-option *ngFor="let customer of (filteredCustomers | async)" [value]="customer">
-          {{ customer.name }}
-        </mat-option>
-      </mat-autocomplete>
-      <mat-error *ngIf="customerInputCtrl.hasError('required') || projectForm.get('customerId')?.hasError('required')">
-        שדה חובה
-      </mat-error>
-    </mat-form-field>
+        <mat-autocomplete #customerAuto="matAutocomplete" [displayWith]="displayCustomer"
+          (optionSelected)="onCustomerSelected($event.option.value)">
+          <mat-option *ngFor="let customer of (filteredCustomers | async)" [value]="customer">
+            {{ customer.companyName }}
+          </mat-option>
+        </mat-autocomplete>
+        <mat-error *ngIf="customerInputCtrl.hasError('required') || projectForm.get('customerId')?.hasError('required')">
+          שדה חובה
+        </mat-error>
+      </mat-form-field>
+      
+      <button mat-mini-fab color="primary" type="button" (click)="openCustomerForm()" 
+              matTooltip="הוסף לקוח חדש" style="margin-top: 8px;">
+        <mat-icon>person_add</mat-icon>
+      </button>
+    </div>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>שם פרוייקט</mat-label>

@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,6 +11,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectService } from '../../../services/project.service';
 import { CustomerService } from '../../../services/customer.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
@@ -19,6 +20,7 @@ import { Customer } from '../../../models/customer.model';
 import { convertDateToUTC } from '../../../utils/date.utils';
 import { Observable, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { CustomerFormComponent } from '../../customers/customer-form/customer-form.component';
 
 @Component({
   selector: 'app-project-form',
@@ -36,7 +38,7 @@ import { map, startWith } from 'rxjs/operators';
     MatDatepickerModule,
     MatNativeDateModule,
     MatAutocompleteModule,
-
+    MatTooltipModule,
   ],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss'
@@ -53,7 +55,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
 
   displayCustomer = (customer?: Customer | string | null): string => {
-    return typeof customer === 'string' ? customer : (customer?.name || '');
+    return typeof customer === 'string' ? customer : (customer?.companyName || '');
   };
 
   constructor(
@@ -61,6 +63,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     private projectService: ProjectService,
     private customerService: CustomerService,
     private messageDialogService: MessageDialogService,
+    private dialog: MatDialog,
     private dialogRef: MatDialogRef<ProjectFormComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Project
   ) {
@@ -82,12 +85,12 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
         this.filteredCustomers = this.customerInputCtrl.valueChanges.pipe(
           startWith(''),
-          map(value => typeof value === 'string' ? value : (value?.name ?? '')),
+          map(value => typeof value === 'string' ? value : (value?.companyName ?? '')),
           map(name => {
             const v = (name ?? '').trim().toLowerCase();
             // 👇 key line: if no typing -> return EMPTY LIST (so panel won't open)
             if (v.length < 1) return [];
-            return this.customers.filter(c => c.name?.toLowerCase().includes(v));
+            return this.customers.filter(c => c.companyName?.toLowerCase().includes(v));
           })
         );
 
@@ -199,5 +202,29 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
+  }
+
+  openCustomerForm(): void {
+    const dialogRef = this.dialog.open(CustomerFormComponent, {
+      width: '500px',
+      disableClose: false
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Refresh customers list
+        this.customerService.getAll().subscribe(response => {
+          if (response.isSuccess && response.data) {
+            this.customers = response.data;
+            // Select the newly created customer (should be the last one)
+            const newCustomer = this.customers[this.customers.length - 1];
+            if (newCustomer) {
+              this.customerInputCtrl.setValue(newCustomer);
+              this.projectForm.get('customerId')?.setValue(newCustomer.id);
+            }
+          }
+        });
+      }
+    });
   }
 }
