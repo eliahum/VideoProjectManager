@@ -4,6 +4,17 @@
   <form [formGroup]="leadForm" class="lead-form">
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
+        <mat-label>שם חברה</mat-label>
+        <input matInput formControlName="companyName" required>
+        <mat-icon matPrefix>business</mat-icon>
+        <mat-error *ngIf="leadForm.get('companyName')?.hasError('required')">
+          שדה חובה
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline" class="full-width">
         <mat-label>איש קשר</mat-label>
         <input matInput formControlName="name" required>
         <mat-icon matPrefix>person</mat-icon>
@@ -29,19 +40,6 @@
         <mat-icon matPrefix>email</mat-icon>
       </mat-form-field>
     </div>
-
-    <div class="form-row">
-      <mat-form-field appearance="outline" class="half-width">
-        <mat-label>שם חברה</mat-label>
-        <input matInput formControlName="companyName" required>
-        <mat-icon matPrefix>business</mat-icon>
-        <mat-error *ngIf="leadForm.get('companyName')?.hasError('required')">
-          שדה חובה
-        </mat-error>
-      </mat-form-field>
-
-
-    </div>
     <div class="form-row">
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>איך הגיע אלי</mat-label>
@@ -54,11 +52,24 @@
     <div class="form-row">
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>טקסט חופשי</mat-label>
-        <textarea matInput formControlName="freeText" rows="3" required></textarea>
-        <mat-error *ngIf="leadForm.get('freeText')?.hasError('required')">
-          שדה חובה
-        </mat-error>
+        <textarea matInput formControlName="freeText" rows="3"></textarea>
       </mat-form-field>
+    </div>
+
+    <div class="document-reference-field">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>הצעת מחיר (קישור ל-Google Drive)</mat-label>
+        <textarea matInput formControlName="priceQuote" placeholder="הדבק קישור לGoogle Drive..." rows="3"></textarea>
+        <mat-icon matPrefix class="drive-icon">folder</mat-icon>
+      </mat-form-field>
+      <button mat-icon-button 
+              type="button"
+              class="open-link-btn"
+              *ngIf="leadForm.get('priceQuote')?.value"
+              (click)="openPriceQuoteLink()"
+              matTooltip="פתח מסמך בטאב חדש">
+        <mat-icon>open_in_new</mat-icon>
+      </button>
     </div>
 
     <div class="form-row">

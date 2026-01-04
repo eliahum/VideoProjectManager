@@ -175,6 +175,10 @@
   .mat-mdc-option {
     color: #ffffff !important;
 
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+    }
+
     &:hover {
       background: rgba(168, 85, 247, 0.2) !important;
     }
@@ -192,11 +196,16 @@
     }
 
     .final-badge {
-      color: rgba(255, 255, 255, 0.5);
+      color: #ffffff !important;
       font-size: 0.85em;
       margin-right: 8px;
       font-style: italic;
     }
+  }
+
+  .mdc-list-item,
+  .mdc-list-item__primary-text {
+    color: #ffffff !important;
   }
 }
 
@@ -404,7 +413,7 @@
 
 ::ng-deep .status-chip {
   background-color: rgba(34, 197, 94, 0.2) !important;
-  color: #22c55e !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 12px !important;
@@ -412,7 +421,7 @@
   .mdc-evolution-chip__cell,
   .mdc-evolution-chip__action,
   .mdc-evolution-chip__text-label {
-    color: #22c55e !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
   }
 }

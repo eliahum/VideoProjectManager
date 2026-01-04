@@ -29,7 +29,7 @@ export const getAllLeads = async (): Promise<LeadsListResponseDTO> => {
         ]);
         
         const data = leads.map((lead) => {
-            const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName, createdAt, hasCustomer } = lead;
+            const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote, createdAt, hasCustomer } = lead;
             return { 
                 id: _id.toString(), 
                 leadId, 
@@ -39,7 +39,8 @@ export const getAllLeads = async (): Promise<LeadsListResponseDTO> => {
                 statusNumber, 
                 source, 
                 freeText, 
-                companyName, 
+                companyName,
+                priceQuote,
                 createdAt,
                 hasCustomer
             };
@@ -55,8 +56,8 @@ export const getLeadById = async (id: string): Promise<LeadResponseDTO> => {
     try {
         const lead = await Lead.findById(id);
         if (!lead) return { isSuccess: false, errorText: 'Lead not found' };
-        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName } = lead;
-        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote } = lead;
+        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[getLeadById] Error fetching lead:', error);
@@ -68,8 +69,8 @@ export const createLead = async (leadData: Partial<LeadDTO>): Promise<LeadRespon
     try {
         const lead = new Lead(leadData);
         const savedLead = await lead.save();
-        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName } = savedLead;
-        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote } = savedLead;
+        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[createLead] Error creating lead:', error);
@@ -81,8 +82,8 @@ export const updateLead = async (id: string, updateData: Partial<LeadDTO>): Prom
     try {
         const updatedLead = await Lead.findByIdAndUpdate(id, updateData, { new: true });
         if (!updatedLead) return { isSuccess: false, errorText: 'Lead not found' };
-        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName } = updatedLead;
-        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote } = updatedLead;
+        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[updateLead] Error updating lead:', error);
@@ -94,8 +95,8 @@ export const deleteLead = async (id: string): Promise<LeadResponseDTO> => {
     try {
         const deletedLead = await Lead.findByIdAndDelete(id);
         if (!deletedLead) return { isSuccess: false, errorText: 'Lead not found' };
-        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName } = deletedLead;
-        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName };
+        const { _id, leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote } = deletedLead;
+        const data = { id: _id.toString(), leadId, name, email, phone, statusNumber, source, freeText, companyName, priceQuote };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[deleteLead] Error deleting lead:', error);

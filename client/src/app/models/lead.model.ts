@@ -14,6 +14,7 @@ export interface Lead {
   updatedAt: Date;
   statusNumber: number; // מספר הסטטוס
   notInterestedReason?: string;
+  priceQuote?: string; // קישור להצעת מחיר ב-Google Drive
   hasCustomer?: boolean; // האם נוצר ממנו לקוח
 }
 
