@@ -59,14 +59,6 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
-.search-container .mat-form-field-appearance-outline .mat-form-field-outline {
-  border-radius: 999px;
-}
-
-.search-container .mat-form-field-flex {
-  border-radius: 999px;
-}
-
 .search-container {
   mat-form-field {
     background: rgba(36, 26, 62, 0.95);
@@ -130,6 +122,149 @@
 
   .mat-mdc-icon-button {
     color: #f4f0ff;
+  }
+}
+
+// Filters row styles
+.filters-row {
+  mat-form-field {
+    background: rgba(36, 26, 62, 0.95);
+    border-radius: 12px;
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background: transparent;
+      border: 2px solid rgba(198, 180, 255, 0.8) !important;
+      border-radius: 12px;
+      padding: 2px 12px;
+      box-shadow: 0 0 0 1px rgba(198, 180, 255, 0.4) !important;
+    }
+
+    ::ng-deep .mdc-notched-outline__leading,
+    ::ng-deep .mdc-notched-outline__notch,
+    ::ng-deep .mdc-notched-outline__trailing {
+      border: none !important;
+      border-color: transparent !important;
+    }
+
+    ::ng-deep .mdc-notched-outline {
+      display: none !important;
+      opacity: 0 !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-focus-overlay {
+      opacity: 1 !important;
+      background-color: rgba(198, 180, 255, 0.1) !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-flex {
+      background: transparent;
+      color: #ffffff;
+    }
+
+    .mat-mdc-form-field-infix {
+      color: #ffffff;
+    }
+
+    .mat-mdc-floating-label,
+    .mat-mdc-form-field-hint {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    ::ng-deep .mat-mdc-select-value,
+    ::ng-deep .mat-mdc-select-arrow {
+      color: #ffffff !important;
+    }
+
+    input.mat-mdc-input-element {
+      color: #ffffff;
+      caret-color: #ffffff;
+    }
+
+    ::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+      opacity: 1;
+    }
+
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+      opacity: 1;
+    }
+
+    .mat-mdc-icon-button {
+      color: #f4f0ff;
+    }
+  }
+
+  ::ng-deep .mat-mdc-select {
+    color: #ffffff !important;
+
+    .mat-mdc-select-value,
+    .mat-mdc-select-value-text,
+    .mat-mdc-select-trigger {
+      color: #ffffff !important;
+    }
+
+    .mdc-list-item,
+    .mat-mdc-option,
+    .mat-mdc-option-text {
+      color: #ffffff !important;
+    }
+
+    .check-icon {
+      color: #22c55e;
+      margin-left: 8px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .final-badge {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85em;
+      margin-right: 8px;
+      font-style: italic;
+    }
+  }
+}
+
+::ng-deep .mat-mdc-select-panel {
+  background: rgba(36, 26, 62, 0.98) !important;
+  border: 1px solid rgba(198, 180, 255, 0.5);
+
+  .mat-mdc-option {
+    color: #ffffff !important;
+
+    .mdc-list-item__primary-text {
+      color: #ffffff !important;
+    }
+
+    &:hover {
+      background: rgba(168, 85, 247, 0.2) !important;
+    }
+
+    &.mdc-list-item--selected {
+      background: rgba(34, 197, 94, 0.2) !important;
+    }
+
+    .check-icon {
+      color: #22c55e;
+      margin-left: 8px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .final-badge {
+      color: #ffffff !important;
+      font-size: 0.85em;
+      margin-right: 8px;
+      font-style: italic;
+    }
+  }
+
+  .mdc-list-item,
+  .mdc-list-item__primary-text {
+    color: #ffffff !important;
   }
 }
 
@@ -291,6 +426,19 @@
     }
   }
 
+  // Document button - Red (PDF)
+  .btn-document {
+    .pdf-icon-img {
+      width: 20px;
+      height: 20px;
+      display: block;
+    }
+
+    &:hover:not([disabled]) .pdf-icon-img {
+      opacity: 0.8;
+    }
+  }
+
   // Convert/Download button - Purple
   .btn-convert {
     .mat-icon {
@@ -325,7 +473,7 @@
 
 ::ng-deep .status-new {
   background-color: #2A2C5F !important;
-  color:  #83C0ED !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 12px !important;
@@ -333,14 +481,14 @@
   .mdc-evolution-chip__cell,
   .mdc-evolution-chip__action,
   .mdc-evolution-chip__text-label {
-    color: #83C0ED !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
   }
 }
 
 ::ng-deep .status-quote {
   background-color: rgba(234,179,8,0.2) !important;
-  color: #eab308 !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 12px !important;
@@ -348,14 +496,14 @@
   .mdc-evolution-chip__cell,
   .mdc-evolution-chip__action,
   .mdc-evolution-chip__text-label {
-    color: #eab308 !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
   }
 }
 
 ::ng-deep .status-paused {
   background-color: rgba(168,85,247,0.2) !important;
-  color: #a855f7 !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 12px !important;
@@ -363,14 +511,14 @@
   .mdc-evolution-chip__cell,
   .mdc-evolution-chip__action,
   .mdc-evolution-chip__text-label {
-    color: #a855f7 !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
   }
 }
 
 ::ng-deep .status-not-interested {
   background-color: rgba(239,68,68,0.2) !important;
-  color: #ef4444 !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 12px !important;
@@ -378,14 +526,14 @@
   .mdc-evolution-chip__cell,
   .mdc-evolution-chip__action,
   .mdc-evolution-chip__text-label {
-    color: #ef4444 !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
   }
 }
 
 ::ng-deep .status-closed {
   background-color: rgba(34,197,94,0.2) !important;
-  color: #22c55e !important;
+  color: #ffffff !important;
   font-weight: 700 !important;
   padding: 4px 12px !important;
   border-radius: 12px !important;
@@ -393,7 +541,7 @@
   .mdc-evolution-chip__cell,
   .mdc-evolution-chip__action,
   .mdc-evolution-chip__text-label {
-    color: #22c55e !important;
+    color: #ffffff !important;
     font-weight: 700 !important;
   }
 }

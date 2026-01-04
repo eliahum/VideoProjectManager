@@ -13,9 +13,32 @@
   </div>
 
   <div *ngIf="!isLoading">
-    <!-- Search box -->
-    <div class="search-container" style="margin-bottom: 16px;">
-      <mat-form-field appearance="outline" style="width: 100%;">
+    <!-- Filters Row -->
+    <div class="filters-row" style="margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start;">
+      <!-- Status Filter -->
+      <mat-form-field appearance="outline" style="flex: 0 0 300px;">
+        <mat-label>סנן לפי סטטוס</mat-label>
+        <mat-select 
+          [(value)]="selectedStatusNumbers" 
+          multiple
+          (selectionChange)="applyFilter()">
+          <mat-select-trigger>
+            <span *ngIf="selectedStatusNumbers.length === 0">בחר סטטוסים...</span>
+            <span *ngIf="selectedStatusNumbers.length > 0">
+              {{ selectedStatusNumbers.length }} סטטוסים נבחרו
+            </span>
+          </mat-select-trigger>
+          <mat-option *ngFor="let status of leadStatuses" [value]="status.statusNumber">
+            <mat-icon *ngIf="isStatusSelected(status.statusNumber)" class="check-icon">check_circle</mat-icon>
+            {{ status.name }}
+            <span *ngIf="status.isFinal" class="final-badge">(סופי)</span>
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Search box -->
+      <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>חפש ליד</mat-label>
         <input matInput [(ngModel)]="searchText" (ngModelChange)="applyFilter()" placeholder="חפש בכל השדות...">
         <button *ngIf="searchText" matSuffix mat-icon-button aria-label="נקה חיפוש" (click)="clearSearch()">
           <mat-icon>close</mat-icon>
@@ -98,6 +121,13 @@
             </button>
             <button mat-icon-button class="action-btn btn-delete" (click)="deleteLead(lead.id)">
               <mat-icon>delete</mat-icon>
+            </button>
+            <button mat-icon-button 
+                    class="action-btn btn-document" 
+                    *ngIf="lead.priceQuote"
+                    (click)="openPriceQuote(lead.priceQuote)"
+                    matTooltip="פתח הצעת מחיר">
+              <img src="assets/icons/pdf-icon.svg" alt="PDF" class="pdf-icon-img">
             </button>
           </div>
         </td>

@@ -11,6 +11,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
 import { LeadService } from '../../../services/lead.service';
 import { LeadStatusService } from '../../../services/lead-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
@@ -35,7 +37,9 @@ import { finalize } from 'rxjs/operators';
     MatFormFieldModule,
     MatInputModule,
     MatPaginatorModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    MatSelectModule
   ],
   templateUrl: './leads-list.component.html',
   styleUrl: './leads-list.component.scss'
@@ -52,6 +56,8 @@ export class LeadsListComponent implements OnInit {
   pageSizeOptions: number[] = [5, 10, 25, 50];
   isLoading: boolean = false;
   leadStatuses: LeadStatus[] = [];
+  activeStatuses: LeadStatus[] = []; // סטטוסים פעילים (לא סופיים)
+  selectedStatusNumbers: number[] = []; // סטטוסים נבחרים לפילטור
   closedStatus: LeadStatus | undefined;
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -71,6 +77,10 @@ export class LeadsListComponent implements OnInit {
       if (response.isSuccess && response.data) {
         this.leadStatuses = response.data;
         this.closedStatus = this.leadStatuses.find(s => s.isFinal && s.name === 'סגירה');
+        // סטטוסים פעילים (לא סופיים) בלבד
+        this.activeStatuses = response.data.filter(s => !s.isFinal);
+        // בחירה אוטומטית של כל הסטטוסים הפעילים
+        this.selectedStatusNumbers = this.activeStatuses.map(s => s.statusNumber);
       }
     });
     this.loadLeads();
@@ -143,13 +153,21 @@ export class LeadsListComponent implements OnInit {
 
   applyFilter(): void {
     const text = this.searchText ? this.searchText.trim().toLowerCase() : '';
-    if (!text) {
+    
+    if (!text && this.selectedStatusNumbers.length === 0) {
       this.filteredLeads = [...this.allLeads];
     } else {
       this.filteredLeads = this.allLeads.filter(lead => {
-        return Object.values(lead).some(val =>
+        // סינון לפי סטטוסים
+        const matchesStatus = this.selectedStatusNumbers.length === 0 || 
+          this.selectedStatusNumbers.includes(lead.statusNumber);
+        
+        // סינון לפי טקסט
+        const matchesText = !text || Object.values(lead).some(val =>
           val && val.toString().toLowerCase().includes(text)
         );
+        
+        return matchesStatus && matchesText;
       });
     }
     this.pageIndex = 0;
@@ -180,8 +198,8 @@ export class LeadsListComponent implements OnInit {
   openLeadForm(lead?: Lead): void {
     const isMobile = window.innerWidth <= 768;
     const dialogRef = this.dialog.open(LeadFormComponent, {
-      width: isMobile ? '95vw' : '600px',
-      maxWidth: isMobile ? '95vw' : '600px',
+      width: isMobile ? '95vw' : '800px',
+      maxWidth: isMobile ? '95vw' : '900px',
       disableClose: true,
       data: lead
     });
@@ -213,6 +231,19 @@ export class LeadsListComponent implements OnInit {
   getStatusName(statusNumber: number): string {
     const status = this.leadStatuses.find(s => s.statusNumber === statusNumber);
     return status?.name || '';
+  }
+
+  openPriceQuote(link: string): void {
+    if (link) {
+      const url = link.startsWith('http://') || link.startsWith('https://') 
+        ? link 
+        : 'https://' + link;
+      window.open(url, '_blank');
+    }
+  }
+
+  isStatusSelected(statusNumber: number): boolean {
+    return this.selectedStatusNumbers.includes(statusNumber);
   }
 
   getStatusClass(statusNumber: number): string {

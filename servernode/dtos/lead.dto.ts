@@ -10,6 +10,7 @@ export interface LeadDTO {
     source: string; // איך הגיע אלי
     freeText: string;
     companyName: string;
+    priceQuote?: string; // קישור להצעת מחיר ב-Google Drive
     hasCustomer?: boolean; // האם נוצר ממנו לקוח
 }
 

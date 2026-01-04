@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { LeadService } from '../../../services/lead.service';
 import { LeadStatusService } from '../../../services/lead-status.service';
 import { CustomerService } from '../../../services/customer.service';
@@ -29,7 +30,8 @@ import { Customer } from '../../../models/customer.model';
     MatSelectModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatIconModule
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './lead-form.component.html',
   styleUrl: './lead-form.component.scss'
@@ -55,11 +57,12 @@ export class LeadFormComponent implements OnInit {
       phone: ['', Validators.required],
       email: [''],
       source: [''],
-      freeText: ['', Validators.required],
+      freeText: [''],
       companyName: ['', Validators.required],
       contactDate: [new Date(), Validators.required],
       statusNumber: [1, Validators.required],
-      notInterestedReason: ['']
+      notInterestedReason: [''],
+      priceQuote: ['']
     });
   }
 
@@ -150,6 +153,17 @@ export class LeadFormComponent implements OnInit {
 
   close(): void {
     this.dialogRef.close();
+  }
+
+  openPriceQuoteLink(): void {
+    const link = this.leadForm.get('priceQuote')?.value;
+    if (link) {
+      // Ensure the link starts with http:// or https://
+      const url = link.startsWith('http://') || link.startsWith('https://') 
+        ? link 
+        : 'https://' + link;
+      window.open(url, '_blank');
+    }
   }
 
   get showNotInterestedReason(): boolean {

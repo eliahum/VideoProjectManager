@@ -12,7 +12,8 @@ const leadSchema = new mongoose.Schema(
     statusNumber: { type: Number, default: 1 },
     source: { type: String }, // איך הגיע אלי
   freeText:{ type: String },
-  companyName: { type: String }
+  companyName: { type: String },
+  priceQuote: { type: String } // קישור להצעת מחיר ב-Google Drive
   
   },
   { timestamps: true }
@@ -40,7 +41,8 @@ export interface LeadDocument extends Document {
   statusNumber: number;
   source: string; // איך הגיע אלי
   freeText: string;
-  companyName: string;  
+  companyName: string;
+  priceQuote?: string; // קישור להצעת מחיר ב-Google Drive
   createdAt?: Date;
   updatedAt?: Date;
 }

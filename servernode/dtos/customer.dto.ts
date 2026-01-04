@@ -22,6 +22,8 @@ export interface CustomerDTO {
     phone: string;
     address?: string;
     leadId?: number; // Lead's auto-increment ID
+    howFoundUs?: string; // How the customer found us
+    notes?: string; // Free text notes
     projects?: ProjectSummaryDTO[]; // List of customer's projects
 }
 
