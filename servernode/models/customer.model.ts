@@ -11,6 +11,8 @@ const customerSchema = new mongoose.Schema(
         phone: { type: String, required: true },
         address: { type: String },
         leadId: { type: Number },
+        howFoundUs: { type: String },
+        notes: { type: String },
     },
     { timestamps: true }
 );
@@ -37,6 +39,8 @@ export interface CustomerDocument extends Document {
     phone: string;
     address?: string;
     leadId?: number;
+    howFoundUs?: string;
+    notes?: string;
     createdAt?: Date;
     updatedAt?: Date;
 }

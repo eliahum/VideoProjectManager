@@ -3,16 +3,28 @@
 <mat-dialog-content>
   <form [formGroup]="customerForm" class="customer-form">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>איש קשר</mat-label>
-      <input matInput formControlName="name">
-      <mat-icon matPrefix>person</mat-icon>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
       <mat-label>שם החברה</mat-label>
       <input matInput formControlName="companyName" required>
       <mat-icon matPrefix>business</mat-icon>
       <mat-error *ngIf="customerForm.get('companyName')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>שם איש קשר</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-icon matPrefix>person</mat-icon>
+      <mat-error *ngIf="customerForm.get('name')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>טלפון</mat-label>
+      <input matInput formControlName="phone" type="tel" required>
+      <mat-icon matPrefix>phone</mat-icon>
+      <mat-error *ngIf="customerForm.get('phone')?.hasError('required')">
         שדה חובה
       </mat-error>
     </mat-form-field>
@@ -27,12 +39,15 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>טלפון</mat-label>
-      <input matInput formControlName="phone" type="tel" required>
-      <mat-icon matPrefix>phone</mat-icon>
-      <mat-error *ngIf="customerForm.get('phone')?.hasError('required')">
-        שדה חובה
-      </mat-error>
+      <mat-label>איך הגיע אלי</mat-label>
+      <input matInput formControlName="howFoundUs">
+      <mat-icon matPrefix>place</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>טקסט חופשי</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+      <mat-icon matPrefix>note</mat-icon>
     </mat-form-field>
   </form>
 </mat-dialog-content>
