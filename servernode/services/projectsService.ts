@@ -358,6 +358,7 @@ export class ProjectsService {
           }))
       })),
       currentMilestoneId: project.currentMilestoneId,
+      cost: project.cost,
       paidAmount: project.paidAmount,
       paymentDate: project.paymentDate,
       paymentNote: project.paymentNote,
