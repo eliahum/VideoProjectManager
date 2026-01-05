@@ -146,11 +146,15 @@
     <div class="payment-content">
       <div class="section-label">תשלום לספקים:</div>
       <div class="payment-buttons">
-        <button class="payment-status-btn paid">
+        <button class="payment-status-btn paid" 
+                [disabled]="getTotalSuppliersPaid() === 0"
+                (click)="showPaidSuppliers()">
           <span class="status-text">שולם</span>
           <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
         </button>
-        <button class="payment-status-btn unpaid">
+        <button class="payment-status-btn unpaid"
+                [disabled]="getTotalSuppliersUnpaid() === 0"
+                (click)="showUnpaidSuppliers()">
           <span class="status-text">לא שולם</span>
           <span class="amount">₪{{ getTotalSuppliersUnpaid() }}</span>
         </button>

@@ -1,0 +1,49 @@
+<div class="suppliers-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>
+      <mat-icon>{{ data.isPaidList ? 'check_circle' : 'pending' }}</mat-icon>
+      <span>ספקים {{ data.isPaidList ? 'ששולם להם' : 'שטרם שולם להם' }}</span>
+    </h2>
+    <button mat-icon-button (click)="close()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div mat-dialog-content class="dialog-content">
+    <div class="total-summary">
+      <span class="label">סה"כ:</span>
+      <span class="amount">₪{{ data.totalAmount }}</span>
+    </div>
+
+    <div class="suppliers-list" [class.scrollable]="data.suppliers.length > 6">
+      <div class="supplier-item" *ngFor="let supplier of data.suppliers">
+        <div class="supplier-header">
+          <div class="supplier-name">
+            <mat-icon>business</mat-icon>
+            <span>{{ supplier.supplierName }}</span>
+          </div>
+          <div class="supplier-amount">₪{{ supplier.amount }}</div>
+        </div>
+        
+        <div class="supplier-details">
+          <div class="detail-item">
+            <mat-icon>flag</mat-icon>
+            <span>{{ supplier.milestoneName }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>layers</mat-icon>
+            <span>{{ supplier.stageName }}</span>
+          </div>
+          <div class="detail-item" *ngIf="supplier.date">
+            <mat-icon>calendar_today</mat-icon>
+            <span>{{ supplier.date | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-raised-button color="primary" (click)="close()">סגור</button>
+  </div>
+</div>
