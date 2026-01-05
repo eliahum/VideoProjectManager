@@ -6,6 +6,512 @@
   min-height: calc(100vh - 64px);
 }
 
+// Top header with back button and title
+.top-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 16px 24px;
+  background: rgba(74,46,122,0.3);
+  border-radius: 12px;
+  border: 1px solid rgba(168,85,247,0.2);
+
+  .back-btn {
+    mat-icon {
+      color: #a855f7;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .header-title-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .project-title {
+    margin: 0;
+    font-size: 2rem;
+    color: #ffffff;
+    font-weight: 700;
+    text-align: right;
+  }
+
+  .project-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255,255,255,0.7);
+    font-weight: 400;
+    text-align: right;
+  }
+
+  .edit-project-btn {
+    background: rgba(167, 139, 250, 0.9);
+    color: #ffffff;
+    border: 0;
+    border-radius: 9999px;
+    padding: 8px 18px;
+    font-weight: 700;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    direction: ltr;
+    flex-direction: row-reverse; /* icon on the right */
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+    line-height: 1;
+    min-height: 36px;
+    white-space: nowrap;
+
+    .btn-text {
+      direction: rtl;
+      unicode-bidi: plaintext;
+    }
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #ffffff;
+    }
+
+    &:hover {
+      background: rgba(167, 139, 250, 1);
+    }
+  }
+}
+
+// Main info card - single card containing all three items
+.main-info-card {
+  background: rgba(74,46,122,0.3);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+
+  .info-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+
+    @media (max-width: 968px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .info-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    &.editing-item {
+      .customer-field {
+        width: 100%;
+
+        ::ng-deep .mat-mdc-text-field-wrapper {
+          background: rgba(168,85,247,0.1);
+          border-radius: 8px;
+        }
+
+        ::ng-deep .mdc-text-field--outlined .mdc-notched-outline {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: rgba(168,85,247,0.5) !important;
+          }
+        }
+
+        ::ng-deep .mat-mdc-form-field-label,
+        ::ng-deep input {
+          color: #ffffff !important;
+        }
+      }
+
+      .edit-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+        justify-content: flex-end;
+      }
+    }
+
+    .card-label {
+      font-size: 18px;
+      color: rgba(255,255,255,0.6);
+      text-align: right;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    .card-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      mat-icon {
+        color: #a855f7;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+      }
+
+      .card-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+        flex: 1;
+        word-break: break-word;
+        line-height: 1.2;
+      }
+    }
+
+    .card-edit-btn {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 32px;
+      height: 32px;
+
+      mat-icon {
+        color: #a855f7;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+
+// Old info-cards-section - keep for backwards compatibility but hidden
+.info-cards-section {
+  display: none;
+}
+
+.info-card {
+  background: rgba(74,46,122,0.3);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+
+  &.editing-card {
+    .customer-field {
+      width: 100%;
+      margin-top: 12px;
+
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        background: rgba(168,85,247,0.1);
+        border-radius: 8px;
+      }
+
+      ::ng-deep .mdc-text-field--outlined .mdc-notched-outline {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(168,85,247,0.5) !important;
+        }
+      }
+
+      ::ng-deep .mat-mdc-form-field-label,
+      ::ng-deep input {
+        color: #ffffff !important;
+      }
+    }
+
+    .edit-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: flex-end;
+    }
+  }
+
+  .card-label {
+    font-size: 14px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 12px;
+    text-align: right;
+  }
+
+  .card-content {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex: 1;
+
+    mat-icon {
+      color: #a855f7;
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .card-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+      word-break: break-word;
+    }
+
+    .budget-values {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      align-items: flex-end;
+
+      .main-budget {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      .paid-amount-small {
+        font-size: 14px;
+        color: #22c55e;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .card-edit-btn {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 32px;
+    height: 32px;
+
+    mat-icon {
+      color: #a855f7;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+// Status and date section
+.status-date-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: stretch;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
+
+  .info-card {
+    background: rgba(74,46,122,0.3);
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .card-header {
+      display: flex;
+      justify-content: flex-start;
+      align-items: normal;
+      gap: 10px;
+      direction: rtl;
+      margin-bottom: 4px;
+
+      .card-label {
+        font-size: 18px;
+        color: rgba(255,255,255,0.5);
+        text-align: right;
+        line-height: 24px;
+      }
+
+      mat-icon {
+        color: #a855f7;
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+      }
+    }
+
+    .card-values {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: right;
+
+      .main-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #ffffff;
+      }
+
+      .sub-value {
+        font-size: 13px;
+        color: #22c55e;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .status-card {
+    .card-values {
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px 20px;
+        border-radius: 20px;
+        background: rgba(234, 179, 8, 0.2);
+        align-self: flex-start;
+
+        .status-text {
+          color: #eab308;
+          font-weight: 700;
+          font-size: 14px;
+        }
+
+        &.status-1 {
+          background: rgba(234, 179, 8, 0.2);
+          .status-text {
+            color: #eab308;
+          }
+        }
+
+        &.status-2 {
+          background: rgba(34, 197, 94, 0.2);
+          .status-text {
+            color: #22c55e;
+          }
+        }
+      }
+    }
+  }
+}
+
+.stage-card {
+  .card-content {
+    justify-content: center;
+  }
+}
+
+// Suppliers payment section
+.suppliers-payment-section {
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  background: rgba(74,46,122,0.3);
+  border: 1px solid rgba(168,85,247,0.2);
+  border-radius: 12px;
+
+  .section-label {
+    font-size: 16px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: right;
+  }
+
+  .payment-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+
+    @media (max-width: 968px) {
+      grid-template-columns: 1fr;
+    }
+
+    .payment-status-btn {
+      padding: 20px 24px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      min-height: 80px;
+
+      .btn-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      &.paid {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+
+        mat-icon {
+          color: #22c55e;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+
+        .status-text {
+          color: #22c55e;
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .amount {
+          color: #22c55e;
+          font-size: 28px;
+          font-weight: 700;
+        }
+
+        &:hover {
+          background: rgba(34, 197, 94, 0.3);
+        }
+      }
+
+      &.unpaid {
+        background: rgba(161, 98, 7, 0.2);
+        border: 1px solid rgba(161, 98, 7, 0.4);
+
+        mat-icon {
+          color: #a16207;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+        }
+
+        .status-text {
+          color: #a16207;
+          font-weight: 600;
+          font-size: 14px;
+        }
+
+        .amount {
+          color: #a16207;
+          font-size: 28px;
+          font-weight: 700;
+        }
+
+        &:hover {
+          background: rgba(161, 98, 7, 0.3);
+        }
+      }
+    }
+  }
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -464,6 +970,47 @@
 
 .tab-content {
   padding: 24px;
+
+  .tab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(168,85,247,0.2);
+
+    .tab-title {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .add-milestone-btn {
+      background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%);
+      color: white;
+      font-weight: 600;
+      padding: 0 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(168,85,247,0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &:hover {
+        background: linear-gradient(135deg, #9333ea 0%, #7e22ce 100%);
+        box-shadow: 0 6px 16px rgba(168,85,247,0.4);
+        transform: translateY(-2px);
+      }
+
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+    }
+  }
 }
 
 .stage-header {

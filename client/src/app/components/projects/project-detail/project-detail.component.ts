@@ -310,6 +310,12 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     return status ? status.name : '';
   }
 
+  getProjectStatusName(statusNumber?: number): string {
+    if (!statusNumber) return '';
+    const status = this.projectStatuses.find(s => s.statusNumber === statusNumber);
+    return status ? status.name : '';
+  }
+
   getMilestoneStatusClass(status?: string): string {
     if (!status) return '';
     switch (status) {
