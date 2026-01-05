@@ -70,6 +70,7 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
     this.projectForm = this.fb.group({
       customerId: ['', Validators.required],
       projectName: ['', Validators.required],
+      cost: [0],
       paidAmount: [0],
       paymentDate: [null],
       paymentNote: [''],
