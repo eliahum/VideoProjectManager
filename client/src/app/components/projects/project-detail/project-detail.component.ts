@@ -708,6 +708,21 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  getCustomerCompanyName(): string {
+    if (!this.project) return '';
+    
+    let customer: Customer | undefined;
+    if (typeof this.project.customerId === 'string') {
+      // customerId is ObjectId string
+      customer = this.customers.find(c => c.id === this.project!.customerId);
+    } else {
+      // customerId is number
+      customer = this.customers.find(c => c.customerId === this.project!.customerId);
+    }
+    
+    return customer?.companyName || '';
+  }
+
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
   }
