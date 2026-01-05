@@ -73,32 +73,33 @@
   </div>
 
   <!-- Status and Date Cards -->
-  <div class="status-date-section">
+  <div class="details-section">
     <!-- Budget Card -->
-    <div class="info-card budget-card">
-      <div class="card-header">
-        <mat-icon>attach_money</mat-icon>
-        <div class="card-label">תקציב כולל</div>
+    <div class="detail-card">
+      <div class="detail-label">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+        </svg>
+        תקציב כולל
       </div>
-      <div class="card-values">
-        <div class="main-value">₪{{ getTotalSuppliersAmount() }}</div>
-        <div class="sub-value">שולם: ₪{{ project.paidAmount || 0 }}</div>
-      </div>
+      <div class="detail-value budget-value">₪{{ getTotalSuppliersAmount() }}</div>
+      <div class="detail-sub budget-sub">שולם: ₪{{ project.paidAmount || 0 }}</div>
     </div>
 
     <!-- Date Card -->
-    <div class="info-card date-card" *ngIf="!isEditingPayment">
-      <div class="card-header">
-        <mat-icon>event</mat-icon>
-        <div class="card-label">תאריכים</div>
+    <div class="detail-card" *ngIf="!isEditingPayment">
+      <div class="detail-label">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+        </svg>
+        תאריכים
       </div>
-      <div class="card-values">
-        <div class="main-value">התחלה: {{ project.paymentDate ? (project.paymentDate | date:'dd/MM/yyyy') : '04/01/2026' }}</div>
-        <div class="sub-value">סיכום: {{ project.paymentNote || 'לא שולם' }}</div>
-      </div>
+      <div class="detail-value date-value">התחלה: {{ project.paymentDate ? (project.paymentDate | date:'dd/MM/yyyy') : '04/01/2026' }}</div>
+      <div class="detail-sub date-sub">סיום: {{ project.paymentNote || 'לא שולם' }}</div>
     </div>
 
-    <div class="date-card editing-card" *ngIf="isEditingPayment">
+    <div class="detail-card editing-card" *ngIf="isEditingPayment">
       <div class="card-label">תאריכים</div>
       <div class="edit-payment-form">
         <mat-form-field appearance="outline" class="payment-field">
@@ -125,15 +126,15 @@
     </div>
 
     <!-- Status Card -->
-    <div class="info-card status-card">
-      <div class="card-header">
-        <mat-icon>groups</mat-icon>
-        <div class="card-label">סטטוס</div>
+    <div class="detail-card">
+      <div class="detail-label">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+        </svg>
+        סטטוס
       </div>
-      <div class="card-values">
-        <div class="status-badge" [ngClass]="'status-' + project.statusNumber">
-          <span class="status-text">{{ getProjectStatusName(project.statusNumber) }}</span>
-        </div>
+      <div class="detail-value">
+        <span class="status-badge" [ngClass]="'status-' + project.statusNumber">{{ getProjectStatusName(project.statusNumber) }}</span>
       </div>
     </div>
   </div>
@@ -144,26 +145,17 @@
   <div class="suppliers-payment-section">
     <div class="section-label">תשלום לספקים:</div>
     <div class="payment-buttons">
-      <button class="payment-status-btn paid">
-        <div class="btn-content">
-          <mat-icon>check_circle</mat-icon>
-          <span class="status-text">שולם</span>
-        </div>
-        <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
-      </button>
-      <button class="payment-status-btn paid">
-        <div class="btn-content">
-          <mat-icon>check_circle</mat-icon>
-          <span class="status-text">שולם</span>
-        </div>
-        <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
-      </button>
       <button class="payment-status-btn unpaid">
-        <div class="btn-content">
-          <mat-icon>pending</mat-icon>
-          <span class="status-text">לא שולם</span>
-        </div>
+        <span class="status-text">לא שולם</span>
         <span class="amount">₪{{ getTotalSuppliersUnpaid() }}</span>
+      </button>
+      <button class="payment-status-btn paid">
+        <span class="status-text">שולם</span>
+        <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
+      </button>
+      <button class="payment-status-btn paid">
+        <span class="status-text">שולם</span>
+        <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
       </button>
     </div>
   </div>

@@ -142,7 +142,7 @@
     }
 
     .card-label {
-      font-size: 18px;
+      font-size: 13px;
       color: rgba(255,255,255,0.6);
       text-align: right;
       font-weight: 400;
@@ -302,101 +302,92 @@
   }
 }
 
-// Status and date section
-.status-date-section {
+// Details section (status, date, budget)
+.details-section {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 24px;
-  align-items: stretch;
+  margin-bottom: 20px;
 
   @media (max-width: 968px) {
     grid-template-columns: 1fr;
   }
 
-  .info-card {
-    background: rgba(74,46,122,0.3);
-    border: 1px solid rgba(168,85,247,0.2);
-    border-radius: 12px;
-    padding: 20px 24px;
+  .detail-card {
+    background: rgba(74, 46, 122, 0.4);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: right;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    align-items: flex-start;
+    gap: 8px;
 
-    .card-header {
+    .detail-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
       display: flex;
-      justify-content: flex-start;
-      align-items: normal;
-      gap: 10px;
-      direction: rtl;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 4px;
 
-      .card-label {
-        font-size: 18px;
-        color: rgba(255,255,255,0.5);
-        text-align: right;
-        line-height: 24px;
-      }
-
-      mat-icon {
-        color: #a855f7;
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-        line-height: 24px;
+      svg {
+        width: 18px;
+        height: 18px;
       }
     }
 
-    .card-values {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      text-align: right;
+    .detail-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: white;
+    }
 
-      .main-value {
-        font-size: 28px;
-        font-weight: 700;
-        color: #ffffff;
+    .detail-sub {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .budget-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: white;
+    }
+
+    .budget-sub {
+      color: #4ade80;
+      font-size: 13px;
+    }
+
+    .date-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+    }
+
+    .date-sub {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+    }
+
+    .status-badge {
+      background: rgba(184, 134, 11, 0.3);
+      color: #daa520;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-block;
+
+      &.status-1 {
+        background: rgba(184, 134, 11, 0.3);
+        color: #daa520;
       }
 
-      .sub-value {
-        font-size: 13px;
+      &.status-2 {
+        background: rgba(34, 197, 94, 0.3);
         color: #22c55e;
-        font-weight: 500;
-      }
-    }
-  }
-
-  .status-card {
-    .card-values {
-      .status-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 10px 20px;
-        border-radius: 20px;
-        background: rgba(234, 179, 8, 0.2);
-        align-self: flex-start;
-
-        .status-text {
-          color: #eab308;
-          font-weight: 700;
-          font-size: 14px;
-        }
-
-        &.status-1 {
-          background: rgba(234, 179, 8, 0.2);
-          .status-text {
-            color: #eab308;
-          }
-        }
-
-        &.status-2 {
-          background: rgba(34, 197, 94, 0.2);
-          .status-text {
-            color: #22c55e;
-          }
-        }
       }
     }
   }
@@ -411,101 +402,87 @@
 // Suppliers payment section
 .suppliers-payment-section {
   margin-bottom: 24px;
-  padding: 20px 24px;
-  background: rgba(74,46,122,0.3);
-  border: 1px solid rgba(168,85,247,0.2);
-  border-radius: 12px;
+  padding: 30px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
 
   .section-label {
     font-size: 16px;
     color: rgba(255,255,255,0.9);
-    font-weight: 600;
-    margin-bottom: 16px;
+    font-weight: normal;
+    margin-bottom: 20px;
     text-align: right;
   }
 
   .payment-buttons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+    gap: 15px;
 
     @media (max-width: 968px) {
       grid-template-columns: 1fr;
     }
 
     .payment-status-btn {
-      padding: 20px 24px;
+      padding: 25px 15px;
       border-radius: 12px;
       border: none;
       cursor: pointer;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
       font-family: inherit;
       transition: all 0.3s ease;
-      min-height: 80px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
 
-      .btn-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
+      .status-text {
+        font-size: 15px;
+        font-weight: 600;
+        display: block;
+      }
+
+      .amount {
+        font-size: 22px;
+        font-weight: bold;
+        display: block;
       }
 
       &.paid {
-        background: rgba(34, 197, 94, 0.2);
-        border: 1px solid rgba(34, 197, 94, 0.4);
-
-        mat-icon {
-          color: #22c55e;
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-        }
+        background: rgba(34, 139, 103, 0.3);
+        color: #34d399;
+        border: 1px solid rgba(52, 211, 153, 0.4);
 
         .status-text {
-          color: #22c55e;
-          font-weight: 600;
-          font-size: 14px;
+          color: #34d399;
         }
 
         .amount {
-          color: #22c55e;
-          font-size: 28px;
-          font-weight: 700;
+          color: #34d399;
         }
 
         &:hover {
-          background: rgba(34, 197, 94, 0.3);
+          background: rgba(34, 139, 103, 0.4);
         }
       }
 
       &.unpaid {
-        background: rgba(161, 98, 7, 0.2);
-        border: 1px solid rgba(161, 98, 7, 0.4);
-
-        mat-icon {
-          color: #a16207;
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-        }
+        background: rgba(101, 67, 33, 0.4);
+        color: #d4a574;
+        border: 1px solid rgba(101, 67, 33, 0.6);
 
         .status-text {
-          color: #a16207;
-          font-weight: 600;
-          font-size: 14px;
+          color: #d4a574;
         }
 
         .amount {
-          color: #a16207;
-          font-size: 28px;
-          font-weight: 700;
+          color: #d4a574;
         }
 
         &:hover {
-          background: rgba(161, 98, 7, 0.3);
+          background: rgba(101, 67, 33, 0.5);
         }
       }
     }
