@@ -60,7 +60,7 @@
       <ng-container matColumnDef="customerName">
         <th mat-header-cell *matHeaderCellDef>שם לקוח</th>
         <td mat-cell *matCellDef="let project">
-          <span class="company-name">{{ project.customerName }}</span>
+          <span class="company-name">{{ project.contactPersonName || project.customerName }}</span>
         </td>
       </ng-container>
 
