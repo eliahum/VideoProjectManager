@@ -10,34 +10,26 @@
   </div>
 
   <div mat-dialog-content class="dialog-content">
-    <div class="total-summary">
-      <span class="label">סה"כ:</span>
-      <span class="amount">₪{{ data.totalAmount }}</span>
-    </div>
-
-    <div class="suppliers-list" [class.scrollable]="data.suppliers.length > 6">
+    <div class="suppliers-list">
       <div class="supplier-item" *ngFor="let supplier of data.suppliers">
-        <div class="supplier-header">
+        <div class="supplier-row">
           <div class="supplier-name">
             <mat-icon>business</mat-icon>
             <span>{{ supplier.supplierName }}</span>
           </div>
-          <div class="supplier-amount">₪{{ supplier.amount }}</div>
-        </div>
-        
-        <div class="supplier-details">
-          <div class="detail-item">
+          <div class="supplier-milestone">
             <mat-icon>flag</mat-icon>
             <span>{{ supplier.milestoneName }}</span>
           </div>
-          <div class="detail-item">
+          <div class="supplier-stage">
             <mat-icon>layers</mat-icon>
             <span>{{ supplier.stageName }}</span>
           </div>
-          <div class="detail-item" *ngIf="supplier.date">
+          <div class="supplier-date" *ngIf="supplier.date">
             <mat-icon>calendar_today</mat-icon>
             <span>{{ supplier.date | date:'dd/MM/yyyy' }}</span>
           </div>
+          <div class="supplier-amount" [class.unpaid]="!data.isPaidList">₪{{ supplier.amount }}</div>
         </div>
       </div>
     </div>

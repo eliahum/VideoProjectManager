@@ -545,6 +545,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     const suppliers = this.collectSuppliers(true);
     this.dialog.open(SuppliersListDialogComponent, {
       width: '700px',
+      height: '600px',
       maxWidth: '90vw',
       panelClass: 'suppliers-dialog-container',
       data: {
@@ -562,6 +563,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     const suppliers = this.collectSuppliers(false);
     this.dialog.open(SuppliersListDialogComponent, {
       width: '700px',
+      height: '600px',
       maxWidth: '90vw',
       panelClass: 'suppliers-dialog-container',
       data: {
