@@ -13,6 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { Router } from '@angular/router';
 import { CustomerService } from '../../../services/customer.service';
 import { Customer } from '../../../models/customer.model';
@@ -39,7 +40,8 @@ import { SAMPLE_CUSTOMERS_WITH_PROJECTS } from './customers-sample-data';
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatCheckboxModule
   ],
   templateUrl: './customers-list.component.html',
   styleUrl: './customers-list.component.scss'
@@ -55,6 +57,16 @@ export class CustomersListComponent implements OnInit {
   pageIndex: number = 0;
   pageSizeOptions: number[] = [5, 10, 25, 50];
   isLoading: boolean = false;
+  
+  // Add Contact Modal
+  showAddContactModal: boolean = false;
+  selectedCustomer: Customer | null = null;
+  newContact: any = {
+    name: '',
+    phone: '',
+    email: '',
+    isPrimary: false
+  };
   
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -136,8 +148,8 @@ export class CustomersListComponent implements OnInit {
   openCustomerForm(customer?: Customer): void {
     const isMobile = window.innerWidth <= 768;
     const dialogRef = this.dialog.open(CustomerFormComponent, {
-      width: isMobile ? '95vw' : '600px',
-      maxWidth: isMobile ? '95vw' : '600px',
+      width: isMobile ? '95vw' : '800px',
+      maxWidth: isMobile ? '95vw' : '800px',
       disableClose: true,
       data: customer
     });
@@ -192,5 +204,67 @@ export class CustomersListComponent implements OnInit {
     console.log('Open project:', project);
     // Navigate to project details
     this.router.navigate(['/projects', project.projectNumber]);
+  }
+
+  openAddContactModal(customer: Customer, event: Event): void {
+    event.stopPropagation();
+    this.selectedCustomer = customer;
+    this.showAddContactModal = true;
+  }
+
+  closeAddContactModal(): void {
+    this.showAddContactModal = false;
+    this.selectedCustomer = null;
+    this.newContact = {
+      name: '',
+      phone: '',
+      email: '',
+      isPrimary: false
+    };
+  }
+
+  submitNewContact(): void {
+    if (!this.selectedCustomer || !this.newContact.name || !this.newContact.phone) {
+      this.messageDialogService.showError('נא למלא את כל השדות החובה (שם וטלפון)');
+      return;
+    }
+
+    // Prepare contacts array
+    const contacts = this.selectedCustomer.contacts || [];
+    contacts.push({
+      name: this.newContact.name,
+      phone: this.newContact.phone,
+      email: this.newContact.email,
+      isPrimary: this.newContact.isPrimary
+    });
+
+    // Update customer with new contact
+    this.customerService.update(this.selectedCustomer.id, { contacts }).subscribe({
+      next: (response) => {
+        if (response.isSuccess) {
+          this.messageDialogService.showSuccess('איש קשר נוסף בהצלחה');
+          this.closeAddContactModal();
+          this.loadCustomers();
+        } else {
+          this.messageDialogService.showError('שגיאה בהוספת איש קשר: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (error) => {
+        this.messageDialogService.showError('שגיאה בהוספת איש קשר');
+      }
+    });
+  }
+
+  getPrimaryContact(customer: any) {
+    if (!customer.contacts || customer.contacts.length === 0) {
+      return {
+        name: customer.name || '-',
+        phone: customer.phone || '-',
+        email: customer.email || '-'
+      };
+    }
+    
+    const primaryContact = customer.contacts.find((c: any) => c.isPrimary);
+    return primaryContact || customer.contacts[0];
   }
 }

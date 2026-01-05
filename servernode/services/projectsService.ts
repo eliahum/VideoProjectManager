@@ -300,6 +300,7 @@ export class ProjectsService {
     // Get customer data from populated field
     let customerName: string | undefined;
     let customerId: number | undefined;
+    let contactPersonName: string | undefined;
     
     // Check if customerId was populated with customer object
     const customerIdValue = project.customerId;
@@ -310,6 +311,14 @@ export class ProjectsService {
         if ('customerId' in customer) {
           customerId = customer.customerId;
           customerName = customer.name;
+          
+          // Find contact person name
+          if (project.contactPersonId && customer.contacts) {
+            const contact = customer.contacts.find((c: any) => c._id.toString() === project.contactPersonId);
+            if (contact) {
+              contactPersonName = contact.name;
+            }
+          }
         }
       } else {
         // customerId is still just a number (not populated)
@@ -328,6 +337,8 @@ export class ProjectsService {
       projectNumber: project.projectNumber,
       customerId: customerId,
       customerName: customerName,
+      contactPersonId: project.contactPersonId,
+      contactPersonName: contactPersonName,
       projectName: project.projectName,
       statusNumber: project.statusNumber,
       currentStage: currentStage?.stageName,
@@ -358,6 +369,7 @@ export class ProjectsService {
           }))
       })),
       currentMilestoneId: project.currentMilestoneId,
+      cost: project.cost,
       paidAmount: project.paidAmount,
       paymentDate: project.paymentDate,
       paymentNote: project.paymentNote,

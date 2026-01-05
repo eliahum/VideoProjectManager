@@ -1,0 +1,227 @@
+.suppliers-dialog {
+  min-width: 500px;
+  max-width: 700px;
+  background: rgba(19, 16, 33, 0.98);
+  color: #f4f0ff;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(209, 196, 255, 0.2);
+    background: rgba(19, 16, 33, 0.98);
+    flex-shrink: 0;
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 600;
+
+      mat-icon {
+        color: #a855f7;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+      }
+    }
+
+    .close-btn {
+      mat-icon {
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      &:hover mat-icon {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .dialog-content {
+    padding: 20px 24px;
+    overflow-y: auto;
+    background: rgba(19, 16, 33, 0.98);
+    flex: 1;
+    min-height: 0;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(36, 26, 62, 0.4);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 247, 0.5);
+      border-radius: 4px;
+
+      &:hover {
+        background: rgba(168, 85, 247, 0.7);
+      }
+    }
+  }
+
+  .total-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    background: rgba(36, 26, 62, 0.6);
+    border: 1px solid rgba(198, 180, 255, 0.3);
+    border-radius: 12px;
+    margin: 16px 0;
+
+    .label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #c6b4ff;
+    }
+
+    .amount {
+      font-size: 24px;
+      font-weight: 700;
+      color: #a855f7;
+    }
+  }
+
+  .suppliers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .supplier-item {
+      padding: 16px;
+      background: rgba(36, 26, 62, 0.6);
+      border: 1px solid rgba(198, 180, 255, 0.3);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        border-color: rgba(198, 180, 255, 0.5);
+        box-shadow: 0 4px 12px rgba(109, 40, 217, 0.2);
+      }
+
+      .supplier-row {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        justify-content: space-between;
+
+        > div {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.9);
+          white-space: nowrap;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: #c6b4ff;
+          }
+        }
+
+        .supplier-name {
+          flex: 1 1 auto;
+          min-width: 150px;
+          font-weight: 600;
+
+          mat-icon {
+            color: #a855f7;
+          }
+        }
+
+        .supplier-milestone {
+          flex: 0 1 auto;
+        }
+
+        .supplier-stage {
+          flex: 0 1 auto;
+        }
+
+        .supplier-date {
+          flex: 0 1 auto;
+        }
+
+        .supplier-amount {
+          font-size: 18px;
+          font-weight: 700;
+          color: #34d399;
+          flex: 0 0 auto;
+          min-width: 100px;
+          text-align: left;
+
+          &.unpaid {
+            color: #ef4444;
+          }
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: 16px 24px;
+    border-top: 1px solid rgba(209, 196, 255, 0.2);
+    justify-content: center;
+    background: rgba(32, 24, 58, 0.95);
+    flex-shrink: 0;
+
+    button {
+      min-width: 120px;
+    }
+  }
+}
+
+::ng-deep .suppliers-dialog-container {
+  .mat-mdc-dialog-container {
+    background: rgba(19, 16, 33, 0.98) !important;
+    color: #f4f0ff !important;
+    border-radius: 12px !important;
+    padding: 0 !important;
+    border: 3px solid #ffffff !important;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5) !important;
+    outline: 1px solid rgba(255, 255, 255, 0.5) !important;
+    outline-offset: -1px !important;
+
+    .mdc-dialog__content {
+      color: #f4f0ff;
+      padding: 0 !important;
+      background: rgba(19, 16, 33, 0.98) !important;
+    }
+
+    .mat-mdc-dialog-surface {
+      background: rgba(19, 16, 33, 0.98) !important;
+    }
+  }
+
+  .cdk-overlay-pane {
+    background: transparent !important;
+  }
+
+  mat-dialog-actions {
+    background: rgba(32, 24, 58, 0.95) !important;
+    border-top: 1px solid rgba(209, 196, 255, 0.2);
+    padding: 0 !important;
+    margin: 0 !important;
+
+    .mat-mdc-raised-button.mat-primary {
+      background-color: #a855f7 !important;
+      color: #ffffff !important;
+      
+      &:hover:not([disabled]) {
+        background-color: #9333ea !important;
+      }
+    }
+  }
+}

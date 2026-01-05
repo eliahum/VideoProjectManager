@@ -5,6 +5,8 @@ export interface Project {
   id: string;
   projectNumber: number;
   customerId: number | string; // Can be either number or ObjectId string
+  contactPersonId?: string;
+  contactPersonName?: string;
   customerName?: string; // Optional - populated from server lookup
   projectName: string;
   statusNumber: number;
@@ -12,6 +14,7 @@ export interface Project {
   currentStageNumber: number;
   stages: Stage[];
   currentMilestoneId?: number;
+  cost?: number;
   paidAmount?: number;
   paymentDate?: Date;
   paymentNote?: string;

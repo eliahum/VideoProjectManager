@@ -1,40 +1,41 @@
 <div class="project-detail-container" *ngIf="project && !isLoading">
-  <div class="header">
-    <button mat-icon-button (click)="goBack()">
+  <!-- Header with back button and title -->
+  <div class="top-header">
+    <button mat-icon-button (click)="goBack()" class="back-btn">
       <mat-icon>arrow_forward</mat-icon>
     </button>
-
-    <div class="status-column">
-      <mat-form-field class="status-select" appearance="outline">
-        <mat-label>סטטוס פרויקט</mat-label>
-        <mat-select [value]="project.statusNumber" (selectionChange)="updateProjectStatus($event.value)">
-          <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
-            {{ status.name }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
-
-      <div class="status-actions">
-        <button mat-raised-button color="primary" (click)="addNewMilestoneToCurrentStage()">
-          <mat-icon>add</mat-icon>
-          הוסף אבן דרך
-        </button>
-      </div>
+    <div class="header-title-section">
+      <h1 class="project-title">{{ project.projectName }}</h1>
+      <p class="project-subtitle">לקוח: {{ project.customerName || 'פרויקט משרד' }}</p>
     </div>
+    <button mat-raised-button color="primary" class="edit-project-btn">
+      <mat-icon>edit</mat-icon>
+      <span class="btn-text">ערוך פרויקט</span>
+    </button>
+  </div>
 
-    <div class="header-actions">
-      <div class="header-row">
-        <span class="current-stage-label">פרוייקט:</span>
-        <span class="current-stage-value">{{ project.projectName }}</span>
+  <!-- Single Info Card with all project details -->
+  <div class="main-info-card">
+    <div class="info-row">
+      <!-- Customer/Client -->
+      <div class="info-item">
+        <div class="card-label">שם החברה</div>
+        <div class="card-content">
+          <span class="card-value">לקוח: {{ getCustomerCompanyName() || 'אין שם חברה' }}</span>
+        </div>
+      </div>
 
-        <span class="current-stage-label">לקוח:</span>
-        <span class="current-stage-value" *ngIf="!isEditingCustomer">
-          {{ project.customerName }}
-          <button mat-icon-button (click)="editCustomer()" matTooltip="ערוך לקוח" class="edit-icon-btn">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </span>
-        <mat-form-field appearance="outline" class="customer-field" *ngIf="isEditingCustomer">
+      <!-- Contact Person -->
+      <div class="info-item" *ngIf="!isEditingCustomer">
+        <div class="card-label">איש קשר</div>
+        <div class="card-content">
+          <span class="card-value">{{ project.customerName || 'משה כהן' }}</span>
+        </div>
+      </div>
+
+      <div class="info-item editing-item" *ngIf="isEditingCustomer">
+        <div class="card-label">איש קשר</div>
+        <mat-form-field appearance="outline" class="customer-field">
           <mat-label>בחר לקוח</mat-label>
           <input matInput
                  [formControl]="customerInputCtrl"
@@ -51,57 +52,56 @@
             </mat-option>
           </mat-autocomplete>
         </mat-form-field>
-        <button mat-icon-button color="primary" *ngIf="isEditingCustomer" (click)="saveCustomer()" matTooltip="שמור">
-          <mat-icon>check</mat-icon>
-        </button>
-        <button mat-icon-button *ngIf="isEditingCustomer" (click)="cancelCustomerEdit()" matTooltip="בטל">
-          <mat-icon>close</mat-icon>
-        </button>
-
-        <span class="current-stage-label">שלב הנוכחי:</span>
-        <span class="current-stage-value">{{ project.currentStage }}</span>
-      </div>
-
-      <div class="header-row payment-row" *ngIf="!isEditingPayment">
-
-
-        <div class="payment-info">
-
-          <span class="current-stage-label">סכום ששלמו:</span>
-          <span class="current-stage-value">{{ project.paidAmount ? '₪' + project.paidAmount : 'לא שולם' }}</span>
-
-          <span class="current-stage-label">תאריך תשלום:</span>
-          <span class="current-stage-value">{{ project.paymentDate ? (project.paymentDate | date:'dd/MM/yyyy') : '-'
-            }}</span>
-
-          <span class="current-stage-label">הערת תשלום:</span>
-          <span class="current-stage-value">{{ project.paymentNote || '-' }}</span>
-          <span class="current-stage-value">
-            <button mat-mini-fab color="accent" (click)="editPaymentInfo()" matTooltip="ערוך פרטי תשלום"
-              class="edit-payment-btn">
-              <mat-icon>edit</mat-icon>
-            </button>
-          </span>
+        <div class="edit-actions">
+          <button mat-icon-button color="primary" (click)="saveCustomer()" matTooltip="שמור">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button mat-icon-button (click)="cancelCustomerEdit()" matTooltip="בטל">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
       </div>
 
-      <div class="header-row suppliers-summary-row">
-        <span class="current-stage-label">תשלום לספקים:</span>
-        <span class="supplier-total" title="סה&quot;כ">
-          <mat-icon>payments</mat-icon>
-          ₪{{ getTotalSuppliersAmount() }}
-        </span>
-        <span class="supplier-paid" title="שולם">
-          <mat-icon>check_circle</mat-icon>
-          ₪{{ getTotalSuppliersPaid() }}
-        </span>
-        <span class="supplier-unpaid" title="לא שולם">
-          <mat-icon>pending</mat-icon>
-          ₪{{ getTotalSuppliersUnpaid() }}
-        </span>
+      <!-- Project Name -->
+      <div class="info-item">
+        <div class="card-label">שם הפרויקט</div>
+        <div class="card-content">
+          <span class="card-value">{{ project.projectName }}</span>
+        </div>
       </div>
+    </div>
+  </div>
 
-      <div class="header-row payment-row" *ngIf="isEditingPayment">
+  <!-- Status and Date Cards -->
+  <div class="details-section">
+    <!-- Budget Card -->
+    <div class="detail-card">
+      <div class="detail-label">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+        </svg>
+        תקציב כולל
+      </div>
+      <div class="detail-value budget-value">₪{{ project.cost || 0 }}</div>
+      <div class="detail-sub budget-sub">שולם: ₪{{ project.paidAmount || 0 }}</div>
+    </div>
+
+    <!-- Date Card -->
+    <div class="detail-card" *ngIf="!isEditingPayment">
+      <div class="detail-label">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+        </svg>
+        תאריכים
+      </div>
+      <div class="detail-value date-value">התחלה: {{ project.paymentDate ? (project.paymentDate | date:'dd/MM/yyyy') : '04/01/2026' }}</div>
+      <div class="detail-sub date-sub">סיום: {{ project.paymentNote || 'לא שולם' }}</div>
+    </div>
+
+    <div class="detail-card editing-card" *ngIf="isEditingPayment">
+      <div class="card-label">תאריכים</div>
+      <div class="edit-payment-form">
         <mat-form-field appearance="outline" class="payment-field">
           <mat-label>סכום ששולם</mat-label>
           <input matInput type="number" [(ngModel)]="paymentData.paidAmount">
@@ -114,29 +114,66 @@
           <mat-datepicker #paymentPicker></mat-datepicker>
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="payment-field">
-          <mat-label>הערת תשלום</mat-label>
-          <input matInput [(ngModel)]="paymentData.paymentNote">
-        </mat-form-field>
-
-        <button mat-icon-button color="primary" (click)="savePaymentInfo()" matTooltip="שמור">
-          <mat-icon>check</mat-icon>
-        </button>
-        <button mat-icon-button (click)="cancelPaymentEdit()" matTooltip="בטל">
-          <mat-icon>close</mat-icon>
-        </button>
+        <div class="edit-actions">
+          <button mat-icon-button color="primary" (click)="savePaymentInfo()" matTooltip="שמור">
+            <mat-icon>check</mat-icon>
+          </button>
+          <button mat-icon-button (click)="cancelPaymentEdit()" matTooltip="בטל">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
       </div>
     </div>
 
-    
+    <!-- Status Card -->
+    <div class="detail-card">
+      <div class="detail-label">
+        <svg fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+        </svg>
+        סטטוס
+      </div>
+      <div class="detail-value">
+        <span class="status-badge" [ngClass]="'status-' + project.statusNumber">{{ getProjectStatusName(project.statusNumber) }}</span>
+      </div>
+    </div>
   </div>
 
-  
+ 
 
+  <!-- Suppliers Payment Section -->
+  <div class="suppliers-payment-section">
+    <div class="payment-content">
+      <div class="section-label">תשלום לספקים:</div>
+      <div class="payment-buttons">
+        <button class="payment-status-btn paid" 
+                [disabled]="getTotalSuppliersPaid() === 0"
+                (click)="showPaidSuppliers()">
+          <span class="status-text">שולם</span>
+          <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
+        </button>
+        <button class="payment-status-btn unpaid"
+                [disabled]="getTotalSuppliersUnpaid() === 0"
+                (click)="showUnpaidSuppliers()">
+          <span class="status-text">לא שולם</span>
+          <span class="amount">₪{{ getTotalSuppliersUnpaid() }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs Section -->
   <mat-card class="stages-card">
     <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="stages-tabs">
       <mat-tab *ngFor="let stage of project.stages" [label]="stage.name">
         <div class="tab-content">
+          <div class="tab-header">
+            <h3 class="tab-title">משימות - {{ stage.name }}</h3>
+            <button mat-raised-button color="primary" (click)="addNewMilestoneToCurrentStage()" class="add-milestone-btn">
+              <mat-icon>add</mat-icon>
+              הוסף משימה
+            </button>
+          </div>
 
 
           <mat-accordion class="milestones-accordion" cdkDropList (cdkDropListDropped)="onMilestoneDrop($event, stage)">

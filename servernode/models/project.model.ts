@@ -31,11 +31,13 @@ export interface IProject extends Document {
   id: string;
   projectNumber: number;
   customerId: mongoose.Types.ObjectId;
+  contactPersonId?: string;
   projectName: string;
   statusNumber: number;
   currentStageNumber: number;
   stages: IStage[];
   currentMilestoneId?: number;
+  cost?: number;
   paidAmount?: number;
   paymentDate?: Date;
   paymentNote?: string;
@@ -135,6 +137,9 @@ const projectSchema = new Schema<IProject>({
     ref: 'Customer',
     required: true
   },
+  contactPersonId: {
+    type: String
+  },
   projectName: {
     type: String,
     required: true
@@ -156,6 +161,10 @@ const projectSchema = new Schema<IProject>({
   },
   currentMilestoneId: {
     type: Number
+  },
+  cost: {
+    type: Number,
+    default: 0
   },
   paidAmount: {
     type: Number,

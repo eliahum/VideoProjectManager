@@ -10,7 +10,7 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
         const allStatuses = await ProjectStatus.find();
         
         const data = customers.map((customer) => {
-            const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes } = customer;
+            const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes, contacts } = customer;
             
             // Find all projects for this customer
             const customerProjects = allProjects.filter((project: IProject) => 
@@ -47,6 +47,7 @@ export const getAllCustomers = async (): Promise<CustomersListResponseDTO> => {
                 leadId,
                 howFoundUs,
                 notes,
+                contacts: contacts || [],
                 projects: projectsSummary
             };
         });
@@ -62,7 +63,7 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
         const customer = await Customer.findById(id);
         if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
         
-        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes } = customer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes, contacts } = customer;
         
         // Find all projects for this customer
         const customerProjects = await Project.find({ customerId: customer._id });
@@ -97,6 +98,7 @@ export const getCustomerById = async (id: string): Promise<CustomerResponseDTO> 
             leadId,
             howFoundUs,
             notes,
+            contacts: contacts || [],
             projects: projectsSummary
         };
         return { isSuccess: true, data };
@@ -110,7 +112,7 @@ export const createCustomer = async (customerData: CustomerDTO): Promise<Custome
     try {
         const customer = new Customer(customerData);
         const savedCustomer = await customer.save();
-        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes } = savedCustomer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes, contacts } = savedCustomer;
         const data = {
             id: _id.toString(),
             customerId,
@@ -121,7 +123,8 @@ export const createCustomer = async (customerData: CustomerDTO): Promise<Custome
             address,
             leadId,
             howFoundUs,
-            notes
+            notes,
+            contacts: contacts || []
         };
         return { isSuccess: true, data };
     } catch (error) {
@@ -134,7 +137,7 @@ export const updateCustomer = async (id: string, updateData: Partial<CustomerDTO
     try {
         const updatedCustomer = await Customer.findByIdAndUpdate(id, updateData, { new: true });
         if (!updatedCustomer) return { isSuccess: false, errorText: 'Customer not found' };
-        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes } = updatedCustomer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes, contacts } = updatedCustomer;
         const data = {
             id: _id.toString(),
             customerId,
@@ -145,7 +148,8 @@ export const updateCustomer = async (id: string, updateData: Partial<CustomerDTO
             address,
             leadId,
             howFoundUs,
-            notes
+            notes,
+            contacts: contacts || []
         };
         return { isSuccess: true, data };
     } catch (error) {
@@ -158,7 +162,7 @@ export const deleteCustomer = async (id: string): Promise<CustomerResponseDTO> =
     try {
         const deletedCustomer = await Customer.findByIdAndDelete(id);
         if (!deletedCustomer) return { isSuccess: false, errorText: 'Customer not found' };
-        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes } = deletedCustomer;
+        const { _id, customerId, name, companyName, email, phone, address, leadId, howFoundUs, notes, contacts } = deletedCustomer;
         const data = {
             id: _id.toString(),
             customerId,
@@ -169,11 +173,106 @@ export const deleteCustomer = async (id: string): Promise<CustomerResponseDTO> =
             address,
             leadId,
             howFoundUs,
-            notes
+            notes,
+            contacts: contacts || []
         };
         return { isSuccess: true, data };
     } catch (error) {
         console.error('[deleteCustomer] Error deleting customer:', error);
         return { isSuccess: false, errorText: 'Failed to delete customer' };
+    }
+};
+
+// Contact Management Functions
+export const getCustomerContacts = async (customerId: string): Promise<any> => {
+    try {
+        const customer = await Customer.findById(customerId);
+        if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        
+        return { 
+            isSuccess: true, 
+            data: {
+                customerId: customer._id.toString(),
+                contacts: customer.contacts || []
+            }
+        };
+    } catch (error) {
+        console.error('[getCustomerContacts] Error fetching contacts:', error);
+        return { isSuccess: false, errorText: 'Failed to fetch contacts' };
+    }
+};
+
+export const addCustomerContact = async (customerId: string, contactData: any): Promise<any> => {
+    try {
+        const customer = await Customer.findById(customerId);
+        if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        
+        if (!customer.contacts) {
+            customer.contacts = [];
+        }
+        
+        customer.contacts.push(contactData);
+        await customer.save();
+        
+        return { 
+            isSuccess: true, 
+            data: {
+                customerId: customer._id.toString(),
+                contacts: customer.contacts
+            }
+        };
+    } catch (error) {
+        console.error('[addCustomerContact] Error adding contact:', error);
+        return { isSuccess: false, errorText: 'Failed to add contact: ' + (error instanceof Error ? error.message : String(error)) };
+    }
+};
+
+export const updateCustomerContact = async (customerId: string, contactIndex: number, contactData: any): Promise<any> => {
+    try {
+        const customer = await Customer.findById(customerId);
+        if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        
+        if (!customer.contacts || contactIndex < 0 || contactIndex >= customer.contacts.length) {
+            return { isSuccess: false, errorText: 'Contact not found' };
+        }
+        
+        customer.contacts[contactIndex] = { ...customer.contacts[contactIndex], ...contactData };
+        await customer.save();
+        
+        return { 
+            isSuccess: true, 
+            data: {
+                customerId: customer._id.toString(),
+                contacts: customer.contacts
+            }
+        };
+    } catch (error) {
+        console.error('[updateCustomerContact] Error updating contact:', error);
+        return { isSuccess: false, errorText: 'Failed to update contact' };
+    }
+};
+
+export const deleteCustomerContact = async (customerId: string, contactIndex: number): Promise<any> => {
+    try {
+        const customer = await Customer.findById(customerId);
+        if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        
+        if (!customer.contacts || contactIndex < 0 || contactIndex >= customer.contacts.length) {
+            return { isSuccess: false, errorText: 'Contact not found' };
+        }
+        
+        customer.contacts.splice(contactIndex, 1);
+        await customer.save();
+        
+        return { 
+            isSuccess: true, 
+            data: {
+                customerId: customer._id.toString(),
+                contacts: customer.contacts
+            }
+        };
+    } catch (error) {
+        console.error('[deleteCustomerContact] Error deleting contact:', error);
+        return { isSuccess: false, errorText: 'Failed to delete contact' };
     }
 };

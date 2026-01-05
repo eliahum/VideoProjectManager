@@ -1,5 +1,13 @@
 import { BaseResponseDTO, BaseDataResponseDTO } from './base-response.dto';
 
+export interface ContactPersonDTO {
+    name: string;
+    email?: string;
+    phone: string;
+    role?: string;
+    isPrimary?: boolean;
+}
+
 export interface ProjectSummaryDTO {
     id: string;
     projectNumber: number;
@@ -24,6 +32,7 @@ export interface CustomerDTO {
     leadId?: number; // Lead's auto-increment ID
     howFoundUs?: string; // How the customer found us
     notes?: string; // Free text notes
+    contacts?: ContactPersonDTO[]; // List of contact persons
     projects?: ProjectSummaryDTO[]; // List of customer's projects
 }
 

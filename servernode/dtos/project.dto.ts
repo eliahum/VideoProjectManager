@@ -33,6 +33,8 @@ export interface ProjectDTO {
   id: string;
   projectNumber: number;
   customerId: number;
+  contactPersonId?: string;
+  contactPersonName?: string;
   customerName?: string; // Optional - populated from Customer lookup
   projectName: string;
   statusNumber: number;
@@ -40,6 +42,7 @@ export interface ProjectDTO {
   currentStageNumber: number;
   stages: StageDTO[];
   currentMilestoneId?: number;
+  cost?: number;
   paidAmount?: number;
   paymentDate?: Date;
   paymentNote?: string;

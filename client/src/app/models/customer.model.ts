@@ -9,13 +9,22 @@ export interface ProjectSummary {
   createdAt: Date;
 }
 
+export interface ContactPerson {
+  name: string;
+  email?: string;
+  phone: string;
+  role?: string; // תפקיד
+  isPrimary?: boolean; // איש קשר ראשי
+}
+
 export interface Customer {
   id: string;
   customerId: number;
-  name?: string;
+  name?: string; // שם ראשי - לתאימות לאחור
   companyName: string;
-  email?: string;
-  phone: string;
+  email?: string; // אימייל ראשי - לתאימות לאחור
+  phone: string; // טלפון ראשי - לתאימות לאחור
+  contacts?: ContactPerson[]; // רשימת אנשי קשר
   howFoundUs?: string; // איך הגיע אלינו
   notes?: string; // טקסט חופשי
   createdAt: Date;

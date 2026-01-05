@@ -49,6 +49,8 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   customers: Customer[] = [];
   customerInputCtrl = new FormControl<Customer | string | null>(null, Validators.required);
   filteredCustomers!: Observable<Customer[]>;
+  selectedCustomer: Customer | null = null;
+  customerContacts: any[] = [];
   private subs: Subscription[] = [];
   private hasTyped = false;
 
@@ -69,7 +71,9 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
   ) {
     this.projectForm = this.fb.group({
       customerId: ['', Validators.required],
+      contactPersonId: ['', Validators.required],
       projectName: ['', Validators.required],
+      cost: [0],
       paidAmount: [0],
       paymentDate: [null],
       paymentNote: [''],
@@ -184,6 +188,17 @@ export class ProjectFormComponent implements OnInit, OnDestroy {
       this.projectForm.get('customerId')?.setValue(selected.id);
       this.customerInputCtrl.setValue(selected);
       this.customerInputCtrl.markAsTouched();
+      
+      // Load customer contacts
+      this.selectedCustomer = selected;
+      this.customerContacts = selected.contacts || [];
+      
+      // Set primary contact as default
+      if (this.customerContacts.length > 0) {
+        const primaryContact = this.customerContacts.find(c => c.isPrimary);
+        const defaultContact = primaryContact || this.customerContacts[0];
+        this.projectForm.get('contactPersonId')?.setValue(defaultContact._id);
+      }
     }
   }
 

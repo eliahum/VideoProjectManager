@@ -29,6 +29,7 @@ import { Customer } from '../../../models/customer.model';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
 import { MilestoneFormComponent } from '../milestone-form/milestone-form.component';
+import { SuppliersListDialogComponent, SupplierDetail } from '../suppliers-list-dialog/suppliers-list-dialog.component';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { convertDateToUTC } from '../../../utils/date.utils';
 
@@ -310,6 +311,12 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     return status ? status.name : '';
   }
 
+  getProjectStatusName(statusNumber?: number): string {
+    if (!statusNumber) return '';
+    const status = this.projectStatuses.find(s => s.statusNumber === statusNumber);
+    return status ? status.name : '';
+  }
+
   getMilestoneStatusClass(status?: string): string {
     if (!status) return '';
     switch (status) {
@@ -531,6 +538,69 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
+  showPaidSuppliers(): void {
+    const totalPaid = this.getTotalSuppliersPaid();
+    if (totalPaid === 0) return;
+
+    const suppliers = this.collectSuppliers(true);
+    this.dialog.open(SuppliersListDialogComponent, {
+      width: '700px',
+      height: '600px',
+      maxWidth: '90vw',
+      panelClass: 'suppliers-dialog-container',
+      data: {
+        suppliers,
+        isPaidList: true,
+        totalAmount: totalPaid
+      }
+    });
+  }
+
+  showUnpaidSuppliers(): void {
+    const totalUnpaid = this.getTotalSuppliersUnpaid();
+    if (totalUnpaid === 0) return;
+
+    const suppliers = this.collectSuppliers(false);
+    this.dialog.open(SuppliersListDialogComponent, {
+      width: '700px',
+      height: '600px',
+      maxWidth: '90vw',
+      panelClass: 'suppliers-dialog-container',
+      data: {
+        suppliers,
+        isPaidList: false,
+        totalAmount: totalUnpaid
+      }
+    });
+  }
+
+  private collectSuppliers(isPaid: boolean): SupplierDetail[] {
+    const suppliers: SupplierDetail[] = [];
+    
+    if (!this.project || !this.project.stages) {
+      return suppliers;
+    }
+
+    this.project.stages.forEach(stage => {
+      stage.milestones.forEach(milestone => {
+        milestone.suppliers?.forEach(supplier => {
+          if (supplier.isPaid === isPaid) {
+            suppliers.push({
+              supplierName: supplier.supplierName,
+              amount: supplier.amount,
+              date: supplier.date,
+              isPaid: supplier.isPaid,
+              milestoneName: milestone.name,
+              stageName: stage.name
+            });
+          }
+        });
+      });
+    });
+
+    return suppliers;
+  }
+
   goBack(): void {
     this.router.navigate(['/projects']);
   }
@@ -700,6 +770,21 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  getCustomerCompanyName(): string {
+    if (!this.project) return '';
+    
+    let customer: Customer | undefined;
+    if (typeof this.project.customerId === 'string') {
+      // customerId is ObjectId string
+      customer = this.customers.find(c => c.id === this.project!.customerId);
+    } else {
+      // customerId is number
+      customer = this.customers.find(c => c.customerId === this.project!.customerId);
+    }
+    
+    return customer?.companyName || '';
   }
 
   ngOnDestroy(): void {
