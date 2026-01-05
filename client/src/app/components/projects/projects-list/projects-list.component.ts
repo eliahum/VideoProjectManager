@@ -48,7 +48,7 @@ export class ProjectsListComponent implements OnInit {
   filteredProjects: Project[] = [];
   paginatedProjects: Project[] = [];
   searchText: string = '';
-  displayedColumns: string[] = ['projectName','customerName', 'status', 'stageMilestone', 'suppliersPayment', 'paidAmount', 'profit', 'actions'];
+  displayedColumns: string[] = ['projectName','customerName', 'status', 'stageMilestone', 'suppliersPayment', 'cost', 'paidAmount', 'profit', 'actions'];
   isLoading: boolean = false;
   pageSize: number = 10;
   pageIndex: number = 0;

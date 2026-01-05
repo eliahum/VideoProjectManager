@@ -112,6 +112,13 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="cost">
+        <th mat-header-cell *matHeaderCellDef>עלות</th>
+        <td mat-cell *matCellDef="let project">
+          <span class="amount-value no-bold">{{ project.cost ? '₪' + project.cost : '-' }}</span>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="paidAmount">
         <th mat-header-cell *matHeaderCellDef>סכום ששלמו</th>
         <td mat-cell *matCellDef="let project">

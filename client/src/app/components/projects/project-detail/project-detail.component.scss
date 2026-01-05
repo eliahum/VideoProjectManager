@@ -402,31 +402,40 @@
 // Suppliers payment section
 .suppliers-payment-section {
   margin-bottom: 24px;
-  padding: 30px;
+  padding: 15px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
+
+  .payment-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    direction: rtl;
+  }
 
   .section-label {
     font-size: 16px;
     color: rgba(255,255,255,0.9);
     font-weight: normal;
-    margin-bottom: 20px;
     text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .payment-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    justify-content: center;
     gap: 15px;
 
     @media (max-width: 968px) {
-      grid-template-columns: 1fr;
+      flex-direction: column;
     }
 
     .payment-status-btn {
-      padding: 25px 15px;
-      border-radius: 12px;
+      padding: 20px 60px;
+      border-radius: 16px;
       border: none;
       cursor: pointer;
       font-family: inherit;
@@ -437,15 +446,16 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      min-width: 220px;
 
       .status-text {
-        font-size: 15px;
+        font-size: 18px;
         font-weight: 600;
         display: block;
       }
 
       .amount {
-        font-size: 22px;
+        font-size: 32px;
         font-weight: bold;
         display: block;
       }

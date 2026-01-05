@@ -83,7 +83,7 @@
         </svg>
         תקציב כולל
       </div>
-      <div class="detail-value budget-value">₪{{ getTotalSuppliersAmount() }}</div>
+      <div class="detail-value budget-value">₪{{ project.cost || 0 }}</div>
       <div class="detail-sub budget-sub">שולם: ₪{{ project.paidAmount || 0 }}</div>
     </div>
 
@@ -143,20 +143,18 @@
 
   <!-- Suppliers Payment Section -->
   <div class="suppliers-payment-section">
-    <div class="section-label">תשלום לספקים:</div>
-    <div class="payment-buttons">
-      <button class="payment-status-btn unpaid">
-        <span class="status-text">לא שולם</span>
-        <span class="amount">₪{{ getTotalSuppliersUnpaid() }}</span>
-      </button>
-      <button class="payment-status-btn paid">
-        <span class="status-text">שולם</span>
-        <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
-      </button>
-      <button class="payment-status-btn paid">
-        <span class="status-text">שולם</span>
-        <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
-      </button>
+    <div class="payment-content">
+      <div class="section-label">תשלום לספקים:</div>
+      <div class="payment-buttons">
+        <button class="payment-status-btn paid">
+          <span class="status-text">שולם</span>
+          <span class="amount">₪{{ getTotalSuppliersPaid() }}</span>
+        </button>
+        <button class="payment-status-btn unpaid">
+          <span class="status-text">לא שולם</span>
+          <span class="amount">₪{{ getTotalSuppliersUnpaid() }}</span>
+        </button>
+      </div>
     </div>
   </div>
 
