@@ -57,7 +57,7 @@
               <input matInput formControlName="email" type="email">
             </mat-form-field>
 
-            <mat-checkbox formControlName="isPrimary" class="primary-checkbox">
+            <mat-checkbox formControlName="isPrimary" class="primary-checkbox" (change)="onPrimaryChange(i)">
               ראשי
             </mat-checkbox>
 
