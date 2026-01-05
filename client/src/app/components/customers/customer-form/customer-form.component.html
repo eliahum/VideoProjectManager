@@ -12,33 +12,6 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>שם איש קשר</mat-label>
-      <input matInput formControlName="name" required>
-      <mat-icon matPrefix>person</mat-icon>
-      <mat-error *ngIf="customerForm.get('name')?.hasError('required')">
-        שדה חובה
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>טלפון</mat-label>
-      <input matInput formControlName="phone" type="tel" required>
-      <mat-icon matPrefix>phone</mat-icon>
-      <mat-error *ngIf="customerForm.get('phone')?.hasError('required')">
-        שדה חובה
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>מייל</mat-label>
-      <input matInput formControlName="email" type="email">
-      <mat-icon matPrefix>email</mat-icon>
-      <mat-error *ngIf="customerForm.get('email')?.hasError('email')">
-        מייל לא תקין
-      </mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
       <mat-label>איך הגיע אלי</mat-label>
       <input matInput formControlName="howFoundUs">
       <mat-icon matPrefix>place</mat-icon>
@@ -49,6 +22,52 @@
       <textarea matInput formControlName="notes" rows="3"></textarea>
       <mat-icon matPrefix>note</mat-icon>
     </mat-form-field>
+
+    <!-- Contacts Section -->
+    <div class="contacts-section">
+      <div class="contacts-header">
+        <h3>אנשי קשר</h3>
+        <button mat-raised-button color="primary" type="button" (click)="addContact()">
+          <mat-icon>person_add</mat-icon>
+          הוסף איש קשר
+        </button>
+      </div>
+
+      <div formArrayName="contacts" class="contacts-list">
+        <mat-card *ngFor="let contact of contacts.controls; let i = index" class="contact-card" [formGroupName]="i">
+          <div class="contact-form-row">
+            <mat-form-field appearance="outline" class="contact-name-field">
+              <mat-label>שם איש קשר</mat-label>
+              <input matInput formControlName="name" required>
+              <mat-error *ngIf="contact.get('name')?.hasError('required')">
+                שדה חובה
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="contact-phone-field">
+              <mat-label>טלפון</mat-label>
+              <input matInput formControlName="phone" type="tel" required>
+              <mat-error *ngIf="contact.get('phone')?.hasError('required')">
+                שדה חובה
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="contact-email-field">
+              <mat-label>מייל</mat-label>
+              <input matInput formControlName="email" type="email">
+            </mat-form-field>
+
+            <mat-checkbox formControlName="isPrimary" class="primary-checkbox">
+              ראשי
+            </mat-checkbox>
+
+            <button mat-icon-button color="warn" type="button" (click)="removeContact(i)" [disabled]="contacts.controls.length <= 1" class="remove-contact-btn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-card>
+      </div>
+    </div>
   </form>
 </mat-dialog-content>
 
