@@ -31,6 +31,7 @@ export interface IProject extends Document {
   id: string;
   projectNumber: number;
   customerId: mongoose.Types.ObjectId;
+  contactPersonId?: string;
   projectName: string;
   statusNumber: number;
   currentStageNumber: number;
@@ -135,6 +136,9 @@ const projectSchema = new Schema<IProject>({
     type: Schema.Types.ObjectId,
     ref: 'Customer',
     required: true
+  },
+  contactPersonId: {
+    type: String
   },
   projectName: {
     type: String,

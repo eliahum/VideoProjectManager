@@ -33,6 +33,7 @@ export interface ProjectDTO {
   id: string;
   projectNumber: number;
   customerId: number;
+  contactPersonId?: string;
   customerName?: string; // Optional - populated from Customer lookup
   projectName: string;
   statusNumber: number;

@@ -27,6 +27,20 @@
     </div>
 
     <mat-form-field appearance="outline" class="full-width">
+      <mat-label>איש קשר</mat-label>
+      <mat-icon matPrefix>contact_page</mat-icon>
+      <mat-select formControlName="contactPersonId" required>
+        <mat-option *ngFor="let contact of customerContacts" [value]="contact._id">
+          {{ contact.name }} - {{ contact.phone }}
+          <span *ngIf="contact.isPrimary" style="color: #c6b4ff;"> (ראשי)</span>
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="projectForm.get('contactPersonId')?.hasError('required')">
+        שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>שם פרוייקט</mat-label>
       <mat-icon matPrefix>video_library</mat-icon>
       <input matInput formControlName="projectName" required>
