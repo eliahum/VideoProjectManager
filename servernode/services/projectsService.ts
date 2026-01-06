@@ -89,6 +89,7 @@ export class ProjectsService {
   async updateProject(id: string, projectData: Partial<ProjectDTO>): Promise<ProjectResponseDTO> {
     try {
       await connectToDatabase();
+      console.log('Updating project with data:', projectData);
       const updatedProject = await Project.findOneAndUpdate(
         { id },
         projectData,
@@ -97,6 +98,7 @@ export class ProjectsService {
       if (!updatedProject) {
         return { isSuccess: false, errorText: 'Project not found' };
       }
+      console.log('Updated project contactPersonId:', updatedProject.contactPersonId);
       const data = await this.mapToDTO(updatedProject);
       return { isSuccess: true, data };
     } catch (error: any) {

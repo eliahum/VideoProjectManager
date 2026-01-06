@@ -148,8 +148,8 @@ export class CustomersListComponent implements OnInit {
   openCustomerForm(customer?: Customer): void {
     const isMobile = window.innerWidth <= 768;
     const dialogRef = this.dialog.open(CustomerFormComponent, {
-      width: isMobile ? '95vw' : '800px',
-      maxWidth: isMobile ? '95vw' : '800px',
+      width: isMobile ? '95vw' : '1100px',
+      maxWidth: isMobile ? '95vw' : '1100px',
       disableClose: true,
       data: customer
     });

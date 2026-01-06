@@ -107,9 +107,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   isLoading: boolean = false;
   isEditingPayment: boolean = false;
   isEditingCustomer: boolean = false;
+  isEditingProject: boolean = false;
   selectedCustomerId: string = '';
   customerInputCtrl = new FormControl<Customer | string | null>(null);
   filteredCustomers!: Observable<Customer[]>;
+  customerContacts: any[] = [];
   private hasTyped = false;
   private subs: Subscription[] = [];
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
@@ -117,6 +119,12 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     paidAmount: 0,
     paymentDate: null as Date | null,
     paymentNote: ''
+  };
+  projectEditData = {
+    projectName: '',
+    contactPersonId: '',
+    cost: 0,
+    statusNumber: 0
   };
 
   constructor(
@@ -232,6 +240,12 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
             
             console.log('Project loaded:', this.project);
             this.initializePaymentData();
+            
+            // Load customer contacts if project has customerId
+            if (this.project.customerId) {
+              this.loadCustomerContactsForDisplay();
+            }
+            
             // Set tab index based on current stage number
             if (this.project.currentStageNumber && this.project.stages) {
               let stageIndex = this.project.stages.findIndex(s => s.stageNumber === this.project!.currentStageNumber);
@@ -785,6 +799,166 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     }
     
     return customer?.companyName || '';
+  }
+
+  editProject(): void {
+    if (!this.project) return;
+    
+    // Initialize edit data
+    this.projectEditData = {
+      projectName: this.project.projectName,
+      contactPersonId: this.project.contactPersonId || '',
+      cost: this.project.cost || 0,
+      statusNumber: this.project.statusNumber || 0
+    };
+
+    console.log('Initial contactPersonId:', this.projectEditData.contactPersonId);
+
+    // Load customer contacts
+    this.loadCustomerContacts();
+    
+    this.isEditingProject = true;
+  }
+
+  loadCustomerContacts(): void {
+    if (!this.project || !this.project.customerId) {
+      console.log('No project or customerId');
+      return;
+    }
+
+    // Try to get customer number
+    let customerNumber: number | undefined;
+    
+    if (typeof this.project.customerId === 'number') {
+      customerNumber = this.project.customerId;
+    } else if (typeof this.project.customerId === 'string') {
+      // Find customer by ObjectId and get their customerId (number)
+      const customer = this.customers.find(c => c.id === this.project!.customerId);
+      customerNumber = customer?.customerId;
+    }
+
+    console.log('Loading contacts for customer number:', customerNumber);
+
+    if (!customerNumber) {
+      console.log('Could not resolve customer number');
+      return;
+    }
+
+    this.customerService.getCustomerContactsByNumber(customerNumber).subscribe({
+      next: (response: any) => {
+        console.log('Contacts response:', response);
+        if (response.isSuccess && response.data) {
+          this.customerContacts = response.data;
+          console.log('Loaded contacts:', this.customerContacts);
+          
+          // Log contact IDs to verify matching
+          this.customerContacts.forEach((contact: any) => {
+            console.log('Contact:', contact.name, 'ID:', contact._id || contact.id);
+          });
+          console.log('Current contactPersonId:', this.projectEditData.contactPersonId);
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading customer contacts:', err);
+      }
+    });
+  }
+
+  loadCustomerContactsForDisplay(): void {
+    if (!this.project || !this.project.customerId) {
+      return;
+    }
+
+    // Try to get customer number
+    let customerNumber: number | undefined;
+    
+    if (typeof this.project.customerId === 'number') {
+      customerNumber = this.project.customerId;
+    } else if (typeof this.project.customerId === 'string') {
+      // Find customer by ObjectId and get their customerId (number)
+      const customer = this.customers.find(c => c.id === this.project!.customerId);
+      customerNumber = customer?.customerId;
+    }
+
+    if (!customerNumber) {
+      return;
+    }
+
+    this.customerService.getCustomerContactsByNumber(customerNumber).subscribe({
+      next: (response: any) => {
+        if (response.isSuccess && response.data) {
+          this.customerContacts = response.data;
+        }
+      },
+      error: (err: any) => {
+        console.error('Error loading customer contacts for display:', err);
+      }
+    });
+  }
+
+  getContactPersonName(): string {
+    if (!this.project) return '';
+    
+    // If no contactPersonId, show empty
+    if (!this.project.contactPersonId) {
+      return this.project.customerName || '';
+    }
+
+    // Try to find contact in loaded contacts
+    const contact = this.customerContacts.find(c => 
+      (c._id === this.project!.contactPersonId) || (c.id === this.project!.contactPersonId)
+    );
+
+    if (contact) {
+      return contact.name || '';
+    }
+
+    // Fallback to customerName if contact not found yet
+    return this.project.customerName || '';
+  }
+
+  saveProject(): void {
+    if (!this.project) return;
+
+    console.log('Saving project with data:', {
+      projectName: this.projectEditData.projectName,
+      contactPersonId: this.projectEditData.contactPersonId,
+      cost: this.projectEditData.cost,
+      statusNumber: this.projectEditData.statusNumber
+    });
+
+    this.isLoading = true;
+    this.projectService.update(this.project.id, {
+      projectName: this.projectEditData.projectName,
+      contactPersonId: this.projectEditData.contactPersonId,
+      cost: this.projectEditData.cost,
+      statusNumber: this.projectEditData.statusNumber
+    }).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess) {
+          this.isEditingProject = false;
+          this.messageDialogService.showSuccess('פרויקט עודכן בהצלחה');
+          this.reloadProject();
+        } else {
+          this.messageDialogService.showError('שגיאה בעדכון פרויקט: ' + (response.errorText || 'Unknown error'));
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בעדכון פרויקט');
+      }
+    });
+  }
+
+  cancelProjectEdit(): void {
+    this.isEditingProject = false;
+    this.projectEditData = {
+      projectName: '',
+      contactPersonId: '',
+      cost: 0,
+      statusNumber: 0
+    };
   }
 
   ngOnDestroy(): void {

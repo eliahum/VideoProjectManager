@@ -191,13 +191,25 @@ export const getCustomerContacts = async (customerId: string): Promise<any> => {
         
         return { 
             isSuccess: true, 
-            data: {
-                customerId: customer._id.toString(),
-                contacts: customer.contacts || []
-            }
+            data: customer.contacts || []
         };
     } catch (error) {
         console.error('[getCustomerContacts] Error fetching contacts:', error);
+        return { isSuccess: false, errorText: 'Failed to fetch contacts' };
+    }
+};
+
+export const getCustomerContactsByNumber = async (customerNumber: number): Promise<any> => {
+    try {
+        const customer = await Customer.findOne({ customerId: customerNumber });
+        if (!customer) return { isSuccess: false, errorText: 'Customer not found' };
+        
+        return { 
+            isSuccess: true, 
+            data: customer.contacts || []
+        };
+    } catch (error) {
+        console.error('[getCustomerContactsByNumber] Error fetching contacts:', error);
         return { isSuccess: false, errorText: 'Failed to fetch contacts' };
     }
 };
