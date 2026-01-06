@@ -122,12 +122,10 @@
 
     <div class="detail-card editing-card" *ngIf="isEditingProject">
       <div class="card-label">תקציב כולל</div>
-      <div class="edit-payment-form">
-        <mat-form-field appearance="outline" class="payment-field">
-          <mat-label>עלות</mat-label>
-          <input matInput type="number" [(ngModel)]="projectEditData.cost">
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="customer-field">
+        <mat-label>עלות</mat-label>
+        <input matInput type="number" [(ngModel)]="projectEditData.cost">
+      </mat-form-field>
     </div>
 
     <!-- Date Card -->
@@ -183,16 +181,14 @@
 
     <div class="detail-card editing-card" *ngIf="isEditingProject">
       <div class="card-label">סטטוס</div>
-      <div class="edit-payment-form">
-        <mat-form-field appearance="outline" class="payment-field">
-          <mat-label>סטטוס פרויקט</mat-label>
-          <mat-select [(ngModel)]="projectEditData.statusNumber">
-            <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
-              {{ status.name }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="customer-field">
+        <mat-label>סטטוס פרויקט</mat-label>
+        <mat-select [(ngModel)]="projectEditData.statusNumber">
+          <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
+            {{ status.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
   </div>
 
