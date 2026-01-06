@@ -104,6 +104,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
   milestoneStatuses: MilestoneStatus[] = [];
   projectStatuses: ProjectStatus[] = [];
   customers: Customer[] = [];
+  customerCompanyName: string = '';
   isLoading: boolean = false;
   isEditingPayment: boolean = false;
   isEditingCustomer: boolean = false;
@@ -124,6 +125,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     projectName: '',
     contactPersonId: '',
     cost: 0,
+    paidAmount: 0,
     statusNumber: 0
   };
 
@@ -194,6 +196,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       next: (response) => {
         if (response.isSuccess && response.data) {
           this.customers = response.data;
+          this.updateCustomerCompanyName();
           
           // Setup filtered customers stream for autocomplete
           this.filteredCustomers = this.customerInputCtrl.valueChanges.pipe(
@@ -240,6 +243,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
             
             console.log('Project loaded:', this.project);
             this.initializePaymentData();
+            this.updateCustomerCompanyName();
             
             // Load customer contacts if project has customerId
             if (this.project.customerId) {
@@ -309,6 +313,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
           if (response.isSuccess && response.data) {
             this.project = response.data;
             this.initializePaymentData();
+            this.updateCustomerCompanyName();
             this.cdr.detectChanges();
           }
         },
@@ -786,8 +791,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  getCustomerCompanyName(): string {
-    if (!this.project) return '';
+  updateCustomerCompanyName(): void {
+    if (!this.project) {
+      this.customerCompanyName = '';
+      return;
+    }
     
     let customer: Customer | undefined;
     if (typeof this.project.customerId === 'string') {
@@ -798,7 +806,11 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       customer = this.customers.find(c => c.customerId === this.project!.customerId);
     }
     
-    return customer?.companyName || '';
+    this.customerCompanyName = customer?.companyName || '';
+  }
+
+  getCustomerCompanyName(): string {
+    return this.customerCompanyName;
   }
 
   editProject(): void {
@@ -808,8 +820,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
     this.projectEditData = {
       projectName: this.project.projectName,
       contactPersonId: this.project.contactPersonId || '',
-      cost: this.project.cost || 0,
-      statusNumber: this.project.statusNumber || 0
+      cost: this.project.cost || 0,      paidAmount: this.project.paidAmount || 0,      statusNumber: this.project.statusNumber || 0
     };
 
     console.log('Initial contactPersonId:', this.projectEditData.contactPersonId);
@@ -924,6 +935,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       projectName: this.projectEditData.projectName,
       contactPersonId: this.projectEditData.contactPersonId,
       cost: this.projectEditData.cost,
+      paidAmount: this.projectEditData.paidAmount,
       statusNumber: this.projectEditData.statusNumber
     });
 
@@ -932,6 +944,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       projectName: this.projectEditData.projectName,
       contactPersonId: this.projectEditData.contactPersonId,
       cost: this.projectEditData.cost,
+      paidAmount: this.projectEditData.paidAmount,
       statusNumber: this.projectEditData.statusNumber
     }).subscribe({
       next: (response) => {
@@ -957,6 +970,7 @@ export class ProjectDetailComponent implements OnInit, OnDestroy {
       projectName: '',
       contactPersonId: '',
       cost: 0,
+      paidAmount: 0,
       statusNumber: 0
     };
   }
