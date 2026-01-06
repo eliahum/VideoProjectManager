@@ -305,38 +305,91 @@
         }
 
         .amount-field {
-          flex: 1;
+          flex: 0.7;
           height: 50px;
+
+          ::ng-deep input[type="number"]::-webkit-inner-spin-button,
+          ::ng-deep input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+          }
+
+          ::ng-deep input[type="number"] {
+            -moz-appearance: textfield;
+          }
         }
 
         .date-field {
-          flex: 1.6;
+          flex: 1.2;
           height: 50px;
+
+          ::ng-deep .mat-mdc-form-field-infix {
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
+            min-height: 40px !important;
+            padding-left: 40px !important;
+            padding-right: 12px !important;
+          }
+
+          ::ng-deep .mdc-text-field {
+            padding: 8px !important;
+          }
+
+          ::ng-deep .mat-mdc-form-field-icon-suffix {
+            position: absolute;
+            left: 0;
+            right: auto;
+            padding-left: 4px;
+          }
+
+          ::ng-deep .mat-datepicker-toggle {
+            margin-left: 0;
+            margin-right: auto;
+          }
         }
 
-        .paid-button {
+        .paid-checkbox-wrapper {
           flex-shrink: 0;
-          min-width: 120px;
+          min-width: 140px;
           height: 50px;
-          background: rgba(239, 68, 68, 0.2);
-          color: #ef4444;
-          border: 1px solid rgba(239, 68, 68, 0.4);
-          font-weight: 600;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0 16px;
+          background: rgba(168, 85, 247, 0.1);
+          border: 2px solid rgba(168, 85, 247, 0.4);
+          border-radius: 12px;
           transition: all 0.3s ease;
 
-          &.paid {
-            background: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-            border: 1px solid rgba(34, 197, 94, 0.4);
-          }
-
-          mat-icon {
-            margin-left: 4px;
-          }
-
           &:hover {
-            transform: translateY(-2px);
+            background: rgba(168, 85, 247, 0.15);
+            border-color: rgba(168, 85, 247, 0.6);
+            transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3);
+          }
+
+          .supplier-paid-checkbox {
+            ::ng-deep .mdc-checkbox {
+              .mdc-checkbox__background {
+                width: 24px;
+                height: 24px;
+                border-color: rgba(168, 85, 247, 0.7) !important;
+                border-width: 2px !important;
+                border-radius: 6px;
+              }
+
+              &.mdc-checkbox--selected .mdc-checkbox__background {
+                background-color: #22c55e !important;
+                border-color: #22c55e !important;
+              }
+            }
+
+            ::ng-deep .mdc-label {
+              color: #ffffff;
+              font-weight: 700;
+              font-size: 15px;
+              padding-right: 8px;
+            }
           }
         }
 
@@ -432,7 +485,7 @@ mat-dialog-actions {
     .supplier-select,
     .amount-field,
     .date-field,
-    .paid-button {
+    .paid-checkbox-wrapper {
       width: 100% !important;
       flex: 1 !important;
     }

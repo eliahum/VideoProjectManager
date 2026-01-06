@@ -96,6 +96,14 @@ export class MilestoneFormComponent implements OnInit {
     this.supplierService.getAll().subscribe(response => {
       if (response.isSuccess && response.data) {
         this.availableSuppliers = response.data;
+        
+        // Load existing suppliers AFTER availableSuppliers is loaded
+        if (this.data.milestone) {
+          this.data.milestone.suppliers.forEach(supplier => {
+            this.addSupplier(supplier);
+          });
+        }
+        
         this.cdr.detectChanges();
       }
     });
@@ -109,10 +117,7 @@ export class MilestoneFormComponent implements OnInit {
         isUrgent: this.data.milestone.isUrgent || false
       });
 
-      // Load existing suppliers
-      this.data.milestone.suppliers.forEach(supplier => {
-        this.addSupplier(supplier);
-      });
+      // Existing suppliers loading moved to supplierService.getAll() callback
     }
   }
 
@@ -164,11 +169,9 @@ export class MilestoneFormComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
-  togglePaid(index: number): void {
+  onPaidChange(event: any, index: number): void {
     const supplier = this.suppliers.at(index);
-    const currentValue = supplier.get('isPaid')?.value;
-    const newValue = !currentValue;
-    
+    const newValue = event.checked;
     const statusText = newValue ? 'שולם' : 'לא שולם';
     const supplierName = supplier.get('supplierName')?.value || 'ספק';
     
@@ -179,7 +182,10 @@ export class MilestoneFormComponent implements OnInit {
       if (result === 'yes') {
         supplier.patchValue({ isPaid: newValue });
         supplier.markAsDirty();
-        console.log('Toggle paid:', { index, currentValue, newValue, formValue: supplier.get('isPaid')?.value });
+      } else {
+        // Reset the checkbox to previous value
+        event.source.checked = !newValue;
+        this.cdr.detectChanges();
       }
     });
   }
