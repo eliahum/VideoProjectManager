@@ -8,10 +8,20 @@
       <h1 class="project-title">{{ project.projectName }}</h1>
       <p class="project-subtitle">לקוח: {{ project.customerName || 'פרויקט משרד' }}</p>
     </div>
-    <button mat-raised-button color="primary" class="edit-project-btn">
+    <button mat-raised-button color="primary" class="edit-project-btn" *ngIf="!isEditingProject" (click)="editProject()">
       <mat-icon>edit</mat-icon>
       <span class="btn-text">ערוך פרויקט</span>
     </button>
+    <div class="edit-actions" *ngIf="isEditingProject">
+      <button mat-raised-button color="primary" (click)="saveProject()">
+        <mat-icon>save</mat-icon>
+        <span class="btn-text">שמור פרויקט</span>
+      </button>
+      <button mat-raised-button (click)="cancelProjectEdit()">
+        <mat-icon>close</mat-icon>
+        <span class="btn-text">ביטול</span>
+      </button>
+    </div>
   </div>
 
   <!-- Single Info Card with all project details -->
@@ -26,10 +36,25 @@
       </div>
 
       <!-- Contact Person -->
-      <div class="info-item" *ngIf="!isEditingCustomer">
+      <div class="info-item" *ngIf="!isEditingCustomer && !isEditingProject">
         <div class="card-label">איש קשר</div>
         <div class="card-content">
-          <span class="card-value">{{ project.customerName || 'משה כהן' }}</span>
+          <span class="card-value">{{ getContactPersonName() }}</span>
+        </div>
+      </div>
+
+      <div class="info-item editing-item" *ngIf="isEditingProject">
+        <div class="card-label">איש קשר</div>
+        <mat-form-field appearance="outline" class="customer-field">
+          <mat-label>בחר איש קשר</mat-label>
+          <mat-select [(ngModel)]="projectEditData.contactPersonId">
+            <mat-option *ngFor="let contact of customerContacts" [value]="contact._id || contact.id">
+              {{ contact.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div *ngIf="customerContacts.length === 0" style="color: #ff6b6b; font-size: 12px; margin-top: 4px;">
+          אין אנשי קשר ללקוח זה
         </div>
       </div>
 
@@ -63,11 +88,19 @@
       </div>
 
       <!-- Project Name -->
-      <div class="info-item">
+      <div class="info-item" *ngIf="!isEditingProject">
         <div class="card-label">שם הפרויקט</div>
         <div class="card-content">
           <span class="card-value">{{ project.projectName }}</span>
         </div>
+      </div>
+
+      <div class="info-item editing-item" *ngIf="isEditingProject">
+        <div class="card-label">שם הפרויקט</div>
+        <mat-form-field appearance="outline" class="customer-field">
+          <mat-label>שם הפרויקט</mat-label>
+          <input matInput [(ngModel)]="projectEditData.projectName">
+        </mat-form-field>
       </div>
     </div>
   </div>
@@ -75,7 +108,7 @@
   <!-- Status and Date Cards -->
   <div class="details-section">
     <!-- Budget Card -->
-    <div class="detail-card">
+    <div class="detail-card" *ngIf="!isEditingProject">
       <div class="detail-label">
         <svg fill="currentColor" viewBox="0 0 20 20">
           <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
@@ -85,6 +118,16 @@
       </div>
       <div class="detail-value budget-value">₪{{ project.cost || 0 }}</div>
       <div class="detail-sub budget-sub">שולם: ₪{{ project.paidAmount || 0 }}</div>
+    </div>
+
+    <div class="detail-card editing-card" *ngIf="isEditingProject">
+      <div class="card-label">תקציב כולל</div>
+      <div class="edit-payment-form">
+        <mat-form-field appearance="outline" class="payment-field">
+          <mat-label>עלות</mat-label>
+          <input matInput type="number" [(ngModel)]="projectEditData.cost">
+        </mat-form-field>
+      </div>
     </div>
 
     <!-- Date Card -->
@@ -126,7 +169,7 @@
     </div>
 
     <!-- Status Card -->
-    <div class="detail-card">
+    <div class="detail-card" *ngIf="!isEditingProject">
       <div class="detail-label">
         <svg fill="currentColor" viewBox="0 0 20 20">
           <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
@@ -135,6 +178,20 @@
       </div>
       <div class="detail-value">
         <span class="status-badge" [ngClass]="'status-' + project.statusNumber">{{ getProjectStatusName(project.statusNumber) }}</span>
+      </div>
+    </div>
+
+    <div class="detail-card editing-card" *ngIf="isEditingProject">
+      <div class="card-label">סטטוס</div>
+      <div class="edit-payment-form">
+        <mat-form-field appearance="outline" class="payment-field">
+          <mat-label>סטטוס פרויקט</mat-label>
+          <mat-select [(ngModel)]="projectEditData.statusNumber">
+            <mat-option *ngFor="let status of projectStatuses" [value]="status.statusNumber">
+              {{ status.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
       </div>
     </div>
   </div>

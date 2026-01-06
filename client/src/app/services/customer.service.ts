@@ -32,5 +32,13 @@ export class CustomerService {
     return this.http.delete<CustomerResponse>(`${this.apiUrl}/${id}`);
   }
 
+  getCustomerContacts(customerId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${customerId}/contacts`);
+  }
+
+  getCustomerContactsByNumber(customerNumber: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/number/${customerNumber}/contacts`);
+  }
+
   // No need for generateId, handled by backend
 }

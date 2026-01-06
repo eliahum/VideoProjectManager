@@ -6,6 +6,7 @@ import {
     updateCustomer, 
     deleteCustomer,
     getCustomerContacts,
+    getCustomerContactsByNumber,
     addCustomerContact,
     updateCustomerContact,
     deleteCustomerContact
@@ -63,8 +64,19 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Contact Management Routes
+// Get contacts by ObjectId
 router.get('/:id/contacts', async (req, res) => {
     const response = await getCustomerContacts(req.params.id);
+    if (response.isSuccess) {
+        res.json(response);
+    } else {
+        res.status(response.errorText === 'Customer not found' ? 404 : 500).json(response);
+    }
+});
+
+// Get contacts by customer number
+router.get('/number/:customerNumber/contacts', async (req, res) => {
+    const response = await getCustomerContactsByNumber(parseInt(req.params.customerNumber));
     if (response.isSuccess) {
         res.json(response);
     } else {
