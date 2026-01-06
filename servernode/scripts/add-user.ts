@@ -11,6 +11,7 @@ import { hashPassword } from '../services/authService';
 
 const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/videoprojectmanager';
 
+
 interface UserData {
     username: string;
     email: string;
