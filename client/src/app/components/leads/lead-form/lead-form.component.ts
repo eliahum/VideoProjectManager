@@ -120,9 +120,11 @@ export class LeadFormComponent implements OnInit {
 
   convertToCustomer(): void {
     const leadData = this.data || this.leadForm.value;
-    const closedStatus = this.leadStatuses.find(s => s.isFinal);
+    const closedStatus = this.leadStatuses.find(s => s.isFinal && s.name === 'סגירה');
     
-    if (closedStatus && leadData.statusNumber === closedStatus.statusNumber) {
+    // בדוק אם הסטטוס הנוכחי הוא סופי
+    const currentStatus = this.leadStatuses.find(s => s.statusNumber === leadData.statusNumber);
+    if (currentStatus?.isFinal) {
       this.messageDialogService.showError('Lead זה כבר הומר ללקוח.');
       return;
     }
@@ -133,18 +135,25 @@ export class LeadFormComponent implements OnInit {
           name: leadData.name,
           email: leadData.email || '',
           phone: leadData.phone,
-          leadId: leadData.leadId || undefined
+          companyName: leadData.companyName,
+          source: leadData.source,
+          freeText: leadData.freeText,
+          leadId: leadData.leadId
         };
-        this.customerService.create(customerData).subscribe(() => {
-          // Update lead status to closed
-          if (this.data && closedStatus) {
-            this.leadService.updateStatus(this.data.id, closedStatus.statusNumber).subscribe(() => {
-              this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
-              this.dialogRef.close(true);
+        this.customerService.create(customerData).subscribe(customerResponse => {
+          if (customerResponse.isSuccess) {
+            this.leadService.updateStatus(this.data.id, closedStatus?.statusNumber || 5).subscribe(leadResponse => {
+              if (leadResponse.isSuccess) {
+                this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
+                this.dialogRef.close(true);
+              } else {
+                console.error('Failed to update lead status:', leadResponse.errorText);
+                this.messageDialogService.showError('שגיאה בעדכון סטטוס Lead: ' + (leadResponse.errorText || 'Unknown error'));
+              }
             });
           } else {
-            this.messageDialogService.showSuccess('הלקוח נוצר בהצלחה!');
-            this.dialogRef.close(true);
+            console.error('Failed to create customer:', customerResponse.errorText);
+            this.messageDialogService.showError('שגיאה ביצירת לקוח: ' + (customerResponse.errorText || 'Unknown error'));
           }
         });
       }
