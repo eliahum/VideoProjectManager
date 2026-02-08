@@ -11,8 +11,12 @@ import { finalize } from 'rxjs/operators';
 import { ProjectService } from '../../services/project.service';
 import { LeadService } from '../../services/lead.service';
 import { ProjectStatusService } from '../../services/project-status.service';
+import { GeneralTaskService } from '../../services/general-task.service';
+import { GeneralTaskStatusService } from '../../services/general-task-status.service';
 import { Project, Milestone } from '../../models/project.model';
 import { ProjectStatus } from '../../models/project-status.model';
+import { GeneralTask } from '../../models/general-task.model';
+import { GeneralTaskStatus } from '../../models/general-task-status.model';
 import { HttpClient } from '@angular/common/http';
 
 interface UrgentMilestoneTask {
@@ -49,11 +53,17 @@ export class DashboardComponent implements OnInit {
   
   // Urgent milestone tasks
   urgentMilestoneTasks: UrgentMilestoneTask[] = [];
+  
+  // Upcoming general tasks
+  upcomingTasks: GeneralTask[] = [];
+  taskStatuses: GeneralTaskStatus[] = [];
 
   constructor(
     private projectService: ProjectService,
     private leadService: LeadService,
     private projectStatusService: ProjectStatusService,
+    private generalTaskService: GeneralTaskService,
+    private generalTaskStatusService: GeneralTaskStatusService,
     private cdr: ChangeDetectorRef
     
   ) {}
@@ -62,8 +72,8 @@ export class DashboardComponent implements OnInit {
     this.loadProjectStatuses();
     this.loadData();
     this.loadLeadsData();
-
-
+    this.loadTaskStatuses();
+    this.loadUpcomingTasks();
   }
 
   loadData(): void {
@@ -172,6 +182,64 @@ export class DashboardComponent implements OnInit {
         console.error('Error loading project statuses:', error);
       }
     });
+  }
+
+  loadTaskStatuses(): void {
+    this.generalTaskStatusService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.taskStatuses = response.data;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading task statuses:', error);
+      }
+    });
+  }
+
+  loadUpcomingTasks(): void {
+    this.generalTaskService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const nextWeek = new Date(today);
+          nextWeek.setDate(today.getDate() + 7);
+          
+          // סנן משימות לשבוע הקרוב ורק פתוחות (לא בסטטוס סופי)
+          this.upcomingTasks = response.data
+            .filter(task => {
+              if (!task.date) return false;
+              const taskDate = new Date(task.date);
+              taskDate.setHours(0, 0, 0, 0);
+              
+              // בדוק שהתאריך בטווח
+              if (taskDate < today || taskDate > nextWeek) return false;
+              
+              // בדוק שהסטטוס לא סופי
+              const status = this.taskStatuses.find(s => s.statusNumber === task.statusNumber);
+              return status && !status.isFinal;
+            })
+            .sort((a, b) => {
+              const dateA = new Date(a.date!).getTime();
+              const dateB = new Date(b.date!).getTime();
+              return dateA - dateB;
+            });
+          
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading upcoming tasks:', error);
+      }
+    });
+  }
+
+  getTaskStatusName(statusNumber: number): string {
+    const status = this.taskStatuses.find(s => s.statusNumber === statusNumber);
+    return status ? status.name : '';
   }
 
   calculatePendingMilestoneTasks(): void {
