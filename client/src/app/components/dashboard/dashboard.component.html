@@ -73,43 +73,40 @@
             ספק חדש
           </button>
         </div>
+
+        <!-- Upcoming Tasks -->
+        <div class="upcoming-tasks-section" *ngIf="upcomingTasks.length > 0">
+          <h3 class="tasks-section-title">
+            <mat-icon>event</mat-icon>
+            משימות לשבוע הקרוב
+          </h3>
+          <div class="tasks-grid">
+            <div class="task-item" *ngFor="let task of upcomingTasks">
+              <div class="task-item-name">{{ task.name }}</div>
+              <div class="task-item-status">{{ getTaskStatusName(task.statusNumber) }}</div>
+              <div class="task-item-date">{{ task.date | date: 'dd/MM/yyyy' }}</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Projects Section -->
       <div class="dashboard-projects-section">
-        <!-- Tasks Container -->
-        <div class="tasks-container">
-          <!-- Upcoming Tasks -->
-          <div class="upcoming-tasks-section" *ngIf="upcomingTasks.length > 0">
-            <h3 class="tasks-section-title">
-              <mat-icon>event</mat-icon>
-              משימות לשבוע הקרוב
-            </h3>
-            <div class="tasks-grid">
-              <div class="task-item" *ngFor="let task of upcomingTasks">
-                <div class="task-item-name">{{ task.name }}</div>
-                <div class="task-item-status">{{ getTaskStatusName(task.statusNumber) }}</div>
-                <div class="task-item-date">{{ task.date | date: 'dd/MM/yyyy' }}</div>
-              </div>
+        <!-- Urgent Milestone Tasks -->
+        <div class="urgent-tasks-section">
+          <h3 class="tasks-section-title">
+            <mat-icon class="warning-icon">warning</mat-icon>
+            אבני דרך דחופות
+          </h3>
+          <div class="urgent-task" *ngFor="let milestoneTask of urgentMilestoneTasks">
+            <div class="task-title">{{ milestoneTask.title }}</div>
+            <div class="task-time">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ milestoneTask.time }}</span>
             </div>
           </div>
-
-          <!-- Urgent Milestone Tasks -->
-          <div class="urgent-tasks-section">
-            <h3 class="tasks-section-title">
-              <mat-icon class="warning-icon">warning</mat-icon>
-              אבני דרך דחופות
-            </h3>
-            <div class="urgent-task" *ngFor="let milestoneTask of urgentMilestoneTasks">
-              <div class="task-title">{{ milestoneTask.title }}</div>
-              <div class="task-time">
-                <mat-icon>schedule</mat-icon>
-                <span>{{ milestoneTask.time }}</span>
-              </div>
-            </div>
-            <div *ngIf="urgentMilestoneTasks.length === 0" class="no-tasks">
-              <p>אין אבני דרך דחופות</p>
-            </div>
+          <div *ngIf="urgentMilestoneTasks.length === 0" class="no-tasks">
+            <p>אין אבני דרך דחופות</p>
           </div>
         </div>
 

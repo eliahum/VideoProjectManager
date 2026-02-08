@@ -170,12 +170,15 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.1);
+  border-bottom: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 0 0 16px 16px;
   display: flex;
   align-items: center;
   padding: 0 16px;
   min-height: 64px;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+  transition: all 0.3s ease;
 
   .menu-button {
     margin-left: 8px;
