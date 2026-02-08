@@ -6,15 +6,20 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { finalize } from 'rxjs/operators';
 import { ProjectService } from '../../services/project.service';
 import { LeadService } from '../../services/lead.service';
 import { ProjectStatusService } from '../../services/project-status.service';
+import { GeneralTaskService } from '../../services/general-task.service';
+import { GeneralTaskStatusService } from '../../services/general-task-status.service';
 import { Project, Milestone } from '../../models/project.model';
 import { ProjectStatus } from '../../models/project-status.model';
+import { GeneralTask } from '../../models/general-task.model';
+import { GeneralTaskStatus } from '../../models/general-task-status.model';
 import { HttpClient } from '@angular/common/http';
 
-interface UrgentTask {
+interface UrgentMilestoneTask {
   title: string;
   time: string;
 }
@@ -29,7 +34,8 @@ interface UrgentTask {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -42,16 +48,24 @@ export class DashboardComponent implements OnInit {
   
   // Dashboard statistics
   totalLeads = 0;
-  pendingTasks = 0;
+  pendingMilestoneTasks = 0;
   weeklyMeetings = 0;
+  totalOwedToMe = 0; // כמה כסף חייבים לי
+  totalIOwe = 0; // כמה כסף אני חייב
   
-  // Urgent tasks
-  urgentTasks: UrgentTask[] = [];
+  // Urgent milestone tasks
+  urgentMilestoneTasks: UrgentMilestoneTask[] = [];
+  
+  // Upcoming general tasks
+  upcomingTasks: GeneralTask[] = [];
+  taskStatuses: GeneralTaskStatus[] = [];
 
   constructor(
     private projectService: ProjectService,
     private leadService: LeadService,
     private projectStatusService: ProjectStatusService,
+    private generalTaskService: GeneralTaskService,
+    private generalTaskStatusService: GeneralTaskStatusService,
     private cdr: ChangeDetectorRef
     
   ) {}
@@ -60,8 +74,8 @@ export class DashboardComponent implements OnInit {
     this.loadProjectStatuses();
     this.loadData();
     this.loadLeadsData();
-
-
+    this.loadTaskStatuses();
+    this.loadUpcomingTasks();
   }
 
   loadData(): void {
@@ -77,17 +91,23 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         console.log('Dashboard response:', response);
         if (response.isSuccess && response.data) {
-          this.activeProjects = [...response.data];
+          // סנן רק פרויקטים שהסטטוס שלהם לא סופי ולא בהשהייה
+          this.activeProjects = response.data.filter(project => {
+            const status = this.projectStatuses.find(s => s.statusNumber === project.statusNumber);
+            return status && !status.isFinal && !status.isPause;
+          });
           console.log('Active projects:', this.activeProjects);
           this.projectStats = this.activeProjects.map(project => ({
             project,
             currentMilestone: this.getCurrentMilestone(project)
           }));
           
-          // Calculate pending tasks from milestones
-          this.calculatePendingTasks();
-          // Refresh urgent tasks from projects
-          this.loadUrgentTasks();
+          // Calculate pending milestone tasks from milestones
+          this.calculatePendingMilestoneTasks();
+          // Refresh urgent milestone tasks from projects
+          this.loadUrgentMilestoneTasks();
+          // Calculate financial statistics
+          this.calculateFinancialStats();
           
           console.log('Project stats:', this.projectStats);
           this.cdr.detectChanges();
@@ -124,13 +144,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  loadUrgentTasks(): void {
+  loadUrgentMilestoneTasks(): void {
     // סנן רק פרויקטים פתוחים (isFinal === false)
     const openProjects = this.activeProjects.filter(project => {
       const status = this.projectStatuses.find(s => s.statusNumber === project.statusNumber);
       return status && status.isFinal === false;
     });
-    const tasks: UrgentTask[] = openProjects.flatMap(project =>
+    const milestoneTasks: UrgentMilestoneTask[] = openProjects.flatMap(project =>
       project.stages
         .filter(stage => stage.milestones && stage.milestones.length > 0)
         .flatMap(stage =>
@@ -151,7 +171,7 @@ export class DashboardComponent implements OnInit {
         )
     );
     
-    this.urgentTasks = tasks;
+    this.urgentMilestoneTasks = milestoneTasks;
   }
 
   loadProjectStatuses(): void {
@@ -168,18 +188,99 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  calculatePendingTasks(): void {
-    this.pendingTasks = 0;
+  loadTaskStatuses(): void {
+    this.generalTaskStatusService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          this.taskStatuses = response.data;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading task statuses:', error);
+      }
+    });
+  }
+
+  loadUpcomingTasks(): void {
+    this.generalTaskService.getAll().subscribe({
+      next: (response) => {
+        if (response.isSuccess && response.data) {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          
+          const nextWeek = new Date(today);
+          nextWeek.setDate(today.getDate() + 7);
+          
+          // סנן משימות לשבוע הקרוב ורק פתוחות (לא בסטטוס סופי)
+          this.upcomingTasks = response.data
+            .filter(task => {
+              if (!task.date) return false;
+              const taskDate = new Date(task.date);
+              taskDate.setHours(0, 0, 0, 0);
+              
+              // בדוק שהתאריך בטווח
+              if (taskDate < today || taskDate > nextWeek) return false;
+              
+              // בדוק שהסטטוס לא סופי
+              const status = this.taskStatuses.find(s => s.statusNumber === task.statusNumber);
+              return status && !status.isFinal;
+            })
+            .sort((a, b) => {
+              const dateA = new Date(a.date!).getTime();
+              const dateB = new Date(b.date!).getTime();
+              return dateA - dateB;
+            });
+          
+          this.cdr.detectChanges();
+        }
+      },
+      error: (error) => {
+        console.error('Error loading upcoming tasks:', error);
+      }
+    });
+  }
+
+  getTaskStatusName(statusNumber: number): string {
+    const status = this.taskStatuses.find(s => s.statusNumber === statusNumber);
+    return status ? status.name : '';
+  }
+
+  calculatePendingMilestoneTasks(): void {
+    this.pendingMilestoneTasks = 0;
     this.activeProjects.forEach(project => {
       project.stages.forEach(stage => {
         if (stage.milestones) {
           stage.milestones.forEach(milestone => {
             // Count milestones that are not completed (status < 4)
             if (milestone.statusNumber && milestone.statusNumber < 4) {
-              this.pendingTasks++;
+              this.pendingMilestoneTasks++;
             }
           });
         }
+      });
+    });
+  }
+
+  calculateFinancialStats(): void {
+    this.totalOwedToMe = 0;
+    this.totalIOwe = 0;
+    
+    this.activeProjects.forEach(project => {
+      // כמה חייבים לי = עלות ללקוח פחות מה ששולם
+      const cost = project.cost || 0;
+      const paidAmount = project.paidAmount || 0;
+      this.totalOwedToMe += (cost - paidAmount);
+      
+      // כמה אני חייב = סכום ספקים שלא שולמו
+      project.stages.forEach(stage => {
+        stage.milestones?.forEach(milestone => {
+          milestone.suppliers?.forEach(supplier => {
+            if (!supplier.isPaid) {
+              this.totalIOwe += supplier.amount || 0;
+            }
+          });
+        });
       });
     });
   }

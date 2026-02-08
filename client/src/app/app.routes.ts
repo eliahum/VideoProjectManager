@@ -49,6 +49,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   { 
+    path: 'tasks', 
+    loadComponent: () => import('./components/general-tasks/general-tasks.component').then(m => m.GeneralTasksComponent),
+    canActivate: [authGuard]
+  },
+  { 
     path: 'statuses', 
     loadComponent: () => import('./components/shared/statuses/statuses.component').then(m => m.StatusesComponent),
     canActivate: [authGuard]

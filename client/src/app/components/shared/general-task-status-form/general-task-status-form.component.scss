@@ -1,0 +1,30 @@
+.status-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 0;
+  min-width: 300px;
+
+  mat-form-field {
+    width: 100%;
+  }
+
+  .checkbox-container {
+    padding: 8px 0;
+
+    .helper-text {
+      margin: 8px 0 0 24px;
+      font-size: 12px;
+      color: #666;
+    }
+  }
+}
+
+mat-dialog-content {
+  min-height: 200px;
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  gap: 8px;
+}
