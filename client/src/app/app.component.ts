@@ -46,6 +46,7 @@ export class AppComponent {
     { path: '/customers', label: 'לקוחות', icon: 'people' },
     { path: '/suppliers', label: 'ספקים', icon: 'business' },
     { path: '/projects', label: 'פרויקטים', icon: 'video_library' },
+    { path: '/tasks', label: 'משימות', icon: 'task' },
     { path: '/statuses', label: 'סטטוסים', icon: 'toggle_on', adminOnly: true },
     { path: '/backup', label: 'גיבויים', icon: 'backup', superadminOnly: true, children: [
       { path: '/backup', label: 'ניהול גיבויים', icon: 'cloud_upload' },

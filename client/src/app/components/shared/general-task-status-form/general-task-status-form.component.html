@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'עריכת סטטוס משימה' : 'הוסף סטטוס משימה חדש' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="statusForm" class="status-form">
+    <mat-form-field appearance="outline">
+      <mat-label>שם הסטטוס</mat-label>
+      <input matInput formControlName="name" placeholder="למשל: התחיל, בביצוע, הושלם">
+      <mat-error *ngIf="statusForm.get('name')?.hasError('required')">
+        שם הסטטוס הוא שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <div class="checkbox-container">
+      <mat-checkbox formControlName="isFinal">
+        סטטוס סופי
+      </mat-checkbox>
+      <p class="helper-text">סמן אם מדובר בסטטוס סיום (כמו "הושלם")</p>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!statusForm.valid">
+    {{ isEditMode ? 'עדכן' : 'הוסף' }}
+  </button>
+</mat-dialog-actions>

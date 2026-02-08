@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'עריכת משימה' : 'הוספת משימה חדשה' }}</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="taskForm" class="task-form">
+    <mat-form-field appearance="outline">
+      <mat-label>שם המשימה</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-error *ngIf="taskForm.get('name')?.hasError('required')">
+        שם המשימה הוא שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>סטטוס</mat-label>
+      <mat-select formControlName="statusNumber" required>
+        <mat-option *ngFor="let status of statuses" [value]="status.statusNumber">
+          {{ status.name }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="taskForm.get('statusNumber')?.hasError('required')">
+        סטטוס הוא שדה חובה
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>תאריך</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>הערות</mat-label>
+      <textarea matInput formControlName="notes" rows="5" placeholder="הזן הערות כאן..."></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">ביטול</button>
+  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!taskForm.valid">
+    {{ isEditMode ? 'עדכן' : 'הוסף' }}
+  </button>
+</mat-dialog-actions>

@@ -225,5 +225,70 @@
         </mat-card-content>
       </mat-card>
     </mat-tab>
+
+    <!-- סטטוסי משימות -->
+    <mat-tab label="סטטוסי משימות">
+      <mat-card class="status-card">
+        <div class="card-header">
+          <button mat-raised-button color="primary" (click)="openGeneralTaskStatusForm()" class="add-status-btn">
+            <mat-icon>add</mat-icon>
+            הוסף סטטוס חדש
+          </button>
+        </div>
+        <mat-card-content>
+          <table mat-table [dataSource]="generalTaskStatuses" class="status-table">
+            <!-- מספר סטטוס -->
+            <ng-container matColumnDef="statusNumber">
+              <th mat-header-cell *matHeaderCellDef>מספר</th>
+              <td mat-cell *matCellDef="let status">{{ status.statusNumber }}</td>
+            </ng-container>
+
+            <!-- שם עברית -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>שם בעברית</th>
+              <td mat-cell *matCellDef="let status">{{ status.name }}</td>
+            </ng-container>
+
+            <!-- סטטוס סופי -->
+            <ng-container matColumnDef="isFinal">
+              <th mat-header-cell *matHeaderCellDef>סטטוס סופי</th>
+              <td mat-cell *matCellDef="let status">
+                <mat-checkbox [checked]="status.isFinal" disabled></mat-checkbox>
+              </td>
+            </ng-container>
+
+            <!-- סך משימות -->
+            <ng-container matColumnDef="taskCount">
+              <th mat-header-cell *matHeaderCellDef>סה"כ משימות</th>
+              <td mat-cell *matCellDef="let status">
+                <span class="task-count">{{ status.taskCount || 0 }}</span>
+              </td>
+            </ng-container>
+
+            <!-- פעולות -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>פעולות</th>
+              <td mat-cell *matCellDef="let status">
+                <button mat-icon-button color="primary" (click)="editGeneralTaskStatus(status)" matTooltip="עריכה">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteGeneralTaskStatus(status)" 
+                        *ngIf="status.taskCount === 0" matTooltip="מחק">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="generalTaskColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: generalTaskColumns;"></tr>
+          </table>
+
+          <div class="no-data" *ngIf="generalTaskStatuses.length === 0">
+            <mat-icon>info</mat-icon>
+            <p>אין סטטוסי משימות</p>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </mat-tab>
   </mat-tab-group>
 </div>

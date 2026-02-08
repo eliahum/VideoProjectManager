@@ -12,13 +12,16 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MilestoneStatusService } from '../../../services/milestone-status.service';
 import { ProjectStatusService } from '../../../services/project-status.service';
 import { LeadStatusService } from '../../../services/lead-status.service';
+import { GeneralTaskStatusService } from '../../../services/general-task-status.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { MilestoneStatus } from '../../../models/milestone-status.model';
 import { ProjectStatus } from '../../../models/project-status.model';
 import { LeadStatus } from '../../../models/lead.model';
+import { GeneralTaskStatus } from '../../../models/general-task-status.model';
 import { ProjectStatusFormComponent } from '../project-status-form/project-status-form.component';
 import { MilestoneStatusFormComponent } from '../milestone-status-form/milestone-status-form.component';
 import { LeadStatusFormComponent } from '../lead-status-form/lead-status-form.component';
+import { GeneralTaskStatusFormComponent } from '../general-task-status-form/general-task-status-form.component';
 
 @Component({
   selector: 'app-statuses',
@@ -41,16 +44,19 @@ export class StatusesComponent implements OnInit {
   milestoneStatuses: MilestoneStatus[] = [];
   projectStatuses: ProjectStatus[] = [];
   leadStatuses: LeadStatus[] = [];
+  generalTaskStatuses: GeneralTaskStatus[] = [];
   isLoading = false;
   
   milestoneColumns: string[] = ['milestoneStatusNumber', 'name', 'isFinal', 'milestoneCount', 'actions'];
   projectColumns: string[] = ['statusNumber', 'name', 'isFinal', 'isPause', 'projectCount', 'actions'];
   leadColumns: string[] = ['statusNumber', 'name', 'isFinal', 'leadCount', 'actions'];
+  generalTaskColumns: string[] = ['statusNumber', 'name', 'isFinal', 'taskCount', 'actions'];
 
   constructor(
     private milestoneStatusService: MilestoneStatusService,
     private projectStatusService: ProjectStatusService,
     private leadStatusService: LeadStatusService,
+    private generalTaskStatusService: GeneralTaskStatusService,
     private messageDialogService: MessageDialogService,
     private cdr: ChangeDetectorRef,
     private dialog: MatDialog
@@ -64,6 +70,7 @@ export class StatusesComponent implements OnInit {
     this.loadMilestoneStatuses();
     this.loadProjectStatuses();
     this.loadLeadStatuses();
+    this.loadGeneralTaskStatuses();
   }
 
   loadMilestoneStatuses(): void {
@@ -357,6 +364,108 @@ export class StatusesComponent implements OnInit {
             if (response.isSuccess) {
               this.messageDialogService.showSuccess('סטטוס נמחק בהצלחה');
               this.loadLeadStatuses();
+            } else {
+              this.messageDialogService.showError('שגיאה במחיקת הסטטוס: ' + (response.errorText || 'Unknown error'));
+            }
+          },
+          error: (err) => {
+            this.isLoading = false;
+            this.messageDialogService.showError('שגיאה במחיקת הסטטוס');
+          }
+        });
+      }
+    });
+  }
+
+  // General Task Statuses
+  loadGeneralTaskStatuses(): void {
+    this.isLoading = true;
+    
+    this.generalTaskStatusService.getAllWithCounts().subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        if (response.isSuccess && response.data) {
+          this.generalTaskStatuses = response.data;
+          this.cdr.detectChanges();
+        } else {
+          this.messageDialogService.showError('שגיאה בטעינת סטטוסי משימות');
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.messageDialogService.showError('שגיאה בטעינת סטטוסי משימות');
+      }
+    });
+  }
+
+  openGeneralTaskStatusForm(status?: GeneralTaskStatus): void {
+    const dialogRef = this.dialog.open(GeneralTaskStatusFormComponent, {
+      width: '600px',
+      disableClose: true,
+      data: status || null
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.saveGeneralTaskStatus(result, status?.id);
+      }
+    });
+  }
+
+  saveGeneralTaskStatus(statusData: Partial<GeneralTaskStatus>, id?: string): void {
+    const confirmMessage = id ? 'האם אתה בטוח שברצונך לעדכן את הסטטוס?' : null;
+    
+    const performSave = () => {
+      this.isLoading = true;
+      
+      const operation = id 
+        ? this.generalTaskStatusService.update(id, statusData)
+        : this.generalTaskStatusService.create(statusData);
+
+      operation.subscribe({
+        next: (response) => {
+          this.isLoading = false;
+          if (response.isSuccess) {
+            this.messageDialogService.showSuccess(
+              id ? 'סטטוס עודכן בהצלחה' : 'סטטוס נוסף בהצלחה'
+            );
+            this.loadGeneralTaskStatuses();
+          } else {
+            this.messageDialogService.showError('שגיאה בשמירת הסטטוס: ' + (response.errorText || 'Unknown error'));
+          }
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.messageDialogService.showError('שגיאה בשמירת הסטטוס');
+        }
+      });
+    };
+
+    if (confirmMessage) {
+      this.messageDialogService.confirm(confirmMessage).subscribe(result => {
+        if (result === 'yes') {
+          performSave();
+        }
+      });
+    } else {
+      performSave();
+    }
+  }
+
+  editGeneralTaskStatus(status: GeneralTaskStatus): void {
+    this.openGeneralTaskStatusForm(status);
+  }
+
+  deleteGeneralTaskStatus(status: GeneralTaskStatus): void {
+    this.messageDialogService.confirm('האם אתה בטוח שברצונך למחוק את הסטטוס?').subscribe(result => {
+      if (result === 'yes') {
+        this.isLoading = true;
+        this.generalTaskStatusService.delete(status.id).subscribe({
+          next: (response) => {
+            this.isLoading = false;
+            if (response.isSuccess) {
+              this.messageDialogService.showSuccess('סטטוס נמחק בהצלחה');
+              this.loadGeneralTaskStatuses();
             } else {
               this.messageDialogService.showError('שגיאה במחיקת הסטטוס: ' + (response.errorText || 'Unknown error'));
             }

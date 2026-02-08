@@ -11,6 +11,8 @@ import milestoneStatusRoutes from '../routes/milestone-status.routes';
 import stageTemplateRoutes from '../routes/stage-template.routes';
 import projectRoutes from '../routes/projects.routes';
 import projectStatusRoutes from '../routes/project-status.routes';
+import generalTaskRoutes from '../routes/general-tasks.routes';
+import generalTaskStatusRoutes from '../routes/general-task-status.routes';
 import authRoutes from '../routes/auth.routes';
 import backupRoutes from '../routes/backup.routes';
 import swaggerUi from 'swagger-ui-express';
@@ -67,6 +69,8 @@ app.use('/api/milestone-statuses', milestoneStatusRoutes);
 app.use('/api/stage-templates', stageTemplateRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/project-statuses', projectStatusRoutes);
+app.use('/api/general-tasks', generalTaskRoutes);
+app.use('/api/general-task-statuses', generalTaskStatusRoutes);
 app.use('/api/backups', backupRoutes);
 
 
