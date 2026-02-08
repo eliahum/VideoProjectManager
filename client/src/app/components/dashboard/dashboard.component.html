@@ -62,20 +62,20 @@
           </button>
         </div>
 
-        <!-- Urgent Tasks -->
+        <!-- Urgent Milestone Tasks -->
         <div class="dashboard-card">
           <h2 class="dashboard-card-title">
             <mat-icon class="warning-icon">warning</mat-icon>
             משימות דחופות
           </h2>
-          <div class="urgent-task" *ngFor="let task of urgentTasks">
-            <div class="task-title">{{ task.title }}</div>
+          <div class="urgent-task" *ngFor="let milestoneTask of urgentMilestoneTasks">
+            <div class="task-title">{{ milestoneTask.title }}</div>
             <div class="task-time">
               <mat-icon>schedule</mat-icon>
-              <span>{{ task.time }}</span>
+              <span>{{ milestoneTask.time }}</span>
             </div>
           </div>
-          <div *ngIf="urgentTasks.length === 0" class="no-tasks">
+          <div *ngIf="urgentMilestoneTasks.length === 0" class="no-tasks">
             <p>אין משימות דחופות</p>
           </div>
         </div>

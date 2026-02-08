@@ -14,7 +14,7 @@ import { Project, Milestone } from '../../models/project.model';
 import { ProjectStatus } from '../../models/project-status.model';
 import { HttpClient } from '@angular/common/http';
 
-interface UrgentTask {
+interface UrgentMilestoneTask {
   title: string;
   time: string;
 }
@@ -42,11 +42,11 @@ export class DashboardComponent implements OnInit {
   
   // Dashboard statistics
   totalLeads = 0;
-  pendingTasks = 0;
+  pendingMilestoneTasks = 0;
   weeklyMeetings = 0;
   
-  // Urgent tasks
-  urgentTasks: UrgentTask[] = [];
+  // Urgent milestone tasks
+  urgentMilestoneTasks: UrgentMilestoneTask[] = [];
 
   constructor(
     private projectService: ProjectService,
@@ -84,10 +84,10 @@ export class DashboardComponent implements OnInit {
             currentMilestone: this.getCurrentMilestone(project)
           }));
           
-          // Calculate pending tasks from milestones
-          this.calculatePendingTasks();
-          // Refresh urgent tasks from projects
-          this.loadUrgentTasks();
+          // Calculate pending milestone tasks from milestones
+          this.calculatePendingMilestoneTasks();
+          // Refresh urgent milestone tasks from projects
+          this.loadUrgentMilestoneTasks();
           
           console.log('Project stats:', this.projectStats);
           this.cdr.detectChanges();
@@ -124,13 +124,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  loadUrgentTasks(): void {
+  loadUrgentMilestoneTasks(): void {
     // סנן רק פרויקטים פתוחים (isFinal === false)
     const openProjects = this.activeProjects.filter(project => {
       const status = this.projectStatuses.find(s => s.statusNumber === project.statusNumber);
       return status && status.isFinal === false;
     });
-    const tasks: UrgentTask[] = openProjects.flatMap(project =>
+    const milestoneTasks: UrgentMilestoneTask[] = openProjects.flatMap(project =>
       project.stages
         .filter(stage => stage.milestones && stage.milestones.length > 0)
         .flatMap(stage =>
@@ -151,7 +151,7 @@ export class DashboardComponent implements OnInit {
         )
     );
     
-    this.urgentTasks = tasks;
+    this.urgentMilestoneTasks = milestoneTasks;
   }
 
   loadProjectStatuses(): void {
@@ -168,15 +168,15 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  calculatePendingTasks(): void {
-    this.pendingTasks = 0;
+  calculatePendingMilestoneTasks(): void {
+    this.pendingMilestoneTasks = 0;
     this.activeProjects.forEach(project => {
       project.stages.forEach(stage => {
         if (stage.milestones) {
           stage.milestones.forEach(milestone => {
             // Count milestones that are not completed (status < 4)
             if (milestone.statusNumber && milestone.statusNumber < 4) {
-              this.pendingTasks++;
+              this.pendingMilestoneTasks++;
             }
           });
         }
