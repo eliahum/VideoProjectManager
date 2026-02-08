@@ -50,6 +50,8 @@ export class DashboardComponent implements OnInit {
   totalLeads = 0;
   pendingMilestoneTasks = 0;
   weeklyMeetings = 0;
+  totalOwedToMe = 0; // כמה כסף חייבים לי
+  totalIOwe = 0; // כמה כסף אני חייב
   
   // Urgent milestone tasks
   urgentMilestoneTasks: UrgentMilestoneTask[] = [];
@@ -104,6 +106,8 @@ export class DashboardComponent implements OnInit {
           this.calculatePendingMilestoneTasks();
           // Refresh urgent milestone tasks from projects
           this.loadUrgentMilestoneTasks();
+          // Calculate financial statistics
+          this.calculateFinancialStats();
           
           console.log('Project stats:', this.projectStats);
           this.cdr.detectChanges();
@@ -254,6 +258,29 @@ export class DashboardComponent implements OnInit {
             }
           });
         }
+      });
+    });
+  }
+
+  calculateFinancialStats(): void {
+    this.totalOwedToMe = 0;
+    this.totalIOwe = 0;
+    
+    this.activeProjects.forEach(project => {
+      // כמה חייבים לי = עלות ללקוח פחות מה ששולם
+      const cost = project.cost || 0;
+      const paidAmount = project.paidAmount || 0;
+      this.totalOwedToMe += (cost - paidAmount);
+      
+      // כמה אני חייב = סכום ספקים שלא שולמו
+      project.stages.forEach(stage => {
+        stage.milestones?.forEach(milestone => {
+          milestone.suppliers?.forEach(supplier => {
+            if (!supplier.isPaid) {
+              this.totalIOwe += supplier.amount || 0;
+            }
+          });
+        });
       });
     });
   }

@@ -35,6 +35,18 @@
           {{ getStatDifference(weeklyMeetings, 6) }}
         </div>
       </div>
+      <div class="stat-card stat-card-money">
+        <div class="stat-info">
+          <div class="stat-label">כמה כסף חייבים לי</div>
+          <div class="stat-value">₪{{ totalOwedToMe | number:'1.0-0' }}</div>
+        </div>
+      </div>
+      <div class="stat-card stat-card-debt">
+        <div class="stat-info">
+          <div class="stat-label">כמה כסף אני חייבת</div>
+          <div class="stat-value">₪{{ totalIOwe | number:'1.0-0' }}</div>
+        </div>
+      </div>
     </div>
 
     <!-- Main Content -->
