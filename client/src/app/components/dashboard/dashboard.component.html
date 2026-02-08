@@ -99,17 +99,18 @@
 
         <div class="projects-grid" *ngIf="activeProjects.length > 0">
           <div class="project-card" *ngFor="let stat of projectStats">
+            <button class="view-icon-button" [routerLink]="['/projects', stat.project.id]" matTooltip="צפה בפרויקט">
+              <mat-icon>visibility</mat-icon>
+            </button>
             <div class="project-header">
               <div class="project-info-header">
                 <h3 class="project-title">{{ stat.project.projectName }}</h3>
                 <p class="project-subtitle">{{ stat.project.customerName }}</p>
               </div>
             </div>
-            <div class="progress-section">
-              <button class="view-button" [routerLink]="['/projects', stat.project.id]">
-                <mat-icon>visibility</mat-icon>
-                צפה בפרויקט
-              </button>
+            <div class="current-milestone" *ngIf="stat.currentMilestone">
+              <mat-icon>flag</mat-icon>
+              <span>{{ stat.currentMilestone.name }}</span>
             </div>
           </div>
         </div>

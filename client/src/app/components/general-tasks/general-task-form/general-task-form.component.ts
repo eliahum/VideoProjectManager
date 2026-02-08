@@ -13,6 +13,7 @@ import { GeneralTaskService } from '../../../services/general-task.service';
 import { MessageDialogService } from '../../../services/message-dialog.service';
 import { GeneralTask } from '../../../models/general-task.model';
 import { GeneralTaskStatus } from '../../../models/general-task-status.model';
+import { convertDateToUTC } from '../../../utils/date.utils';
 
 @Component({
   selector: 'app-general-task-form',
@@ -47,7 +48,7 @@ export class GeneralTaskFormComponent implements OnInit {
     this.taskForm = this.fb.group({
       name: ['', Validators.required],
       statusNumber: [1, Validators.required],
-      date: [null],
+      date: [null, Validators.required],
       notes: ['']
     });
   }
@@ -67,7 +68,10 @@ export class GeneralTaskFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.taskForm.valid) {
-      const taskData = this.taskForm.value;
+      const taskData = {
+        ...this.taskForm.value,
+        date: convertDateToUTC(this.taskForm.value.date)
+      };
       
       if (this.isEditMode) {
         this.taskService.update(this.data.task!._id!, taskData).subscribe(response => {

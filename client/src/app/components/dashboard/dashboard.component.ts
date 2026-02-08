@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { finalize } from 'rxjs/operators';
 import { ProjectService } from '../../services/project.service';
 import { LeadService } from '../../services/lead.service';
@@ -29,7 +30,8 @@ interface UrgentMilestoneTask {
     MatButtonModule,
     MatIconModule,
     MatChipsModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
@@ -77,7 +79,11 @@ export class DashboardComponent implements OnInit {
       next: (response) => {
         console.log('Dashboard response:', response);
         if (response.isSuccess && response.data) {
-          this.activeProjects = [...response.data];
+          // סנן רק פרויקטים שהסטטוס שלהם לא סופי ולא בהשהייה
+          this.activeProjects = response.data.filter(project => {
+            const status = this.projectStatuses.find(s => s.statusNumber === project.statusNumber);
+            return status && !status.isFinal && !status.isPause;
+          });
           console.log('Active projects:', this.activeProjects);
           this.projectStats = this.activeProjects.map(project => ({
             project,
